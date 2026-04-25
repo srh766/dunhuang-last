@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>云游石窟 - 数字敦煌</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- 异步加载百度地图API -->
+  <script type="text/javascript">
+    // 全局变量
+    let currentScene = 'menkou';
+    let isAnimating = false;
+    let isFullscreen = false;
+    let originalContainer = null;
+    let currentCaveId = null;
+
+    const dragState = {
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      translateX: 0,
+      translateY: 0
+    };
+
+    const scaleState = {
+      scale: 1,
+      minScale: 1,
+      maxScale: 1.5
+    };
+
+    // 地图初始化函数（全局作用域，以便百度地图API回调可以访问）
+    function initMap() {
+      // 初始化地图
+      var map = new BMap.Map("map-container");
+      var point = new BMap.Point(103.82, 36.05); // 甘肃中心点
+      map.centerAndZoom(point, 7);
+      map.enableScrollWheelZoom(true);
+
+      // 添加控件
+      map.addControl(new BMap.NavigationControl());
+      map.addControl(new BMap.ScaleControl());
+      map.addControl(new BMap.OverviewMapControl());
+
+      // 敦煌文化区域数据
+      var dunhuangArea = {
+          center: new BMap.Point(94.65, 40.14),
+          radius: 100000 // 100公里范围
+      };
+
+      // 绘制敦煌文化区域
+      var circle = new BMap.Circle(dunhuangArea.center, dunhuangArea.radius, {
+          strokeColor: "#3385ff",
+          strokeWeight: 2,
+          strokeOpacity: 0.8,
+          fillColor: "#3385ff",
+          fillOpacity: 0.1
+      });
+      map.addOverlay(circle);
+
+      // 景点数据
+      var spots = [
+          {
+              name: "莫高窟",
+              location: new BMap.Point(94.68, 40.13),
+              description: "莫高窟，俗称千佛洞，坐落在河西走廊西端的敦煌。它始建于十六国的前秦时期，历经十六国、北朝、隋、唐、五代、西夏、元等历代的兴建，形成巨大的规模，有洞窟735个，壁画4.5万平方米、泥质彩塑2415尊，是世界上现存规模最大、内容最丰富的佛教艺术地。",
+              image: "../dingwei.tupian/m.muogaoku.jpg"
+          },
+          {
+              name: "敦煌市博物馆",
+              location: new BMap.Point(94.71, 40.15),
+              description: "敦煌市博物馆是一座综合性博物馆，收藏了大量敦煌地区的历史文物和艺术品，展示了敦煌的历史文化和艺术成就。",
+              image: "../dingwei.tupian/m.bowuguan.jpg"
+          },
+          {
+              name: "榆林窟",
+              location: new BMap.Point(95.90, 40.10),
+              description: "榆林窟，又名万佛峡，位于瓜州县南70公里处，是敦煌莫高窟的姊妹窟，同样以精美的壁画和彩塑闻名。",
+              image: "../dingwei.tupian/m.yulinku.jpg"
+          },
+          {
+              name: "西千佛洞",
+              location: new BMap.Point(94.50, 40.10),
+              description: "西千佛洞位于敦煌市区西南35公里处，是敦煌佛教艺术的重要组成部分，保存了从北魏到宋代的壁画和彩塑。",
+              image: "../dingwei.tupian/m.xiqianfuodong.jpg"
+          },
+          {
+              name: "鸣沙山",
+              location: new BMap.Point(94.65, 40.08),
+              description: "鸣沙山位于敦煌市城南5公里处，因沙动有声而得名，是敦煌著名的自然景观。",
+              image: "../dingwei.tupian/m.mingshashan.jpg"
+          },
+          {
+              name: "月牙泉",
+              location: new BMap.Point(94.66, 40.09),
+              description: "月牙泉位于鸣沙山北麓，因形似月牙而得名，是敦煌著名的自然景观，有'沙漠第一泉'之称。",
+              image: "../dingwei.tupian/m.yueyaquan.jpg"
+          },
+          {
+              name: "敦煌雅丹国家地质公园",
+              location: new BMap.Point(93.71, 40.26),
+              description: "敦煌雅丹国家地质公园，俗称敦煌雅丹魔鬼城。是敦煌西线旅游大景区的一个重要组成部分，距离敦煌市区180公里，位于玉门关西北边，景区分南北两区，东西长约25公里，南北宽约13公里。",
+              image: "../dingwei.tupian/m.yadan.jpg"
+          },
+          {
+              name: "玉门关",
+              location: new BMap.Point(93.88, 40.20),
+              description: "玉门关，始置于汉武帝开通西域道路、设置河西四郡之时，因西域输入玉石时取道于此而得名。汉时为通往西域各地的门户，故址在今甘肃敦煌西北小方盘城。",
+              image: "../dingwei.tupian/m.yumenguan.jpg"
+          },
+          {
+              name: "阳关",
+              location: new BMap.Point(95.08, 39.83),
+              description: "阳关，位于甘肃省敦煌市西南的古董滩附近。西汉置关，因在玉门关之南，故名。和玉门关同为当时对西域交通的门户。",
+              image: "../dingwei.tupian/m.yangguan.jpg"
+          },
+          {
+              name: "悬泉置",
+              location: new BMap.Point(95.20, 40.05),
+              description: "悬泉置是汉代设立的驿站，位于敦煌市东60公里处，是丝绸之路的重要节点，保存有大量简牍和文物。",
+              image: "../dingwei.tupian/m.xuanquanzhi.jpg"
+          },
+          {
+              name: "三危山",
+              location: new BMap.Point(94.75, 40.18),
+              description: "三危山位于敦煌市东南25公里处，是敦煌的重要文化名山，与莫高窟隔河相望，山上有众多佛教遗迹。",
+              image: "../dingwei.tupian/m.sanweishan.jpg"
+          },
+          {
+              name: "敦煌古城",
+              location: new BMap.Point(94.60, 40.10),
+              description: "敦煌古城又称敦煌影视城，位于敦煌市西南18公里处，是为拍摄电影而建的仿唐古城，现已成为旅游景点。",
+              image: "../dingwei.tupian/m.dunhuanggucheng.jpg"
+          }
+      ];
+
+      // 添加景点标记
+      var markers = [];
+      function addSpotMarkers() {
+          var zoom = map.getZoom();
+          
+          // 清除现有标记
+          for (var i = 0; i < markers.length; i++) {
+              map.removeOverlay(markers[i]);
+          }
+          markers = [];
+          
+          // 当地图放大到一定级别时显示景点标记
+          if (zoom >= 9) {
+              for (var i = 0; i < spots.length; i++) {
+                  var spot = spots[i];
+                  var marker = new BMap.Marker(spot.location);
+                  marker.setTitle(spot.name);
+                  marker.spotData = spot;
+                  
+                  // 添加点击事件
+                  marker.addEventListener("click", function(e) {
+                      var spotData = this.spotData;
+                      document.getElementById("spot-name").textContent = spotData.name;
+                      document.getElementById("spot-image").innerHTML = '<img src="' + spotData.image + '" alt="' + spotData.name + '" class="w-full h-auto rounded-lg" />';
+                      document.getElementById("spot-description").textContent = spotData.description;
+                      document.getElementById("spot-info").style.display = "block";
+                  });
+                  
+                  map.addOverlay(marker);
+                  markers.push(marker);
+              }
+          }
+      }
+
+      // 地图缩放事件
+      map.addEventListener("zoomend", addSpotMarkers);
+      
+      // 初始化时添加标记
+      addSpotMarkers();
+
+      // 关闭景点信息面板
+      document.getElementById("close-btn").addEventListener("click", function() {
+          document.getElementById("spot-info").style.display = "none";
+      });
+    }
+
+    function loadBaiduMap() {
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = 'https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=initMapScript';
+      document.body.appendChild(script);
+    }
+    
+    function initMapScript() {
+      // 百度地图API加载完成后的回调
+      console.log('百度地图API加载完成');
+      
+      // 检查地图容器是否存在
+      var mapContainer = document.getElementById('map-container');
+      console.log('地图容器:', mapContainer);
+      
+      // 初始化地图
+      if (mapContainer) {
+        console.log('开始初始化地图...');
+        initMap();
+        console.log('地图初始化完成');
+      } else {
+        console.error('地图容器不存在');
+      }
+    }
+    
+    // 页面加载完成后加载百度地图API
+    window.addEventListener('DOMContentLoaded', loadBaiduMap);
+
+    // 页面加载完成后初始化所有功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 石窟数据
+      const caveData = [
+        {
+          id: '1',
+          title: '莫高窟第96窟',
+          subtitle: '唐代 · 九层楼',
+          image: '../img/yun1.jpg',
+          description: '莫高窟第96窟，俗称"九层楼"，是莫高窟的标志性建筑，内有高达35.5米的弥勒佛像，是世界上最大的室内坐佛。该窟建于唐代，历经多次重修，是莫高窟的象征。',
+          history: '第96窟不仅是莫高窟的标志性建筑，也是中国古代建筑艺术的杰出代表。窟内的弥勒佛像体现了唐代雕塑艺术的高超水平，具有重要的历史和艺术价值。'
+        },
+        {
+          id: '2',
+          title: '莫高窟第257窟',
+          subtitle: '北魏 · 九色鹿本生',
+          image: '../img/kf1.jpg',
+          description: '莫高窟第257窟以"九色鹿本生"故事画闻名，壁画色彩鲜艳，构图巧妙，是北魏时期的经典代表作。窟内保存了大量精美的壁画和雕塑。',
+          history: '第257窟的"九色鹿本生"壁画是敦煌壁画的经典之作，展现了北魏时期的绘画风格和艺术水平，对研究中国古代绘画史具有重要价值。'
+        },
+        {
+          id: '3',
+          title: '莫高窟第17窟',
+          subtitle: '晚唐 · 藏经洞',
+          image: '../img/yun17.jpg',
+          description: '莫高窟第17窟，即著名的"藏经洞"，1900年发现了大量珍贵的古代文献和艺术品，对研究敦煌学具有重要意义。',
+          history: '藏经洞的发现是20世纪考古学的重大事件，洞内保存的文献涵盖了宗教、历史、文学、艺术等多个领域，为研究古代中国和中亚地区的历史文化提供了宝贵资料。'
+        },
+        {
+          id: '4',
+          title: '莫高窟第103窟',
+          subtitle: '唐代 · 维摩诘经变',
+          image: '../img/yun103.jpg',
+          description: '莫高窟第103窟的"维摩诘经变"壁画以其精湛的线描技法和生动的人物形象著称，是唐代壁画的杰作。',
+          history: '第103窟的壁画体现了唐代绘画的高超技艺，尤其是"维摩诘经变"中的人物形象栩栩如生，线条流畅，是中国古代绘画艺术的珍品。'
+        },
+        {
+          id: '5',
+          title: '莫高窟第112窟',
+          subtitle: '唐代 · 反弹琵琶',
+          image: '../img/yun112.jpg',
+          description: '莫高窟第112窟的"反弹琵琶"壁画是敦煌艺术的标志性形象，展现了唐代乐舞的高超技艺。',
+          history: '"反弹琵琶"是敦煌艺术中最具代表性的形象之一，体现了唐代音乐舞蹈的繁荣和艺术家的丰富想象力，成为中国文化的重要符号。'
+        },
+        {
+          id: '6',
+          title: '榆林窟第25窟',
+          subtitle: '中唐 · 西方净土变',
+          image: '../img/yun25.jpg',
+          description: '榆林窟第25窟的"西方净土变"壁画色彩绚丽，构图宏伟，是中唐时期壁画艺术的杰出代表。',
+          history: '榆林窟第25窟的壁画保存完好，色彩鲜艳，展现了中唐时期壁画艺术的最高水平，对研究唐代宗教艺术具有重要价值。'
+        },
+        {
+          id: '7',
+          title: '西千佛洞第12窟',
+          subtitle: '北魏 · 飞天壁画',
+          image: '../img/yun12.jpg',
+          description: '西千佛洞第12窟以精美的飞天壁画著称，展现了北魏时期的艺术风格，飞天姿态轻盈，线条流畅。',
+          history: '西千佛洞第12窟的飞天壁画是北魏时期的代表作，体现了佛教艺术与中国传统艺术的融合，对研究古代绘画艺术具有重要价值。'
+        },
+        {
+          id: '8',
+          title: '莫高窟第323窟',
+          subtitle: '初唐 · 张骞出使西域',
+          image: '../img/yun323.jpg',
+          description: '莫高窟第323窟的"张骞出使西域"壁画生动描绘了张骞出使西域的历史场景，是研究丝绸之路历史的重要资料。',
+          history: '第323窟的壁画记录了张骞出使西域的历史事件，是敦煌壁画中少有的历史题材作品，具有重要的历史和艺术价值。'
+        },
+        {
+          id: '9',
+          title: '东千佛洞第2窟',
+          subtitle: '西夏 · 水月观音',
+          image: '../img/yun2.jpg',
+          description: '东千佛洞第2窟的"水月观音"壁画是西夏时期的杰作，画面宁静典雅，展现了观音菩萨的慈悲形象。',
+          history: '东千佛洞第2窟的水月观音壁画体现了西夏时期的艺术风格，是研究西夏佛教艺术的重要资料，具有独特的艺术价值。'
+        }
+      ];
+
+      // 收藏夹模态框元素
+      const favoriteModalContainer = document.getElementById('favorite-modal-container');
+      const closeFavoriteModal = document.getElementById('close-favorite-modal');
+      const favoriteList = document.getElementById('favorite-list');
+      const favoriteEmpty = document.getElementById('favorite-empty');
+      
+      // 显示收藏夹
+      function showFavoriteModal() {
+        loadFavoriteItems();
+        favoriteModalContainer.classList.remove('hidden');
+      }
+      
+      // 加载收藏内容
+      function loadFavoriteItems() {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        const favoriteArray = [];
+        
+        for (const page in favorites) {
+          if (favorites[page] && Array.isArray(favorites[page])) {
+            favorites[page].forEach(item => {
+              favoriteArray.push({...item, page: page});
+            });
+          }
+        }
+        
+        favoriteList.innerHTML = '';
+        
+        if (favoriteArray.length === 0) {
+          favoriteEmpty.classList.remove('hidden');
+          favoriteList.classList.add('hidden');
+        } else {
+          favoriteEmpty.classList.add('hidden');
+          favoriteList.classList.remove('hidden');
+          
+          favoriteArray.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card rounded-xl overflow-hidden card-hover bg-dark/50 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40';
+            card.innerHTML = `
+              <div class="relative overflow-hidden group">
+                <img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3">
+                  <span class="bg-accent/90 text-dark text-xs font-bold px-2 py-1 rounded-full">${item.page}</span>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <h4 class="text-lg font-bold text-primary mb-1">${item.title}</h4>
+                  <p class="text-light text-sm opacity-90 mb-3">${item.period || item.subtitle || item.category || item.description?.substring(0, 60) || ''}</p>
+                  <div class="flex gap-2">
+                    <button class="view-btn px-3 py-1 rounded-lg text-white text-sm flex-1 flex items-center justify-center gap-1" style="background-color: #d4a76a;">
+                      <i class="fa fa-eye"></i> 查看
+                    </button>
+                    <button class="remove-favorite px-3 py-1 rounded-lg text-white text-sm" style="background-color: #8b5a2b;" data-page="${item.page}" data-id="${item.id}">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            favoriteList.appendChild(card);
+            
+            const viewBtn = card.querySelector('.view-btn');
+            if (viewBtn) {
+              viewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = item.page;
+                favoriteModalContainer.classList.add('hidden');
+                if (page === '云游石窟' || page === '丹青壁画' || page === '数字藏经' || page === '开放素材' || page === '敦煌学术') {
+                  document.getElementById('modal-title').textContent = item.title;
+                  document.getElementById('modal-subtitle').textContent = item.title;
+                  document.getElementById('modal-period').textContent = item.subtitle || item.period || item.category || item.date || '';
+                  document.getElementById('modal-image').src = item.image;
+                  document.getElementById('modal-image').alt = item.title;
+                  document.getElementById('modal-description').textContent = item.description || '';
+                  document.getElementById('modal').classList.remove('hidden');
+                }
+              });
+            }
+            
+            const removeBtn = card.querySelector('.remove-favorite');
+            if (removeBtn) {
+              removeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = this.getAttribute('data-page');
+                const id = this.getAttribute('data-id');
+                removeFavorite(page, id);
+                loadFavoriteItems();
+              });
+            }
+          });
+        }
+      }
+      
+      // 移除收藏
+      function removeFavorite(page, id) {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        if (favorites[page]) {
+          favorites[page] = favorites[page].filter(item => item.id !== id);
+          localStorage.setItem('allFavorites', JSON.stringify(favorites));
+        }
+      }
+      
+      // 收藏图标点击事件
+      const favoriteIcon = document.getElementById('favorite-icon');
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('click', function() {
+          showFavoriteModal();
+        });
+      }
+      
+      // 关闭收藏夹模态框
+      if (closeFavoriteModal) {
+        closeFavoriteModal.addEventListener('click', function() {
+          favoriteModalContainer.classList.add('hidden');
+        });
+      }
+      
+      // 点击模态框外部关闭
+      if (favoriteModalContainer) {
+        favoriteModalContainer.addEventListener('click', function(e) {
+          if (e.target === favoriteModalContainer) {
+            favoriteModalContainer.classList.add('hidden');
+          }
+        });
+      }
+
+      // 搜索功能
+      const searchInput = document.getElementById('search-input');
+      const searchBtn = document.getElementById('search-btn');
+      
+      function performSearch() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+          const caveCards = document.querySelectorAll('.card');
+          let hasResults = false;
+          
+          caveCards.forEach(card => {
+            const title = card.querySelector('h3').textContent.toLowerCase();
+            const subtitle = card.querySelector('p').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || subtitle.includes(searchTerm)) {
+              card.style.display = 'block';
+              hasResults = true;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+          
+          const searchResults = document.getElementById('search-results');
+          if (!searchResults) {
+            const resultsElement = document.createElement('div');
+            resultsElement.id = 'search-results';
+            resultsElement.className = 'text-center py-8';
+            resultsElement.style.display = 'none';
+            document.querySelector('.grid').parentElement.appendChild(resultsElement);
+          }
+          
+          const resultsElement = document.getElementById('search-results');
+          if (!hasResults) {
+            resultsElement.innerHTML = '<p class="text-light opacity-75">未找到与 "' + searchInput.value + '" 相关的内容</p>';
+            resultsElement.style.display = 'block';
+          } else {
+            resultsElement.style.display = 'none';
+          }
+        } else {
+          const caveCards = document.querySelectorAll('.card');
+          caveCards.forEach(card => {
+            card.style.display = 'block';
+          });
+          
+          const searchResults = document.getElementById('search-results');
+          if (searchResults) {
+            searchResults.style.display = 'none';
+          }
+        }
+      }
+      
+      // 搜索按钮点击事件
+      if (searchBtn) {
+        searchBtn.addEventListener('click', performSearch);
+      }
+      
+      // 回车键搜索
+      if (searchInput) {
+        searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performSearch();
+          }
+        });
+      }
+
+      // 分类按钮点击事件
+      const filterTags = document.querySelectorAll('.filter-tag');
+      if (filterTags.length > 0) {
+        filterTags.forEach(tag => {
+          tag.addEventListener('click', function() {
+            // 移除所有按钮的active类
+            filterTags.forEach(t => {
+              t.classList.remove('active');
+              t.classList.remove('bg-secondary');
+              t.classList.add('bg-dark');
+            });
+            
+            // 添加当前按钮的active类
+            this.classList.add('active');
+            this.classList.remove('bg-dark');
+            this.classList.add('bg-secondary');
+            
+            // 获取选中的分类
+            const category = this.textContent;
+            const caveCards = document.querySelectorAll('.card');
+            
+            caveCards.forEach(card => {
+              if (category === '全部石窟') {
+                card.style.display = 'block';
+              } else {
+                const title = card.querySelector('h3').textContent;
+                const subtitle = card.querySelector('p').textContent;
+                const text = title + ' ' + subtitle;
+                
+                if (text.includes(category)) {
+                  card.style.display = 'block';
+                } else {
+                  card.style.display = 'none';
+                }
+              }
+            });
+          });
+        });
+      }
+
+      // 加载更多功能
+      const loadMoreBtn = document.getElementById('load-more');
+      const caveGrid = document.getElementById('cave-grid');
+      let loadedCount = 6;
+
+      function createCaveCard(cave, index) {
+        const card = document.createElement('div');
+        card.className = 'card rounded-xl overflow-hidden card-hover animate-fade-in';
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.innerHTML = `
+          <div class="relative overflow-hidden group">
+            <img src="${cave.image}" alt="${cave.title}" class="w-full h-64 object-cover filter-dunhuang">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">${cave.title}</h3>
+              <p class="text-light opacity-85 text-sm mb-4">${cave.subtitle}</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="${cave.id}">
+                  查看详细
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="${cave.id}">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm">
+              ${cave.description.substring(0, 80)}...
+            </p>
+          </div>
+        `;
+        return card;
+      }
+
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          loadMoreBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+
+          setTimeout(() => {
+            const endIndex = Math.min(loadedCount + 3, caveData.length);
+
+            for (let i = loadedCount; i < endIndex; i++) {
+              const card = createCaveCard(caveData[i], i - loadedCount);
+              caveGrid.appendChild(card);
+            }
+
+            loadedCount = endIndex;
+
+            bindCaveEvents();
+
+            if (loadedCount >= caveData.length) {
+              loadMoreBtn.innerHTML = '<span>没有更多了</span>';
+              loadMoreBtn.disabled = true;
+              loadMoreBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+              loadMoreBtn.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+            }
+          }, 500);
+        });
+      }
+
+      function bindCaveEvents() {
+        document.querySelectorAll('.view-cave').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            currentCaveId = id;
+            const cave = caveData.find(item => item.id === id);
+            if (cave) {
+              document.getElementById('modal-title').textContent = cave.title;
+              document.getElementById('modal-subtitle').textContent = cave.title;
+              document.getElementById('modal-period').textContent = cave.subtitle;
+              document.getElementById('modal-image').src = cave.image;
+              document.getElementById('modal-image').alt = cave.title;
+              document.getElementById('modal-description').textContent = cave.description;
+              modal.classList.remove('hidden');
+            }
+          });
+        });
+
+        document.querySelectorAll('.add-favorite').forEach(btn => {
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-heart-o')) {
+              icon.classList.remove('fa-heart-o');
+              icon.classList.add('fa-heart');
+              this.classList.add('text-primary');
+              const cave = caveData.find(item => item.id === id);
+              if (cave) {
+                const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+                if (!allFavorites['云游石窟']) {
+                  allFavorites['云游石窟'] = [];
+                }
+                const exists = allFavorites['云游石窟'].some(item => item.id === id);
+                if (!exists) {
+                  allFavorites['云游石窟'].push(cave);
+                  localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+                }
+              }
+            } else {
+              icon.classList.remove('fa-heart');
+              icon.classList.add('fa-heart-o');
+              this.classList.remove('text-primary');
+              const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+              if (allFavorites['云游石窟']) {
+                allFavorites['云游石窟'] = allFavorites['云游石窟'].filter(item => item.id !== id);
+                localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+              }
+            }
+          });
+        });
+      }
+
+      bindCaveEvents();
+
+      const modal = document.getElementById('modal');
+      const closeModal = document.getElementById('close-modal');
+
+      closeModal.addEventListener('click', function() {
+        modal.classList.add('hidden');
+      });
+
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+
+      // 下载功能
+      document.getElementById('download-image').addEventListener('click', function() {
+        const img = document.getElementById('modal-image');
+        const link = document.createElement('a');
+        link.download = '敦煌石窟.jpg';
+        link.href = img.src;
+        link.click();
+      });
+
+      // 分享功能
+      document.getElementById('share-image').addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: '敦煌石窟',
+            text: '来云游敦煌石窟',
+            url: window.location.href
+          });
+        } else {
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(function() {
+            alert('链接已复制到剪贴板');
+          });
+        }
+      });
+
+      // 复制链接功能
+      document.getElementById('copy-link').addEventListener('click', function() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(function() {
+          alert('链接已复制到剪贴板');
+        });
+      });
+
+      console.log('DOM加载完成，所有功能已初始化');
+
+      // 个人中心图标点击事件
+      const userIcon = document.getElementById('user-icon');
+      if (userIcon) {
+        userIcon.addEventListener('click', function(e) {
+          e.stopPropagation(); // 阻止事件冒泡
+          // 跳转到登录页面
+          window.location.href = '../logoin/code/123.html';
+        });
+      }
+    });
+  </script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#D4A76A',
+            secondary: '#8B4513',
+            accent: '#E6C29C',
+            dark: '#3E2723',
+            light: '#F5F5DC',
+            paper: '#F0E6D2'
+          },
+          fontFamily: {
+            cursive: ['Ma Shan Zheng', 'cursive']
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.8s ease-out forwards',
+            'slide-up': 'slideUp 0.8s ease-out forwards',
+            'zoom-in': 'zoomIn 0.8s ease-out forwards'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            zoomIn: {
+              '0%': { opacity: '0', transform: 'scale(0.8)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary: #D4A76A;
+      --secondary: #8B4513;
+      --accent: #E6C29C;
+      --dark: #3E2723;
+      --light: #F5F5DC;
+      --paper: #F0E6D2;
+      --bg-color: #140D08;
+      --text-color: #F7E9D4;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.7;
+    }
+    
+
+    
+    .header {
+      background: linear-gradient(to bottom, rgba(75, 47, 30, 0.7), rgba(45, 27, 18, 0.8)), url('../img/background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-bottom: 2px solid #D4AF7E;
+      box-shadow: 0 0 30px rgba(212, 175, 126, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+CiAgPHBhdGggZD0iTTAgMCBMNjAgNjAgTTAwIDYwIEw2MCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNENEE3NkEiIHN0cm9rZS13aWR0aD0iMC41Ij48L3BhdGg+Cjwvc3ZnPg==');
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    
+    .header h1 {
+      font-family: "Ma Shan Zheng", cursive;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 10px rgba(232, 196, 142, 0.3);
+    }
+    
+    .card {
+      background: linear-gradient(135deg, rgba(43, 27, 18, 0.9), rgba(68, 44, 31, 0.8));
+      border: 1px solid #442C1F;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(212, 175, 126, 0.05), rgba(212, 175, 126, 0.15));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+      border-color: #D4AF7E;
+    }
+    
+    .card img {
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: brightness(0.9) saturate(1.1);
+    }
+    
+    .card:hover img {
+      transform: scale(1.05);
+      filter: brightness(1.1) saturate(1.3);
+    }
+    
+    .card-title {
+      font-family: "Ma Shan Zheng", cursive;
+      color: #E8C48E;
+    }
+    
+    .btn-primary {
+      background-color: #A16A43;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c08255;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: #5C3C28;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #754A30;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(92, 60, 40, 0.3);
+    }
+    
+    .footer {
+      background-color: #1B100A;
+      border-top: 1px solid #442C1F;
+    }
+    
+    .filter-tag {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-tag::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 126, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .filter-tag:hover::before {
+      left: 100%;
+    }
+    
+    .filter-tag.active {
+      background-color: #D4A76A;
+      color: #3E2723;
+    }
+    
+    .modal {
+      background-color: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, rgba(43, 27, 18, 0.95), rgba(68, 44, 31, 0.95));
+      border: 1px solid #D4AF7E;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      animation: zoomIn 0.3s ease-out forwards;
+    }
+    
+    #spot-info {
+      display: none;
+    }
+
+    /* 3D石窟漫游样式 */
+    .scene {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: scale(1.3);
+      overflow: hidden;
+    }
+
+    .scene.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      z-index: 5;
+    }
+
+    .scene.exiting {
+      opacity: 0;
+      transform: scale(0.85);
+      z-index: 1;
+    }
+
+    .scene.entering {
+      opacity: 1;
+      transform: scale(1);
+      z-index: 10;
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 133.33%;
+      height: 133.33%;
+      left: -16.665%;
+      top: -16.665%;
+      cursor: grab;
+      transition: transform 0.1s ease-out;
+      transform-origin: center center;
+    }
+
+    .image-wrapper:active {
+      cursor: grabbing;
+    }
+
+    .nav-arrow {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(3px);
+      z-index: 20;
+    }
+
+    .nav-arrow:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+
+    .nav-arrow svg {
+      width: 24px;
+      height: 24px;
+      fill: rgba(255, 255, 255, 0.7);
+      transition: all 0.3s ease;
+    }
+
+    .nav-arrow:hover svg {
+      fill: rgba(255, 255, 255, 0.95);
+    }
+
+    .scene.active .drag-hint {
+      opacity: 1;
+    }
+
+    @keyframes gentle-pulse {
+      0%, 100% {
+        opacity: 0.6;
+        transform: translateX(-50%) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.05);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 008.716-6.747 M12 21a9.004 9.004 0 01-8.716-6.747 M12 21c2.485 0 4.5-4.03 4.5-9 S14.485 3 12 3 m0 18c-2.485 0-4.5-4.03-4.5-9 S9.515 3 12 3 m0 0a8.997 8.997 0 017.843 4.582 M12 3a8.997 8.997 0 00-7.843 4.582 m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918 m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253 m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247 m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </svg>
+      </div>
+      <div>梵境寻迹</div>
+    </div>
+    <div>
+      <div><a href="../index.html" style="color: inherit; text-decoration: none;">首页</a></div>
+      <div class="active">云游石窟</div>
+      <div><a href="../danqingbihua/index.html" style="color: inherit; text-decoration: none;">丹青壁画</a></div>
+      <div><a href="../shuzicangjing/index.html" style="color: inherit; text-decoration: none;">数字藏经</a></div>
+      <div><a href="../kaifangsucai/index.html" style="color: inherit; text-decoration: none;">开放素材</a></div>
+      <div><a href="../dunhuangxueshu/index.html" style="color: inherit; text-decoration: none;">敦煌学术</a></div>
+      <div><a href="../lianxiwomen/index.html" style="color: inherit; text-decoration: none;">联系我们</a></div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="favorite-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="user-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- 头部区域 -->
+  <div class="header py-16 px-4 text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4 relative z-10 animate-float">云游石窟</h1>
+    <p class="text-lg md:text-xl text-light opacity-85 max-w-3xl mx-auto relative z-10">
+      虚拟漫游敦煌石窟，感受千年艺术的震撼魅力
+    </p>
+  </div>
+
+  <!-- 搜索和筛选 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <div class="flex-1 relative">
+        <input type="text" id="search-input" class="search-input w-full py-3 px-4 pr-12 rounded-full text-light" placeholder="搜索石窟... (例如：莫高窟、九层楼、反弹琵琶)">
+        <button id="search-btn" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary">
+          <i class="fa fa-search text-xl"></i>
+        </button>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+          <i class="fa fa-filter"></i>
+          <span>筛选</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 石窟分类 -->
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">石窟类型：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light">全部石窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">莫高窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">榆林窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">西千佛洞</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">东千佛洞</button>
+    </div>
+  </div>
+
+  <!-- 石窟展示 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">石窟精选</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="cave-grid">
+      <!-- 石窟卡片 1 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in">
+        <div class="relative overflow-hidden group">
+          <img src="../img/yun1.jpg" alt="莫高窟第96窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第96窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 九层楼</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="1">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="1">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            莫高窟第96窟，俗称"九层楼"，是莫高窟的标志性建筑，内有高达35.5米的弥勒佛像，是世界上最大的室内坐佛。
+          </p>
+        </div>
+      </div>
+
+      <!-- 石窟卡片 2 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/kf1.jpG" alt="莫高窟第257窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第257窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">北魏 · 九色鹿本生</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="2">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="2">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            莫高窟第257窟以"九色鹿本生"故事画闻名，壁画色彩鲜艳，构图巧妙，是北魏时期的经典代表作。
+          </p>
+        </div>
+      </div>
+
+      <!-- 石窟卡片 3 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/yun17.jpg" alt="莫高窟第17窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第17窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">晚唐 · 藏经洞</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="3">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="3">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            莫高窟第17窟，即著名的"藏经洞"，1900年发现了大量珍贵的古代文献和艺术品，对研究敦煌学具有重要意义。
+          </p>
+        </div>
+      </div>
+
+      <!-- 石窟卡片 4 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/yun103.jpg" alt="莫高窟第103窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第103窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 维摩诘经变</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="4">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="4">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            莫高窟第103窟的"维摩诘经变"壁画以其精湛的线描技法和生动的人物形象著称，是唐代壁画的杰作。
+          </p>
+        </div>
+      </div>
+
+      <!-- 石窟卡片 5 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.4s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/yun112.jpg" alt="莫高窟第112窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第112窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 反弹琵琶</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="5">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="5">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            莫高窟第112窟的"反弹琵琶"壁画是敦煌艺术的标志性形象，展现了唐代乐舞的高超技艺。
+          </p>
+        </div>
+      </div>
+
+      <!-- 石窟卡片 6 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.5s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/yun25.jpg" alt="榆林窟第25窟" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">榆林窟第25窟</h3>
+            <p class="text-light opacity-85 text-sm mb-4">中唐 · 西方净土变</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-cave" data-id="6">
+                查看详细
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="6">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            榆林窟第25窟的"西方净土变"壁画色彩绚丽，构图宏伟，是中唐时期壁画艺术的杰出代表。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载更多按钮 -->
+    <div class="text-center mt-12">
+      <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto" id="load-more">
+        <span>加载更多</span>
+        <i class="fa fa-refresh"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 3D 石窟漫游 -->
+  <div class="max-w-7xl mx-auto px-4 py-12 mb-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">3D 石窟漫游</h2>
+    <div class="bg-dark rounded-xl p-6 border border-secondary">
+      <div class="aspect-w-16 aspect-h-9 mb-6">
+        <div class="w-full h-[500px] bg-black rounded-lg overflow-hidden relative flex items-center justify-center">
+          <div class="text-center p-8">
+            <svg viewBox="0 0 24 24" style="width: 80px; height: 80px; fill: rgba(255, 255, 255, 0.7); margin: 0 auto 20px;">
+              <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.32 6.05L14 12.22V16h-4v-3.78l-4.32-2.34L12 4.68l6.32 3.37z"/>
+            </svg>
+            <h3 class="text-xl font-bold text-white mb-4">体验3D虚拟漫游</h3>
+            <p class="text-light opacity-75 mb-6">通过360度全景技术，身临其境地感受敦煌石窟的魅力</p>
+            <a href="../yun.3d.pic/yun.3d.html" class="btn-primary px-6 py-3 rounded-lg text-white inline-flex items-center gap-2 hover:bg-primary/80 transition-colors">
+              <span>进入3D漫游</span>
+              <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-dark/50 rounded-lg p-4 border border-secondary/30">
+          <h4 class="text-lg font-medium text-primary mb-2">全景浏览</h4>
+          <p class="text-light opacity-75 text-sm">360度全景拍摄，真实还原石窟内部环境</p>
+        </div>
+        <div class="bg-dark/50 rounded-lg p-4 border border-secondary/30">
+          <h4 class="text-lg font-medium text-primary mb-2">细节放大</h4>
+          <p class="text-light opacity-75 text-sm">高清细节展示，近距离欣赏壁画艺术</p>
+        </div>
+        <div class="bg-dark/50 rounded-lg p-4 border border-secondary/30">
+          <h4 class="text-lg font-medium text-primary mb-2">导览解说</h4>
+          <p class="text-light opacity-75 text-sm">专业导游解说，了解石窟历史文化</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 石窟地图 -->
+  <div class="max-w-7xl mx-auto px-4 py-12 mb-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">石窟分布地图</h2>
+    <div class="bg-dark rounded-xl p-6 border border-secondary">
+      <div id="map-container" class="w-full h-96 rounded-lg bg-white"></div>
+      <div id="spot-info" class="mt-4">
+        <h3 id="spot-name" class="text-xl font-bold text-primary mb-2"></h3>
+        <div id="spot-image" class="mb-4"></div>
+        <p id="spot-description" class="text-light opacity-75 mb-4"></p>
+        <button id="close-btn" class="btn-secondary px-4 py-2 rounded-lg text-white">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-2xl font-bold text-primary" id="modal-title">石窟详情</h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl" id="close-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="relative">
+          <img src="../img/1.jpg" alt="石窟详情" class="w-full h-auto rounded-lg" id="modal-image">
+          <div class="absolute top-4 right-4 flex gap-2">
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="download-image">
+              <i class="fa fa-download"></i>
+            </button>
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="share-image">
+              <i class="fa fa-share-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-bold text-light mb-2" id="modal-subtitle">莫高窟第96窟</h4>
+          <p class="text-light opacity-85 mb-4" id="modal-period">唐代 · 九层楼</p>
+          <div class="mb-6">
+            <h4 class="text-lg font-medium text-light mb-2">石窟描述</h4>
+            <p class="text-light opacity-75" id="modal-description">
+              莫高窟第96窟，俗称"九层楼"，是莫高窟的标志性建筑，内有高达35.5米的弥勒佛像，是世界上最大的室内坐佛。该窟建于唐代，历经多次重修，是莫高窟的象征。
+            </p>
+          </div>
+          <div class="mb-6">
+            <h4 class="text-lg font-medium text-light mb-2">历史价值</h4>
+            <p class="text-light opacity-75">
+              第96窟不仅是莫高窟的标志性建筑，也是中国古代建筑艺术的杰出代表。窟内的弥勒佛像体现了唐代雕塑艺术的高超水平，具有重要的历史和艺术价值。
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-secondary px-4 py-2 rounded-lg text-white" id="copy-link">
+              <i class="fa fa-link"></i> 复制链接
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- 收藏夹模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="favorite-modal-container">
+    <div class="modal-content rounded-xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-heart text-primary"></i>
+          我的收藏夹
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-favorite-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div id="favorite-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 收藏内容将动态添加 -->
+      </div>
+      <div id="favorite-empty" class="text-center py-16 text-light opacity-75 hidden">
+        <div class="inline-block p-6 rounded-full bg-dark/50 mb-6">
+          <i class="fa fa-heart-o text-6xl text-accent/50"></i>
+        </div>
+        <h4 class="text-xl font-semibold mb-2">暂无收藏内容</h4>
+        <p class="text-sm mt-2 max-w-md mx-auto">浏览内容并点击收藏按钮添加到收藏夹，方便随时查看</p>
+        <button class="btn-primary px-6 py-2 rounded-lg text-white mt-6" onclick="window.location.href='../index.html'">
+          <i class="fa fa-explore mr-2"></i> 去浏览内容
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 登录模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="login-modal">
+    <div class="modal-content rounded-xl p-8 max-w-md w-full bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-sign-in text-primary"></i>
+          用户登录
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-login-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <form id="login-form" class="space-y-6">
+        <div>
+          <label for="login-email" class="block text-light opacity-85 mb-2">邮箱</label>
+          <input type="email" id="login-email" class="w-full py-3 px-4 rounded-lg bg-dark/50 border border-accent/20 text-light focus:outline-none focus:border-primary transition-colors" placeholder="请输入邮箱" required>
+        </div>
+        <div>
+          <label for="login-password" class="block text-light opacity-85 mb-2">密码</label>
+          <input type="password" id="login-password" class="w-full py-3 px-4 rounded-lg bg-dark/50 border border-accent/20 text-light focus:outline-none focus:border-primary transition-colors" placeholder="请输入密码" required>
+        </div>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <input type="checkbox" id="remember-me" class="mr-2 text-primary">
+            <label for="remember-me" class="text-light opacity-75 text-sm">记住我</label>
+          </div>
+          <a href="#" class="text-primary hover:underline text-sm">忘记密码？</a>
+        </div>
+        <button type="submit" class="w-full btn-primary py-3 rounded-lg text-white font-medium transition-all duration-300 hover:bg-primary/80">
+          登录
+        </button>
+        <div class="text-center text-light opacity-75 text-sm">
+          还没有账号？ <a href="#" class="text-primary hover:underline">立即注册</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 个人中心模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="user-modal">
+    <div class="modal-content rounded-2xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-black/90 via-black/70 to-black/90 border border-accent/30 shadow-2xl cursor-move" id="user-modal-content" style="background-image: url('../img/yun1.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+      <div class="flex justify-between items-center mb-10">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-user-circle text-primary text-2xl"></i>
+          个人中心
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110 hover:text-primary" id="close-user-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- 用户信息卡片 -->
+      <div class="bg-black/70 backdrop-blur-md rounded-2xl p-8 mb-10 border border-accent/30 shadow-lg transform transition-all duration-500 hover:shadow-xl hover:border-accent/40">
+        <div class="flex flex-col md:flex-row items-center gap-8">
+          <div class="relative">
+            <div class="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center border-4 border-dark shadow-lg transform transition-all duration-300 hover:scale-110">
+              <i class="fa fa-user text-5xl text-dark"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 w-10 h-10 bg-green-500 rounded-full border-3 border-dark flex items-center justify-center transform transition-all duration-300 hover:scale-110">
+              <i class="fa fa-check text-white text-sm"></i>
+            </div>
+          </div>
+          <div class="text-center md:text-left flex-1">
+            <h4 class="text-2xl font-bold text-primary mb-3">敦煌文化爱好者</h4>
+            <p class="text-light opacity-75 mb-6">welcome@dunhuang.com</p>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+              <button class="btn-primary px-6 py-3 rounded-lg text-white text-sm font-medium flex items-center gap-2 transform transition-all duration-300 hover:bg-primary/80 hover:scale-105">
+                <i class="fa fa-edit"></i> 编辑资料
+              </button>
+              <button class="btn-secondary px-6 py-3 rounded-lg text-white text-sm font-medium flex items-center gap-2 transform transition-all duration-300 hover:bg-secondary/80 hover:scale-105">
+                <i class="fa fa-sign-out"></i> 退出登录
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 数据概览 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        <div class="bg-black/70 backdrop-blur-md rounded-xl p-6 border border-accent/30 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-light opacity-85 text-sm font-medium">浏览次数</h5>
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <i class="fa fa-eye"></i>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-primary mb-2">128</p>
+          <p class="text-light opacity-60 text-xs flex items-center gap-1">
+            <i class="fa fa-arrow-up text-green-500"></i> 本周 +12
+          </p>
+        </div>
+        <div class="bg-black/70 backdrop-blur-md rounded-xl p-6 border border-accent/30 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-light opacity-85 text-sm font-medium">收藏数量</h5>
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <i class="fa fa-heart"></i>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-primary mb-2">24</p>
+          <p class="text-light opacity-60 text-xs flex items-center gap-1">
+            <i class="fa fa-arrow-up text-green-500"></i> 本周 +3
+          </p>
+        </div>
+        <div class="bg-black/70 backdrop-blur-md rounded-xl p-6 border border-accent/30 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-light opacity-85 text-sm font-medium">游览时长</h5>
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <i class="fa fa-clock-o"></i>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-primary mb-2">4.5h</p>
+          <p class="text-light opacity-60 text-xs flex items-center gap-1">
+            <i class="fa fa-arrow-up text-green-500"></i> 本周 +30min
+          </p>
+        </div>
+        <div class="bg-black/70 backdrop-blur-md rounded-xl p-6 border border-accent/30 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+          <div class="flex items-center justify-between mb-4">
+            <h5 class="text-light opacity-85 text-sm font-medium">已探索石窟</h5>
+            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+              <i class="fa fa-map-marker"></i>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-primary mb-2">15</p>
+          <p class="text-light opacity-60 text-xs flex items-center gap-1">
+            <i class="fa fa-arrow-up text-green-500"></i> 本周 +2
+          </p>
+        </div>
+      </div>
+      
+      <!-- 最近浏览 -->
+      <div class="bg-black/70 backdrop-blur-md rounded-2xl p-8 mb-10 border border-accent/30 shadow-lg">
+        <h4 class="text-xl font-bold text-primary mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+            <i class="fa fa-history"></i>
+          </div>
+          最近浏览
+        </h4>
+        <div class="space-y-4">
+          <div class="flex gap-4 p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all duration-300 transform hover:translate-x-1">
+            <img src="../img/1.jpg" alt="莫高窟第96窟" class="w-24 h-24 object-cover rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+            <div class="flex-1">
+              <h5 class="text-light font-medium text-lg mb-2">莫高窟第96窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">唐代 · 九层楼</p>
+              <p class="text-light opacity-50 text-xs flex items-center gap-1">
+                <i class="fa fa-clock-o"></i> 2小时前
+              </p>
+            </div>
+            <button class="text-light opacity-75 hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/50">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all duration-300 transform hover:translate-x-1">
+            <img src="../img/2.jpg" alt="莫高窟第257窟" class="w-24 h-24 object-cover rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+            <div class="flex-1">
+              <h5 class="text-light font-medium text-lg mb-2">莫高窟第257窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">北魏 · 九色鹿本生</p>
+              <p class="text-light opacity-50 text-xs flex items-center gap-1">
+                <i class="fa fa-clock-o"></i> 昨天
+              </p>
+            </div>
+            <button class="text-light opacity-75 hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-black/50">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all duration-300 transform hover:translate-x-1">
+            <img src="../img/3.jpg" alt="莫高窟第17窟" class="w-24 h-24 object-cover rounded-lg shadow-md transform transition-all duration-300 hover:scale-105">
+            <div class="flex-1">
+              <h5 class="text-light font-medium text-lg mb-2">莫高窟第17窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">晚唐 · 藏经洞</p>
+              <p class="text-light opacity-50 text-xs flex items-center gap-1">
+                <i class="fa fa-clock-o"></i> 3天前
+              </p>
+            </div>
+            <button class="text-light opacity-75 hover:text-primary transition-colors flex items-center justify-center w-10 h-10 rounded-full hover:bg-dark/50">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <button class="text-primary hover:text-accent transition-colors text-sm font-medium flex items-center gap-2 mx-auto">
+            <span>查看全部</span>
+            <i class="fa fa-angle-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 我的收藏 -->
+      <div class="bg-black/70 backdrop-blur-md rounded-2xl p-8 mb-10 border border-accent/30 shadow-lg">
+        <h4 class="text-xl font-bold text-primary mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+            <i class="fa fa-heart"></i>
+          </div>
+          我的收藏
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-black/50 backdrop-blur-sm rounded-xl overflow-hidden border border-accent/20 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+            <img src="../img/4.jpg" alt="莫高窟第103窟" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="p-4">
+              <h5 class="text-light font-medium text-lg mb-1">莫高窟第103窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">唐代 · 维摩诘经变</p>
+              <button class="text-primary hover:text-accent transition-colors text-sm flex items-center gap-1">
+                <i class="fa fa-eye"></i> 查看详情
+              </button>
+            </div>
+          </div>
+          <div class="bg-black/50 backdrop-blur-sm rounded-xl overflow-hidden border border-accent/20 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+            <img src="../img/5.jpeg" alt="莫高窟第112窟" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="p-4">
+              <h5 class="text-light font-medium text-lg mb-1">莫高窟第112窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">唐代 · 反弹琵琶</p>
+              <button class="text-primary hover:text-accent transition-colors text-sm flex items-center gap-1">
+                <i class="fa fa-eye"></i> 查看详情
+              </button>
+            </div>
+          </div>
+          <div class="bg-black/50 backdrop-blur-sm rounded-xl overflow-hidden border border-accent/20 shadow-md transform transition-all duration-300 hover:scale-105 hover:border-accent/40 hover:shadow-lg">
+            <img src="../img/3.jpg" alt="莫高窟第17窟" class="w-full h-48 object-cover transition-transform duration-500 hover:scale-110">
+            <div class="p-4">
+              <h5 class="text-light font-medium text-lg mb-1">莫高窟第17窟</h5>
+              <p class="text-light opacity-75 text-sm mb-3">晚唐 · 藏经洞</p>
+              <button class="text-primary hover:text-accent transition-colors text-sm flex items-center gap-1">
+                <i class="fa fa-eye"></i> 查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 text-center">
+          <button class="text-primary hover:text-accent transition-colors text-sm font-medium flex items-center gap-2 mx-auto">
+            <span>查看全部</span>
+            <i class="fa fa-angle-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <!-- 账户设置 -->
+      <div class="bg-black/70 backdrop-blur-md rounded-2xl p-8 border border-accent/30 shadow-lg">
+        <h4 class="text-xl font-bold text-primary mb-6 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+            <i class="fa fa-cog"></i>
+          </div>
+          账户设置
+        </h4>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors cursor-pointer transform duration-300 hover:translate-x-1">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <i class="fa fa-user"></i>
+              </div>
+              <span class="text-light font-medium">个人资料</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50 transition-transform duration-300 hover:translate-x-1"></i>
+          </div>
+          <div class="flex items-center justify-between p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors cursor-pointer transform duration-300 hover:translate-x-1">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <i class="fa fa-lock"></i>
+              </div>
+              <span class="text-light font-medium">隐私设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50 transition-transform duration-300 hover:translate-x-1"></i>
+          </div>
+          <div class="flex items-center justify-between p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors cursor-pointer transform duration-300 hover:translate-x-1">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <i class="fa fa-bell"></i>
+              </div>
+              <span class="text-light font-medium">通知设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50 transition-transform duration-300 hover:translate-x-1"></i>
+          </div>
+          <div class="flex items-center justify-between p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors cursor-pointer transform duration-300 hover:translate-x-1">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <i class="fa fa-language"></i>
+              </div>
+              <span class="text-light font-medium">语言设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50 transition-transform duration-300 hover:translate-x-1"></i>
+          </div>
+          <div class="flex items-center justify-between p-4 rounded-xl bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-colors cursor-pointer transform duration-300 hover:translate-x-1">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                <i class="fa fa-question-circle"></i>
+              </div>
+              <span class="text-light font-medium">帮助中心</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50 transition-transform duration-300 hover:translate-x-1"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="footer py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">关于我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">敦煌研究院</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">机构设置</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">历史沿革</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术资源</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">研究论文</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术著作</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">考古报告</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术期刊</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术服务</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">学术会议</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术讲座</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">专家咨询</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">数据库访问</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">联系我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li class="flex items-center gap-2"><i class="fa fa-map-marker"></i> 甘肃省敦煌市莫高窟</li>
+            <li class="flex items-center gap-2"><i class="fa fa-phone"></i> 0937-8869000</li>
+            <li class="flex items-center gap-2"><i class="fa fa-envelope"></i> contact@dha.ac.cn</li>
+            <li class="flex items-center gap-2"><i class="fa fa-globe"></i> www.dha.ac.cn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-dark mt-8 pt-8 text-center text-light opacity-50 text-sm">
+        <p>© 2026 数字敦煌 版权所有</p>
+      </div>
+    </div>
+  </div>
+
+
+  </body>
+</html>

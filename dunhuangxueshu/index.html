@@ -1,0 +1,2240 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>敦煌学术 - 数字敦煌</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  colors: {
+                      primary: '#D4A76A', // 敦煌土黄色
+                      secondary: '#8B4513', // 敦煌褐色
+                      accent: '#E6C29C', // 敦煌浅褐色
+                      dark: '#3E2723', // 深褐色
+                      light: '#F5F5DC', // 米色
+                      paper: '#F0E6D2' // 古卷纸色
+                  },
+                  fontFamily: {
+                      sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                      serif: ['Noto Serif SC', 'serif'],
+                      cursive: ['Ma Shan Zheng', 'cursive']
+                  }
+              }
+          }
+      }
+  </script>
+  <style type="text/tailwindcss">
+      @layer utilities {
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .card-hover {
+              transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+          .card-hover:hover {
+              transform: translateY(-10px) scale(1.02);
+              box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+          }
+          .btn-hover {
+              transition: all 0.3s ease;
+          }
+          .btn-hover:hover {
+              transform: translateY(-3px);
+              box-shadow: 0 6px 16px rgba(161, 106, 67, 0.35);
+          }
+          .tag {
+              transition: all 0.2s ease;
+          }
+          .tag:hover {
+              background-color: #D4A76A;
+              color: #3E2723;
+          }
+          .text-shadow {
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          }
+          .bg-gradient-dunhuang {
+              background: linear-gradient(to bottom, rgba(75, 47, 30, 0.95), rgba(45, 27, 18, 0.95));
+          }
+      }
+  </style>
+  <style>
+      /* 自定义样式 */
+      body {
+          background-color: #140D08;
+          color: #F7E9D4;
+          line-height: 1.7;
+      }
+      .header {
+          background: linear-gradient(to bottom, rgba(75, 47, 30, 0.7), rgba(45, 27, 18, 0.8)), url('../img/background.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          backdrop-filter: blur(10px);
+          border-bottom: 2px solid #D4AF7E;
+          box-shadow: 0 0 30px rgba(212, 175, 126, 0.15);
+      }
+      .header h1 {
+          font-family: "Ma Shan Zheng", cursive;
+          letter-spacing: 3px;
+          text-shadow: 0 2px 10px rgba(232, 196, 142, 0.3);
+      }
+      .nav-btn {
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+      .nav-btn:hover,
+      .nav-btn.active {
+          background-color: #A16A43;
+          transform: translateY(-3px);
+          box-shadow: 0 6px 16px rgba(161, 106, 67, 0.35);
+      }
+      .card {
+          background-color: #2B1B12;
+          border: 1px solid #442C1F;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      .card:hover {
+          transform: translateY(-10px) scale(1.02);
+          box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+          border-color: #D4AF7E;
+      }
+      .card img {
+          transition: transform 0.4s ease;
+      }
+      .card:hover img {
+          transform: scale(1.08);
+      }
+      .card-title {
+          font-family: "Ma Shan Zheng", cursive;
+          color: #E8C48E;
+      }
+      .btn-primary {
+          background-color: #A16A43;
+          transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+          background-color: #c08255;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+      }
+      .btn-secondary {
+          background-color: #5C3C28;
+          transition: all 0.3s ease;
+      }
+      .btn-secondary:hover {
+          background-color: #754A30;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(92, 60, 40, 0.3);
+      }
+      .footer {
+          background-color: #1B100A;
+          border-top: 1px solid #442C1F;
+      }
+      .search-input {
+          background-color: rgba(43, 27, 18, 0.8);
+          border: 1px solid #442C1F;
+          color: #F7E9D4;
+          transition: all 0.3s ease;
+      }
+      .search-input:focus {
+          border-color: #D4AF7E;
+          box-shadow: 0 0 0 3px rgba(212, 175, 126, 0.1);
+      }
+      .tag {
+          background-color: rgba(92, 60, 40, 0.8);
+          color: #F7E9D4;
+          transition: all 0.2s ease;
+      }
+      .tag:hover {
+          background-color: #D4A76A;
+          color: #3E2723;
+      }
+      .loader {
+          border-top-color: #D4AF7E;
+          animation: spinner 1.5s linear infinite;
+      }
+      @keyframes spinner {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+      .timeline-item {
+          position: relative;
+      }
+      .timeline-item::before {
+          content: '';
+          position: absolute;
+          left: -20px;
+          top: 0;
+          height: 100%;
+          width: 2px;
+          background-color: #D4AF7E;
+      }
+      .timeline-item::after {
+          content: '';
+          position: absolute;
+          left: -24px;
+          top: 8px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background-color: #A16A43;
+      }
+      .scholar-card {
+          transition: all 0.3s ease;
+      }
+      .scholar-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+      .project-card {
+          transition: all 0.3s ease;
+      }
+      .project-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+      .news-card {
+          transition: all 0.3s ease;
+      }
+      .news-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0.778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </svg>
+      </div>
+      <div>梵境寻迹</div>
+    </div>
+    <div>
+      <div><a href="../index.html" style="color: inherit; text-decoration: none;">首页</a></div>
+      <div><a href="../yunyoushiku/index.html" style="color: inherit; text-decoration: none;">云游石窟</a></div>
+      <div><a href="../danqingbihua/index.html" style="color: inherit; text-decoration: none;">丹青壁画</a></div>
+      <div><a href="../shuzicangjing/index.html" style="color: inherit; text-decoration: none;">数字藏经</a></div>
+      <div><a href="../kaifangsucai/index.html" style="color: inherit; text-decoration: none;">开放素材</a></div>
+      <div class="active">敦煌学术</div>
+      <div><a href="../lianxiwomen/index.html" style="color: inherit; text-decoration: none;">联系我们</a></div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="favorite-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="user-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 头部区域 -->
+  <div class="header py-16 px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4">敦煌学术</h1>
+    <p class="text-lg md:text-xl text-light opacity-85 max-w-3xl mx-auto">
+      探索敦煌文化的深层内涵，推动敦煌学的研究与传承
+    </p>
+  </div>
+
+  <!-- 学术导航 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-wrap gap-3 mb-12 justify-center">
+      <button class="nav-btn active px-6 py-2 rounded-full bg-secondary text-light" data-tab="resources">学术资源</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="activities">学术活动</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="scholars">学者风采</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="projects">研究项目</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="database">学术数据库</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="news">学术动态</button>
+      <button class="nav-btn px-6 py-2 rounded-full bg-dark text-light" data-tab="exchange">学术交流</button>
+    </div>
+  </div>
+
+  <!-- 学术资源 -->
+  <div id="resources-tab" class="tab-content">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学术资源</h2>
+      
+      <!-- 资源分类 -->
+      <div class="flex flex-wrap gap-2 mb-8 justify-center">
+        <button class="tag px-4 py-2 rounded-full text-sm">全部资源</button>
+        <button class="tag px-4 py-2 rounded-full text-sm">研究论文</button>
+        <button class="tag px-4 py-2 rounded-full text-sm">学术著作</button>
+        <button class="tag px-4 py-2 rounded-full text-sm">考古报告</button>
+        <button class="tag px-4 py-2 rounded-full text-sm">学术期刊</button>
+        <button class="tag px-4 py-2 rounded-full text-sm">会议论文集</button>
+      </div>
+
+      <!-- 资源列表 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 资源卡片 1 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">研究论文</span>
+              <span class="text-light opacity-75 text-sm">2026-04-01</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌壁画中的飞天形象研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本文通过对莫高窟不同时期飞天壁画的分析，探讨了飞天形象的演变过程及其艺术特色，揭示了敦煌壁画艺术的独特魅力。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">作者：张明教授</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资源卡片 2 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">学术著作</span>
+              <span class="text-light opacity-75 text-sm">2026-03-15</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌学概论</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本书系统介绍了敦煌学的基本概念、研究方法和主要研究领域，是敦煌学入门的重要参考资料。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">作者：李华教授</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资源卡片 3 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">考古报告</span>
+              <span class="text-light opacity-75 text-sm">2026-02-28</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">莫高窟第17窟考古发掘报告</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本报告详细记录了莫高窟第17窟的考古发掘过程、出土文物及研究成果，为敦煌学研究提供了重要的第一手资料。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">作者：敦煌研究院考古队</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资源卡片 4 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">学术期刊</span>
+              <span class="text-light opacity-75 text-sm">2026-01-20</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌研究（2026年第1期）</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本期期刊收录了多篇关于敦煌壁画、文献、历史等方面的研究论文，反映了敦煌学研究的最新成果。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">主办：敦煌研究院</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资源卡片 5 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">会议论文集</span>
+              <span class="text-light opacity-75 text-sm">2025-12-15</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">第10届敦煌学国际学术研讨会论文集</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本文集收录了来自世界各地敦煌学专家的研究论文，涵盖了敦煌历史、艺术、宗教、文献等多个领域。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">主编：王强教授</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 资源卡片 6 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">研究论文</span>
+              <span class="text-light opacity-75 text-sm">2025-11-10</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌藏经洞文献的整理与研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              本文对敦煌藏经洞出土的文献进行了系统整理和研究，探讨了这些文献的历史价值和学术意义。
+            </p>
+            <div class="flex justify-between items-center">
+              <span class="text-light opacity-75 text-sm">作者：刘芳教授</span>
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                查看详情
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载更多按钮 -->
+      <div class="text-center mt-12">
+        <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto">
+          <span>加载更多</span>
+          <i class="fa fa-refresh"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学术活动 -->
+  <div id="activities-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学术活动</h2>
+
+      <!-- 活动时间线 -->
+      <div class="relative pl-8">
+        <!-- 活动 1 -->
+        <div class="timeline-item mb-12">
+          <div class="card rounded-xl overflow-hidden">
+            <div class="p-6">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                  <span class="bg-primary text-dark px-4 py-2 rounded-lg font-bold">2026-05-15</span>
+                  <span class="tag px-3 py-1 rounded-full text-xs">国际研讨会</span>
+                </div>
+                <span class="text-light opacity-75 text-sm">敦煌研究院学术报告厅</span>
+              </div>
+              <h3 class="card-title text-xl font-bold mb-2">第11届敦煌学国际学术研讨会</h3>
+              <p class="text-light opacity-75 text-sm mb-4">
+                本次研讨会将邀请来自世界各地的敦煌学专家学者，共同探讨敦煌文化的保护、研究与传承，交流最新研究成果。
+              </p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                  在线报名
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 活动 2 -->
+        <div class="timeline-item mb-12">
+          <div class="card rounded-xl overflow-hidden">
+            <div class="p-6">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                  <span class="bg-primary text-dark px-4 py-2 rounded-lg font-bold">2026-04-20</span>
+                  <span class="tag px-3 py-1 rounded-full text-xs">学术讲座</span>
+                </div>
+                <span class="text-light opacity-75 text-sm">北京大学考古文博学院</span>
+              </div>
+              <h3 class="card-title text-xl font-bold mb-2">敦煌壁画的艺术特色与保护</h3>
+              <p class="text-light opacity-75 text-sm mb-4">
+                本次讲座将由敦煌研究院的专家主讲，介绍敦煌壁画的艺术特色、历史价值以及现代保护技术。
+              </p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                  在线报名
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 活动 3 -->
+        <div class="timeline-item mb-12">
+          <div class="card rounded-xl overflow-hidden">
+            <div class="p-6">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                  <span class="bg-primary text-dark px-4 py-2 rounded-lg font-bold">2026-03-10</span>
+                  <span class="tag px-3 py-1 rounded-full text-xs">工作坊</span>
+                </div>
+                <span class="text-light opacity-75 text-sm">敦煌研究院数字保护中心</span>
+              </div>
+              <h3 class="card-title text-xl font-bold mb-2">敦煌文献数字化技术工作坊</h3>
+              <p class="text-light opacity-75 text-sm mb-4">
+                本次工作坊将介绍敦煌文献数字化的最新技术和方法，包括高清扫描、图像处理、数据库建设等内容。
+              </p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                  在线报名
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 活动 4 -->
+        <div class="timeline-item mb-12">
+          <div class="card rounded-xl overflow-hidden">
+            <div class="p-6">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                  <span class="bg-primary text-dark px-4 py-2 rounded-lg font-bold">2026-02-25</span>
+                  <span class="tag px-3 py-1 rounded-full text-xs">展览</span>
+                </div>
+                <span class="text-light opacity-75 text-sm">国家博物馆</span>
+              </div>
+              <h3 class="card-title text-xl font-bold mb-2">敦煌艺术大展</h3>
+              <p class="text-light opacity-75 text-sm mb-4">
+                本次展览将展出敦煌莫高窟的经典壁画复制品、雕塑以及相关文物，展现敦煌艺术的魅力。
+              </p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                  在线预约
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载更多按钮 -->
+      <div class="text-center mt-12">
+        <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto">
+          <span>加载更多</span>
+          <i class="fa fa-refresh"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学者风采 -->
+  <div id="scholars-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学者风采</h2>
+
+      <!-- 学者列表 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <!-- 学者 1 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/ai1.jpg" alt="张明教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">张明教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">敦煌研究院 研究员</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌壁画艺术，发表学术论文50余篇，出版专著3部，主持国家级科研项目2项。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 学者 2 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/ai2.jpg" alt="李华教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">李华教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">北京大学 教授</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌文献与历史，发表学术论文80余篇，出版专著5部，培养博士研究生20余名。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 学者 3 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/ai3.jpg" alt="王强教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">王强教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">敦煌研究院 院长</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌石窟考古与保护，发表学术论文100余篇，出版专著8部，主持国家级科研项目5项。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 学者 4 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/1.jpg" alt="刘芳教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">刘芳教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">清华大学 教授</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌艺术与文化，发表学术论文60余篇，出版专著4部，主持国际合作项目3项。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 学者 5 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/2.jpg" alt="陈亮教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">陈亮教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">复旦大学 教授</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌文献语言文字，发表学术论文70余篇，出版专著6部，主持省部级科研项目4项。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 学者 6 -->
+        <div class="scholar-card card rounded-xl overflow-hidden">
+          <div class="relative h-64 overflow-hidden">
+            <img src="../img/3.jpg" alt="赵静教授" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
+              <h3 class="card-title text-xl font-bold">赵静教授</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-light opacity-75 text-sm mb-2">中国社会科学院 研究员</p>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              主要研究方向为敦煌历史与宗教，发表学术论文90余篇，出版专著7部，主持国家级科研项目3项。
+            </p>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 研究项目 -->
+  <div id="projects-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">研究项目</h2>
+
+      <!-- 项目列表 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 项目 1 -->
+        <div class="project-card card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">国家级项目</span>
+              <span class="text-light opacity-75 text-sm">2024-2027</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌壁画数字化保护与研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4">
+              本项目旨在通过现代数字技术对敦煌壁画进行数字化采集、处理和存储，建立完整的壁画数据库，为壁画保护和研究提供科学依据。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">负责人：张明教授</span>
+              <span class="text-light opacity-75 text-sm">经费：200万元</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 项目 2 -->
+        <div class="project-card card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">省部级项目</span>
+              <span class="text-light opacity-75 text-sm">2025-2028</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌藏经洞文献整理与研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4">
+              本项目旨在对敦煌藏经洞出土的文献进行系统整理和研究，建立文献数据库，揭示其历史价值和学术意义。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">负责人：李华教授</span>
+              <span class="text-light opacity-75 text-sm">经费：100万元</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 项目 3 -->
+        <div class="project-card card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">国际合作项目</span>
+              <span class="text-light opacity-75 text-sm">2023-2026</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌艺术与丝绸之路文化交流研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4">
+              本项目旨在通过国际合作，研究敦煌艺术与丝绸之路文化交流的关系，揭示敦煌在东西方文化交流中的重要作用。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">负责人：王强教授</span>
+              <span class="text-light opacity-75 text-sm">经费：150万元</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+
+        <!-- 项目 4 -->
+        <div class="project-card card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+              <span class="tag px-3 py-1 rounded-full text-xs">横向合作项目</span>
+              <span class="text-light opacity-75 text-sm">2025-2027</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌文化创意产品开发与研究</h3>
+            <p class="text-light opacity-75 text-sm mb-4">
+              本项目旨在基于敦煌文化元素，开发具有市场潜力的文化创意产品，推动敦煌文化的传承与创新。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">负责人：刘芳教授</span>
+              <span class="text-light opacity-75 text-sm">经费：80万元</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              查看详情
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学术数据库 -->
+  <div id="database-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学术数据库</h2>
+
+      <!-- 数据库搜索 -->
+      <div class="mb-8">
+        <div class="flex flex-col md:flex-row gap-4">
+          <div class="flex-1 relative">
+            <input type="text" class="search-input w-full py-3 px-4 pr-12 rounded-full" placeholder="搜索数据库...">
+            <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary">
+              <i class="fa fa-search text-xl"></i>
+            </button>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+              <i class="fa fa-filter"></i>
+              <span>筛选</span>
+            </button>
+            <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+              <i class="fa fa-download"></i>
+              <span>导出</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 数据库分类 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- 数据库 1 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-database text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌壁画数据库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含莫高窟、榆林窟等敦煌石窟的壁画图像、 metadata 信息，支持按洞窟、朝代、题材等多维度检索。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：10,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2026-04-01</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+
+        <!-- 数据库 2 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-book text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌文献数据库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含敦煌藏经洞出土的各类文献，支持全文检索、多语言翻译、版本对比等功能。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：50,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2026-03-15</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+
+        <!-- 数据库 3 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-map text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌石窟考古数据库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含敦煌石窟的考古发掘报告、测绘数据、保护记录等信息，支持空间分析和时间序列查询。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：5,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2026-02-28</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+
+        <!-- 数据库 4 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-users text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌学者数据库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含国内外敦煌学学者的基本信息、研究领域、代表性成果等，支持按研究方向、机构等检索。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：1,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2026-01-20</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+
+        <!-- 数据库 5 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-calendar text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌学术活动数据库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含国内外敦煌学相关的学术会议、讲座、展览等活动信息，支持按时间、地点、主题等检索。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：2,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2026-01-10</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+
+        <!-- 数据库 6 -->
+        <div class="card database-card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-link text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">敦煌研究资源链接库</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              包含国内外敦煌学相关的研究机构、期刊、网站等资源链接，支持按类型、地区等分类浏览。
+            </p>
+            <div class="flex justify-between items-center mb-4">
+              <span class="text-light opacity-75 text-sm">数据量：5,000+</span>
+              <span class="text-light opacity-75 text-sm">更新时间：2025-12-31</span>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              访问数据库
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学术动态 -->
+  <div id="news-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学术动态</h2>
+
+      <!-- 新闻列表 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 新闻 1 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/4.jpg" alt="敦煌学国际研讨会" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              学术会议
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-04-10</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 1,234</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">第11届敦煌学国际学术研讨会筹备工作启动</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              由敦煌研究院主办的第11届敦煌学国际学术研讨会筹备工作已正式启动，会议将于2026年5月15日在敦煌召开。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+
+        <!-- 新闻 2 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/5.jpeg" alt="敦煌壁画保护" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              保护研究
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-04-05</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 987</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌壁画数字化保护技术取得新突破</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              敦煌研究院联合清华大学开发的壁画数字化保护技术取得新突破，能够更精准地还原壁画色彩和细节。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+
+        <!-- 新闻 3 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/6.jpg" alt="敦煌文献研究" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              研究成果
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-03-28</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 1,567</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">《敦煌藏经洞文献总目索引》修订版出版</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              由敦煌研究院编纂的《敦煌藏经洞文献总目索引》修订版正式出版，收录了最新的文献整理成果。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+
+        <!-- 新闻 4 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/7.jpg" alt="敦煌文化展览" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              文化展览
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-03-20</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 2,345</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">"敦煌艺术大展"在国家博物馆开幕</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              "敦煌艺术大展"在国家博物馆开幕，展出了敦煌莫高窟的经典壁画复制品、雕塑以及相关文物。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+
+        <!-- 新闻 5 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/8.jpg" alt="敦煌学人才培养" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              人才培养
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-03-15</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 876</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌学青年学者培养计划启动</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              敦煌研究院启动敦煌学青年学者培养计划，旨在培养一批具有国际视野的敦煌学研究人才。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+
+        <!-- 新闻 6 -->
+        <div class="news-card card rounded-xl overflow-hidden">
+          <div class="relative h-48 overflow-hidden">
+            <img src="../img/9.jpg" alt="敦煌国际合作" class="w-full h-full object-cover">
+            <div class="absolute top-4 left-4 bg-primary/80 text-dark px-3 py-1 rounded-lg text-sm font-bold">
+              国际合作
+            </div>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-light opacity-75 text-sm">2026-03-10</span>
+              <span class="text-light opacity-75 text-sm"><i class="fa fa-eye"></i> 1,123</span>
+            </div>
+            <h3 class="card-title text-xl font-bold mb-2">敦煌研究院与大英博物馆签署合作协议</h3>
+            <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">
+              敦煌研究院与大英博物馆签署合作协议，将共同开展敦煌文献的保护与研究工作。
+            </p>
+            <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+              阅读全文
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 加载更多按钮 -->
+      <div class="text-center mt-12">
+        <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto">
+          <span>加载更多</span>
+          <i class="fa fa-refresh"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 学术交流 -->
+  <div id="exchange-tab" class="tab-content hidden">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <h2 class="text-3xl font-bold text-primary mb-8 text-center">学术交流</h2>
+
+      <!-- 交流平台 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        <!-- 交流论坛 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-comments text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">学术论坛</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              敦煌学学术论坛是一个开放的交流平台，欢迎广大敦煌学研究者、爱好者在此分享研究成果、交流学术心得。
+            </p>
+            <div class="space-y-4 mb-6">
+              <!-- 论坛主题 1 -->
+              <div class="flex gap-4">
+                <div class="w-12 h-12 bg-dark rounded-full flex items-center justify-center">
+                  <i class="fa fa-user text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-light font-medium mb-1">敦煌壁画中的飞天形象演变</h4>
+                  <p class="text-light opacity-75 text-sm mb-2">由 张明教授 发起</p>
+                  <div class="flex justify-between items-center">
+                    <span class="text-light opacity-75 text-xs">2026-04-10</span>
+                    <span class="text-light opacity-75 text-xs"><i class="fa fa-comment"></i> 23 回复</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 论坛主题 2 -->
+              <div class="flex gap-4">
+                <div class="w-12 h-12 bg-dark rounded-full flex items-center justify-center">
+                  <i class="fa fa-user text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-light font-medium mb-1">敦煌藏经洞文献的数字化保护</h4>
+                  <p class="text-light opacity-75 text-sm mb-2">由 李华教授 发起</p>
+                  <div class="flex justify-between items-center">
+                    <span class="text-light opacity-75 text-xs">2026-04-05</span>
+                    <span class="text-light opacity-75 text-xs"><i class="fa fa-comment"></i> 18 回复</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              进入论坛
+            </button>
+          </div>
+        </div>
+
+        <!-- 专家问答 -->
+        <div class="card rounded-xl overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-question-circle text-2xl text-primary"></i>
+              </div>
+              <h3 class="card-title text-xl font-bold">专家问答</h3>
+            </div>
+            <p class="text-light opacity-75 text-sm mb-4">
+              敦煌学专家在线解答关于敦煌文化、艺术、历史等方面的问题，欢迎广大用户提问。
+            </p>
+            <div class="space-y-4 mb-6">
+              <!-- 问答 1 -->
+              <div class="flex gap-4">
+                <div class="w-12 h-12 bg-dark rounded-full flex items-center justify-center">
+                  <i class="fa fa-user text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-light font-medium mb-1">敦煌壁画的颜料主要来自哪些材料？</h4>
+                  <p class="text-light opacity-75 text-sm mb-2">由 访客 提问</p>
+                  <p class="text-light opacity-85 text-sm mb-2">
+                    <span class="font-bold">专家回答：</span>敦煌壁画的颜料主要来自天然矿物颜料，如朱砂、赭石、石青、石绿等，还有部分植物颜料和金属颜料。这些颜料经过精细加工后使用，使得敦煌壁画能够保存千年而依然色彩鲜艳。
+                  </p>
+                  <div class="flex justify-between items-center">
+                    <span class="text-light opacity-75 text-xs">2026-04-08</span>
+                    <span class="text-light opacity-75 text-xs"><i class="fa fa-thumbs-up"></i> 45 赞</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 问答 2 -->
+              <div class="flex gap-4">
+                <div class="w-12 h-12 bg-dark rounded-full flex items-center justify-center">
+                  <i class="fa fa-user text-primary"></i>
+                </div>
+                <div>
+                  <h4 class="text-light font-medium mb-1">敦煌藏经洞的发现对中国学术史有什么影响？</h4>
+                  <p class="text-light opacity-75 text-sm mb-2">由 学生 提问</p>
+                  <p class="text-light opacity-85 text-sm mb-2">
+                    <span class="font-bold">专家回答：</span>敦煌藏经洞的发现为中国学术史打开了新的研究领域，它不仅保存了大量的古代文献，包括佛经、历史、文学、医学等方面的资料，还为研究中国古代社会、文化、宗教等提供了珍贵的第一手资料，对中国学术史的发展产生了深远的影响。
+                  </p>
+                  <div class="flex justify-between items-center">
+                    <span class="text-light opacity-75 text-xs">2026-04-03</span>
+                    <span class="text-light opacity-75 text-xs"><i class="fa fa-thumbs-up"></i> 38 赞</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button class="btn-primary w-full py-2 rounded-lg text-white text-sm">
+              提问专家
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 合作机构 -->
+      <div class="mb-12">
+        <h3 class="text-2xl font-bold text-primary mb-6 text-center">合作机构</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">敦煌研究院</span>
+          </div>
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">北京大学</span>
+          </div>
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">清华大学</span>
+          </div>
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">复旦大学</span>
+          </div>
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">中国社会科学院</span>
+          </div>
+          <div class="flex items-center justify-center p-4 bg-dark rounded-lg">
+            <span class="text-light font-medium">大英博物馆</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 个人中心模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="user-modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl cursor-move" id="user-modal-content">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-user-circle text-primary"></i>
+          个人中心
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-user-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- 用户信息卡片 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+          <div class="relative">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center border-4 border-dark shadow-lg">
+              <i class="fa fa-user text-4xl text-dark"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-2 border-dark flex items-center justify-center">
+              <i class="fa fa-check text-white text-xs"></i>
+            </div>
+          </div>
+          <div class="text-center md:text-left">
+            <h4 class="text-xl font-bold text-primary mb-2">敦煌文化爱好者</h4>
+            <p class="text-light opacity-75 mb-4">welcome@dunhuang.com</p>
+            <div class="flex gap-3 justify-center md:justify-start">
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                <i class="fa fa-edit mr-1"></i> 编辑资料
+              </button>
+              <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                <i class="fa fa-sign-out mr-1"></i> 退出登录
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 数据概览 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">浏览次数</h5>
+            <i class="fa fa-eye text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">128</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +12</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">收藏数量</h5>
+            <i class="fa fa-heart text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">24</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +3</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">游览时长</h5>
+            <i class="fa fa-clock-o text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">4.5h</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +30min</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">已阅读论文</h5>
+            <i class="fa fa-file-text text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">15</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +2</p>
+        </div>
+      </div>
+      
+      <!-- 最近浏览 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <h4 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+          <i class="fa fa-history text-primary"></i>
+          最近浏览
+        </h4>
+        <div class="space-y-4">
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/1.jpg" alt="敦煌壁画艺术" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">敦煌壁画艺术</h5>
+              <p class="text-light opacity-75 text-sm mb-2">学术研究 · 敦煌壁画</p>
+              <p class="text-light opacity-50 text-xs">2小时前</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/2.jpg" alt="敦煌藏经洞文献" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">敦煌藏经洞文献</h5>
+              <p class="text-light opacity-75 text-sm mb-2">学术研究 · 藏经洞</p>
+              <p class="text-light opacity-50 text-xs">昨天</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/3.jpg" alt="敦煌石窟建筑" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">敦煌石窟建筑</h5>
+              <p class="text-light opacity-75 text-sm mb-2">学术研究 · 石窟建筑</p>
+              <p class="text-light opacity-50 text-xs">3天前</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 我的收藏 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="text-lg font-bold text-primary flex items-center gap-2">
+            <i class="fa fa-heart text-primary"></i>
+            我的收藏
+          </h4>
+          <a href="#" class="text-primary hover:text-accent text-sm transition-colors">
+            查看全部
+          </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="relative rounded-lg overflow-hidden group">
+            <img src="../img/4.jpg" alt="敦煌艺术研究" class="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end p-4">
+              <h5 class="text-light font-medium mb-1">敦煌艺术研究</h5>
+              <p class="text-light opacity-85 text-xs">学术研究 · 艺术</p>
+            </div>
+          </div>
+          <div class="relative rounded-lg overflow-hidden group">
+            <img src="../img/5.jpeg" alt="敦煌历史文化" class="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end p-4">
+              <h5 class="text-light font-medium mb-1">敦煌历史文化</h5>
+              <p class="text-light opacity-85 text-xs">学术研究 · 历史</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 设置选项 -->
+      <div class="bg-dark/50 rounded-xl p-6 border border-accent/20">
+        <h4 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+          <i class="fa fa-cog text-primary"></i>
+          账户设置
+        </h4>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-user text-primary w-6"></i>
+              <span class="text-light">个人资料</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-lock text-primary w-6"></i>
+              <span class="text-light">隐私设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-bell text-primary w-6"></i>
+              <span class="text-light">通知设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-language text-primary w-6"></i>
+              <span class="text-light">语言设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-question-circle text-primary w-6"></i>
+              <span class="text-light">帮助中心</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="footer py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">关于我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">敦煌研究院</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">机构设置</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">历史沿革</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术资源</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">研究论文</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术著作</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">考古报告</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术期刊</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术服务</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">学术会议</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术讲座</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">专家咨询</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">数据库访问</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">联系我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li class="flex items-center gap-2"><i class="fa fa-map-marker"></i> 甘肃省敦煌市莫高窟</li>
+            <li class="flex items-center gap-2"><i class="fa fa-phone"></i> 0937-8869000</li>
+            <li class="flex items-center gap-2"><i class="fa fa-envelope"></i> contact@dha.ac.cn</li>
+            <li class="flex items-center gap-2"><i class="fa fa-globe"></i> www.dha.ac.cn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-dark mt-8 pt-8 text-center text-light opacity-50 text-sm">
+        <p>© 2026 敦煌学术平台 版权所有</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 收藏夹模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="favorite-modal-container">
+    <div class="modal-content rounded-xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-heart text-primary"></i>
+          我的收藏夹
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-favorite-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div id="favorite-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 收藏内容将动态添加 -->
+      </div>
+      <div id="favorite-empty" class="text-center py-16 text-light opacity-75 hidden">
+        <div class="inline-block p-6 rounded-full bg-dark/50 mb-6">
+          <i class="fa fa-heart-o text-6xl text-accent/50"></i>
+        </div>
+        <h4 class="text-xl font-semibold mb-2">暂无收藏内容</h4>
+        <p class="text-sm mt-2 max-w-md mx-auto">浏览内容并点击收藏按钮添加到收藏夹，方便随时查看</p>
+        <button class="btn-primary px-6 py-2 rounded-lg text-white mt-6" onclick="window.location.href='../index.html'">
+          <i class="fa fa-explore mr-2"></i> 去浏览内容
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 收藏夹模态框元素
+    const favoriteModalContainer = document.getElementById('favorite-modal-container');
+    const closeFavoriteModal = document.getElementById('close-favorite-modal');
+    const favoriteList = document.getElementById('favorite-list');
+    const favoriteEmpty = document.getElementById('favorite-empty');
+    
+    // 显示收藏夹
+    function showFavoriteModal() {
+      loadFavoriteItems();
+      favoriteModalContainer.classList.remove('hidden');
+    }
+    
+    // 加载收藏内容
+    function loadFavoriteItems() {
+      const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+      const favoriteArray = [];
+      
+      for (const page in favorites) {
+        if (favorites[page] && Array.isArray(favorites[page])) {
+          favorites[page].forEach(item => {
+            favoriteArray.push({...item, page: page});
+          });
+        }
+      }
+      
+      favoriteList.innerHTML = '';
+      
+      if (favoriteArray.length === 0) {
+        favoriteEmpty.classList.remove('hidden');
+        favoriteList.classList.add('hidden');
+      } else {
+        favoriteEmpty.classList.add('hidden');
+        favoriteList.classList.remove('hidden');
+        
+        favoriteArray.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'card rounded-xl overflow-hidden card-hover bg-dark/50 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40';
+          card.innerHTML = `
+            <div class="relative overflow-hidden group">
+              <img src="${item.image || '../img/f8.jpg'}" alt="${item.title}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+              <div class="absolute top-3 left-3">
+                <span class="bg-accent/90 text-dark text-xs font-bold px-2 py-1 rounded-full">${item.page}</span>
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                <h4 class="text-lg font-bold text-primary mb-1">${item.title}</h4>
+                <p class="text-light text-sm opacity-90 mb-3">${item.category || item.date || item.description?.substring(0, 60) || ''}</p>
+                <div class="flex gap-2">
+                  <button class="view-btn px-3 py-1 rounded-lg text-white text-sm flex-1 flex items-center justify-center gap-1" style="background-color: #d4a76a;">
+                    <i class="fa fa-eye"></i> 查看
+                  </button>
+                  <button class="remove-favorite px-3 py-1 rounded-lg text-white text-sm" style="background-color: #8b5a2b;" data-page="${item.page}" data-id="${item.id}">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+          favoriteList.appendChild(card);
+          
+          // 为查看按钮绑定事件
+          const viewBtn = card.querySelector('.view-btn');
+          if (viewBtn) {
+            viewBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const page = item.page;
+              
+              // 关闭收藏夹模态框
+              favoriteModalContainer.classList.add('hidden');
+              
+              // 显示详情模态框
+              if (document.getElementById('modal')) {
+                document.getElementById('modal-title').textContent = item.title;
+                document.getElementById('modal-subtitle').textContent = item.title;
+                document.getElementById('modal-period').textContent = item.subtitle || item.period || item.category || item.date || '';
+                document.getElementById('modal-image').src = item.image || '../img/f8.jpg';
+                document.getElementById('modal-image').alt = item.title;
+                document.getElementById('modal-description').textContent = item.description || '';
+                document.getElementById('modal').classList.remove('hidden');
+              }
+            });
+          }
+          
+          // 为移除按钮绑定事件
+          const removeBtn = card.querySelector('.remove-favorite');
+          if (removeBtn) {
+            removeBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              const page = this.getAttribute('data-page');
+              const id = this.getAttribute('data-id');
+              removeFavorite(page, id);
+              loadFavoriteItems();
+            });
+          }
+        });
+      }
+    }
+    
+    // 移除收藏
+    function removeFavorite(page, id) {
+      const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+      if (favorites[page]) {
+        favorites[page] = favorites[page].filter(item => item.id !== id);
+        localStorage.setItem('allFavorites', JSON.stringify(favorites));
+      }
+    }
+    
+    // 收藏图标点击事件
+      const favoriteIcon = document.getElementById('favorite-icon');
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('click', function() {
+          showFavoriteModal();
+        });
+      }
+      
+      // 导航栏搜索功能
+      const navSearchInput = document.getElementById('nav-search-input');
+      const navSearchBtn = document.getElementById('nav-search-btn');
+      
+      function performNavSearch() {
+        const searchTerm = navSearchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+          // 简单的搜索实现，过滤显示包含搜索词的内容
+          const allItems = document.querySelectorAll('.card, .activity-card, .scholar-card, .project-card, .news-card');
+          let hasResults = false;
+          
+          allItems.forEach(item => {
+            const title = item.querySelector('h3, h4')?.textContent.toLowerCase() || '';
+            const description = item.querySelector('p')?.textContent.toLowerCase() || '';
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+              item.style.display = 'block';
+              hasResults = true;
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        }
+      }
+      
+      // 导航栏搜索按钮点击事件
+      if (navSearchBtn) {
+        navSearchBtn.addEventListener('click', performNavSearch);
+      }
+      
+      // 导航栏搜索框回车键事件
+      if (navSearchInput) {
+        navSearchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performNavSearch();
+          }
+        });
+      }
+    
+    // 关闭收藏夹模态框
+    if (closeFavoriteModal) {
+      closeFavoriteModal.addEventListener('click', function() {
+        favoriteModalContainer.classList.add('hidden');
+      });
+    }
+    
+    // 点击模态框外部关闭
+    if (favoriteModalContainer) {
+      favoriteModalContainer.addEventListener('click', function(e) {
+        if (e.target === favoriteModalContainer) {
+          favoriteModalContainer.classList.add('hidden');
+        }
+      });
+    }
+    
+    // 选项卡切换功能
+    document.addEventListener('DOMContentLoaded', function() {
+      const navBtns = document.querySelectorAll('.nav-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      navBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          // 移除所有按钮的active类
+          navBtns.forEach(b => b.classList.remove('active', 'bg-secondary'));
+          navBtns.forEach(b => b.classList.add('bg-dark'));
+          
+          // 添加当前按钮的active类
+          this.classList.add('active', 'bg-secondary');
+          this.classList.remove('bg-dark');
+          
+          // 隐藏所有内容
+          tabContents.forEach(content => content.classList.add('hidden'));
+          
+          // 显示对应内容
+          const tabId = this.getAttribute('data-tab');
+          document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+        });
+      });
+
+      // 资源分类筛选
+      const resourceTags = document.querySelectorAll('.tag');
+      resourceTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+          // 移除所有标签的active类
+          resourceTags.forEach(t => t.classList.remove('bg-primary', 'text-dark'));
+          
+          // 添加当前标签的active类
+          this.classList.add('bg-primary', 'text-dark');
+          
+          // 这里可以添加实际的筛选逻辑
+          console.log('筛选:', this.textContent.trim());
+        });
+      });
+
+      // 搜索功能
+      const searchInputs = document.querySelectorAll('.search-input');
+      searchInputs.forEach(input => {
+        input.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            const searchTerm = this.value.trim();
+            if (searchTerm) {
+              console.log('搜索:', searchTerm);
+              // 这里可以添加实际的搜索逻辑
+            }
+          }
+        });
+      });
+
+      // 搜索按钮点击事件
+      const searchButtons = document.querySelectorAll('.fa-search').forEach(icon => {
+        const button = icon.closest('button');
+        if (button) {
+          button.addEventListener('click', function() {
+            const input = this.closest('.relative').querySelector('input');
+            if (input) {
+              const searchTerm = input.value.trim();
+              if (searchTerm) {
+                console.log('搜索:', searchTerm);
+                // 这里可以添加实际的搜索逻辑
+              }
+            }
+          });
+        }
+      });
+
+      // 为新添加的卡片和按钮绑定事件
+      function bindEventsToNewElements() {
+        // 为新添加的卡片绑定悬停效果
+        const newCards = document.querySelectorAll('.card:not([data-bound])');
+        newCards.forEach(card => {
+          card.setAttribute('data-bound', 'true');
+          card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px) scale(1.02)';
+            this.style.boxShadow = '0 16px 30px rgba(0, 0, 0, 0.4)';
+          });
+          
+          card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+          });
+        });
+        
+        // 为新添加的按钮绑定悬停效果和点击事件
+        const newButtons = document.querySelectorAll('.btn-primary:not([data-bound]), .btn-secondary:not([data-bound])');
+        newButtons.forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          
+          // 悬停效果
+          btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+            this.style.boxShadow = '0 6px 16px rgba(161, 106, 67, 0.35)';
+          });
+          
+          btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+          });
+          
+          // 查看详情按钮点击事件
+          if (btn.textContent.includes('查看详情')) {
+            btn.addEventListener('click', function() {
+              const card = this.closest('.card');
+              if (card) {
+                const title = card.querySelector('.card-title').textContent;
+                const category = card.querySelector('.tag').textContent;
+                const date = card.querySelector('.text-light.opacity-75.text-sm').textContent;
+                const author = card.querySelector('span.text-light.opacity-75.text-sm')?.textContent || '';
+                const description = card.querySelector('p.text-light.opacity-75.text-sm').textContent;
+                
+                // 创建详情模态框
+                const modal = document.createElement('div');
+                modal.className = 'detail-modal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(20, 13, 8, 0.9)';
+                modal.style.zIndex = '10000';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                modal.style.backdropFilter = 'blur(5px)';
+                modal.style.transition = 'all 0.3s ease';
+                modal.style.opacity = '0';
+                
+                // 模态框内容
+                modal.innerHTML = `
+                  <div class="bg-dark/90 rounded-xl p-8 max-w-4xl w-full max-h-[80vh] overflow-y-auto border border-accent/50">
+                    <div class="flex justify-between items-start mb-6">
+                      <div>
+                        <h2 class="text-2xl font-bold text-primary mb-2">${title}</h2>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                          <span class="tag px-3 py-1 rounded-full text-xs">${category}</span>
+                          <span class="text-light opacity-75 text-sm">${date}</span>
+                          ${author ? `<span class="text-light opacity-75 text-sm">${author}</span>` : ''}
+                        </div>
+                      </div>
+                      <button class="close-btn text-light hover:text-primary text-2xl cursor-pointer">
+                        <i class="fa fa-times"></i>
+                      </button>
+                    </div>
+                    <div class="text-light opacity-90 leading-relaxed">
+                      <p class="mb-4">${description}</p>
+                      <p class="text-light opacity-75 text-sm">
+                        本文详细介绍了敦煌相关的学术研究内容，为敦煌学的发展提供了重要的参考资料。
+                        通过深入分析敦煌的历史、艺术和文化，为研究人员和爱好者提供了宝贵的学术资源。
+                      </p>
+                    </div>
+                  </div>
+                `;
+                
+                // 关闭按钮事件
+                modal.querySelector('.close-btn').addEventListener('click', function() {
+                  modal.remove();
+                });
+                
+                // 点击背景关闭
+                modal.addEventListener('click', function(e) {
+                  if (e.target === modal) {
+                    modal.remove();
+                  }
+                });
+                
+                // 添加到页面
+                document.body.appendChild(modal);
+                
+                // 淡入效果
+                setTimeout(() => {
+                  modal.style.opacity = '1';
+                }, 10);
+              }
+            });
+          }
+          
+          // 在线报名按钮点击事件
+          if (btn.textContent.includes('在线报名')) {
+            btn.addEventListener('click', function() {
+              alert('报名功能即将开放，敬请期待！');
+            });
+          }
+          
+          // 收藏按钮点击事件
+          if (btn.classList.contains('add-favorite')) {
+            btn.addEventListener('click', function() {
+              const id = parseInt(this.getAttribute('data-id'));
+              const activity = allActivities.find(item => item.id === id);
+              if (activity) {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('fa-heart-o')) {
+                  icon.classList.remove('fa-heart-o');
+                  icon.classList.add('fa-heart');
+                  this.innerHTML = '<i class="fa fa-heart"></i> 已收藏';
+                  this.classList.add('text-red-400');
+                  // 保存到统一的本地存储
+                  const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+                  if (!allFavorites['敦煌学术']) {
+                    allFavorites['敦煌学术'] = [];
+                  }
+                  const exists = allFavorites['敦煌学术'].some(item => item.id === id);
+                  if (!exists) {
+                    allFavorites['敦煌学术'].push(activity);
+                    localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+                  }
+                } else {
+                  icon.classList.remove('fa-heart');
+                  icon.classList.add('fa-heart-o');
+                  this.innerHTML = '<i class="fa fa-heart-o"></i> 收藏';
+                  this.classList.remove('text-red-400');
+                  // 从统一的本地存储移除
+                  const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+                  if (allFavorites['敦煌学术']) {
+                    allFavorites['敦煌学术'] = allFavorites['敦煌学术'].filter(item => item.id !== id);
+                    localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // 初始化绑定事件
+      bindEventsToNewElements();
+
+      // 标签页切换时重新绑定事件
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          setTimeout(bindEventsToNewElements, 100);
+        });
+      });
+
+      // 学术资源数据
+      const allResources = [
+        {
+          id: 1,
+          title: '敦煌壁画中的飞天形象研究',
+          category: '研究论文',
+          author: '张明教授',
+          date: '2026-04-01',
+          description: '本文通过对莫高窟不同时期飞天壁画的分析，探讨了飞天形象的演变过程及其艺术特色，揭示了敦煌壁画艺术的独特魅力。'
+        },
+        {
+          id: 2,
+          title: '敦煌学概论',
+          category: '学术著作',
+          author: '李华教授',
+          date: '2026-03-15',
+          description: '本书系统介绍了敦煌学的基本概念、研究方法和主要研究领域，是敦煌学入门的重要参考资料。'
+        },
+        {
+          id: 3,
+          title: '莫高窟第17窟考古发掘报告',
+          category: '考古报告',
+          author: '敦煌研究院考古队',
+          date: '2026-02-28',
+          description: '本报告详细记录了莫高窟第17窟的考古发掘过程、出土文物及研究成果，为敦煌学研究提供了重要的第一手资料。'
+        },
+        {
+          id: 4,
+          title: '敦煌研究（2026年第1期）',
+          category: '学术期刊',
+          author: '敦煌研究院',
+          date: '2026-01-20',
+          description: '本期期刊收录了多篇关于敦煌壁画、文献、历史等方面的研究论文，反映了敦煌学研究的最新成果。'
+        },
+        {
+          id: 5,
+          title: '敦煌文献学导论',
+          category: '学术著作',
+          author: '王建国教授',
+          date: '2025-12-15',
+          description: '本书系统阐述了敦煌文献的发现、整理、研究和保护过程，是敦煌文献学研究的入门之作。'
+        },
+        {
+          id: 6,
+          title: '敦煌石窟艺术赏析',
+          category: '学术著作',
+          author: '陈思远副教授',
+          date: '2025-11-20',
+          description: '本书通过大量高清图片和详细解说，全面介绍了敦煌石窟的艺术特色和文化内涵。'
+        },
+        {
+          id: 7,
+          title: '敦煌藏经洞文献的整理与研究',
+          category: '研究论文',
+          author: '刘芳教授',
+          date: '2025-11-10',
+          description: '本文对敦煌藏经洞出土的文献进行了系统整理和研究，探讨了这些文献的历史价值和学术意义。'
+        },
+        {
+          id: 8,
+          title: '敦煌壁画色彩研究',
+          category: '研究论文',
+          author: '赵敏副教授',
+          date: '2025-10-25',
+          description: '本文深入分析了敦煌壁画不同时期的色彩特点，探讨了色彩与佛教艺术发展的关系。'
+        }
+      ];
+      
+      let loadedResourceCount = 5;
+      const resourceContainer = document.querySelector('#resources-tab .grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-6');
+      
+      // 加载更多功能
+      const loadMoreBtns = document.querySelectorAll('.btn-primary');
+      loadMoreBtns.forEach(btn => {
+        if (btn.textContent.includes('加载更多') && btn.closest('#resources-tab')) {
+          btn.addEventListener('click', function() {
+            // 显示加载动画
+            this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+            this.disabled = true;
+            
+            // 模拟加载延迟
+            setTimeout(() => {
+              const endIndex = Math.min(loadedResourceCount + 3, allResources.length);
+              
+              for (let i = loadedResourceCount; i < endIndex; i++) {
+                const resource = allResources[i];
+                const card = document.createElement('div');
+                card.className = 'card rounded-xl overflow-hidden animate-fade-in';
+                card.style.animationDelay = `${(i - loadedResourceCount) * 0.1}s`;
+                card.innerHTML = `
+                  <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                      <span class="tag px-3 py-1 rounded-full text-xs">${resource.category}</span>
+                      <span class="text-light opacity-75 text-sm">${resource.date}</span>
+                    </div>
+                    <h3 class="card-title text-xl font-bold mb-2">${resource.title}</h3>
+                    <p class="text-light opacity-75 text-sm mb-4 line-clamp-3">${resource.description}</p>
+                    <div class="flex justify-between items-center">
+                      <span class="text-light opacity-75 text-sm">作者：${resource.author}</span>
+                      <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                        查看详情
+                      </button>
+                    </div>
+                  </div>
+                `;
+                resourceContainer.appendChild(card);
+              }
+              
+              loadedResourceCount = endIndex;
+              
+              // 检查是否还有更多数据
+              if (loadedResourceCount >= allResources.length) {
+                this.innerHTML = '<span>没有更多了</span>';
+                this.disabled = true;
+                this.classList.add('opacity-50', 'cursor-not-allowed');
+              } else {
+                this.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+                this.disabled = false;
+              }
+              
+              // 为新添加的元素绑定事件
+              bindEventsToNewElements();
+            }, 1500);
+          });
+        }
+      });
+
+      // 学术活动数据
+      const allActivities = [
+        {
+          id: 1,
+          title: '第11届敦煌学国际学术研讨会',
+          date: '2026-05-15',
+          category: '国际研讨会',
+          location: '敦煌研究院学术报告厅',
+          description: '本次研讨会将邀请来自世界各地的敦煌学专家学者，共同探讨敦煌文化的保护、研究与传承，交流最新研究成果。'
+        },
+        {
+          id: 2,
+          title: '敦煌壁画的艺术特色与保护',
+          date: '2026-04-20',
+          category: '学术讲座',
+          location: '北京大学考古文博学院',
+          description: '本次讲座将由敦煌研究院的专家主讲，介绍敦煌壁画的艺术特色、历史价值以及现代保护技术。'
+        },
+        {
+          id: 3,
+          title: '敦煌数字化工坊',
+          date: '2026-03-10',
+          category: '工作坊',
+          location: '敦煌研究院数字保护中心',
+          description: '本工作坊将介绍敦煌壁画的数字化技术，包括三维扫描、高清摄影和信息处理等。'
+        },
+        {
+          id: 4,
+          title: '敦煌石窟保护国际论坛',
+          date: '2026-02-15',
+          category: '国际论坛',
+          location: '敦煌研究院',
+          description: '来自各国的石窟保护专家将分享他们在石窟保护方面的经验和最新技术。'
+        },
+        {
+          id: 5,
+          title: '敦煌文献整理与研究培训班',
+          date: '2026-01-20',
+          category: '培训班',
+          location: '兰州大学敦煌学研究所',
+          description: '本培训班将系统讲授敦煌文献的整理方法和研究技术，培养新一代敦煌学研究人才。'
+        },
+        {
+          id: 6,
+          title: '敦煌艺术鉴赏专题讲座',
+          date: '2025-12-15',
+          category: '学术讲座',
+          location: '敦煌博物馆报告厅',
+          description: '著名敦煌学专家将为您详细解读敦煌艺术的魅力和文化价值。'
+        }
+      ];
+      
+      let loadedActivityCount = 3;
+      const activityContainer = document.querySelector('#activities-tab .timeline-container, #activities-tab .relative.pl-8');
+      
+      // 为学术活动添加加载更多功能
+      const activityLoadMoreBtn = document.querySelector('#activities-tab .text-center.mt-12 .btn-primary');
+      if (activityLoadMoreBtn) {
+        activityLoadMoreBtn.addEventListener('click', function() {
+          // 显示加载动画
+          this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+          this.disabled = true;
+          
+          // 模拟加载延迟
+          setTimeout(() => {
+            const endIndex = Math.min(loadedActivityCount + 3, allActivities.length);
+            
+            for (let i = loadedActivityCount; i < endIndex; i++) {
+              const activity = allActivities[i];
+              const timelineItem = document.createElement('div');
+              timelineItem.className = 'timeline-item mb-12 animate-fade-in';
+              timelineItem.style.animationDelay = `${(i - loadedActivityCount) * 0.1}s`;
+              timelineItem.innerHTML = `
+                <div class="card rounded-xl overflow-hidden">
+                  <div class="p-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                      <div class="flex items-center gap-4 mb-4 md:mb-0">
+                        <span class="bg-primary text-dark px-4 py-2 rounded-lg font-bold">${activity.date}</span>
+                        <span class="tag px-3 py-1 rounded-full text-xs">${activity.category}</span>
+                      </div>
+                      <span class="text-light opacity-75 text-sm">${activity.location}</span>
+                    </div>
+                    <h3 class="card-title text-xl font-bold mb-2">${activity.title}</h3>
+                    <p class="text-light opacity-75 text-sm mb-4">${activity.description}</p>
+                    <div class="flex gap-2">
+                      <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                        查看详情
+                      </button>
+                      <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                        在线报名
+                      </button>
+                      <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm add-favorite" data-id="${activity.id}">
+                        <i class="fa fa-heart-o"></i> 收藏
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              `;
+              activityContainer.appendChild(timelineItem);
+            }
+            
+            loadedActivityCount = endIndex;
+            
+            // 检查是否还有更多数据
+            if (loadedActivityCount >= allActivities.length) {
+              this.innerHTML = '<span>没有更多了</span>';
+              this.disabled = true;
+              this.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+              this.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+              this.disabled = false;
+            }
+              
+              // 为新添加的元素绑定事件
+              bindEventsToNewElements();
+            }, 1500);
+        });
+      }
+
+      // 卡片悬停效果增强
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-10px) scale(1.02)';
+          this.style.boxShadow = '0 16px 30px rgba(0, 0, 0, 0.4)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0) scale(1)';
+          this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+        });
+      });
+
+      // 按钮悬停效果
+      const buttons = document.querySelectorAll('.btn-primary, .btn-secondary');
+      buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-3px)';
+          this.style.boxShadow = '0 6px 16px rgba(161, 106, 67, 0.35)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+        });
+        
+        // 为其他功能按钮添加点击事件
+        const buttonText = btn.textContent.trim();
+        if (['在线报名', '在线预约', '筛选', '导出'].includes(buttonText)) {
+          btn.addEventListener('click', function() {
+            console.log('点击:', buttonText);
+            // 这里可以添加实际的功能逻辑
+            if (buttonText === '在线报名' || buttonText === '在线预约') {
+              alert('报名功能已启动，请填写相关信息。');
+            } else if (buttonText === '筛选') {
+              alert('筛选功能已启动，请选择筛选条件。');
+            } else if (buttonText === '导出') {
+              alert('导出功能已启动，正在生成导出文件。');
+            }
+          });
+        }
+      });
+    });
+
+    // 个人中心图标点击事件
+    const userIcon = document.getElementById('user-icon');
+    if (userIcon) {
+      userIcon.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
+        // 跳转到登录页面
+        window.location.href = '../logoin/code/123.html';
+      });
+    }
+  </script>
+</body>
+</html>

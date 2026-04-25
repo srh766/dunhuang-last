@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>甘肃地图 - 敦煌文化</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #spot-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 300px;
+            display: none;
+        }
+        #spot-info img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        #spot-info h3 {
+            margin-top: 0;
+        }
+        #close-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        #close-btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="spot-info">
+        <h3 id="spot-name"></h3>
+        <div id="spot-image"></div>
+        <p id="spot-description"></p>
+        <button id="close-btn">关闭</button>
+    </div>
+    <div id="map-container"></div>
+
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=wtm0Cw3OYxi6gML7UjXWmaVwTmsgVwpU"></script>
+    <script>
+        // 等待百度地图API加载完成
+        window.onload = function() {
+            // 初始化地图
+            var map = new BMap.Map("map-container");
+            var point = new BMap.Point(103.82, 36.05); // 甘肃中心点
+            map.centerAndZoom(point, 7);
+            map.enableScrollWheelZoom(true);
+
+            // 添加控件
+            map.addControl(new BMap.NavigationControl());
+            map.addControl(new BMap.ScaleControl());
+            map.addControl(new BMap.OverviewMapControl());
+
+            // 敦煌文化区域数据
+            var dunhuangArea = {
+                center: new BMap.Point(94.65, 40.14),
+                radius: 100000 // 100公里范围
+            };
+
+            // 绘制敦煌文化区域
+            var circle = new BMap.Circle(dunhuangArea.center, dunhuangArea.radius, {
+                strokeColor: "#3385ff",
+                strokeWeight: 2,
+                strokeOpacity: 0.8,
+                fillColor: "#3385ff",
+                fillOpacity: 0.1
+            });
+            map.addOverlay(circle);
+
+            // 景点数据
+            var spots = [
+                {
+                    name: "莫高窟",
+                    location: new BMap.Point(94.68, 40.13),
+                    description: "莫高窟，俗称千佛洞，坐落在河西走廊西端的敦煌。它始建于十六国的前秦时期，历经十六国、北朝、隋、唐、五代、西夏、元等历代的兴建，形成巨大的规模，有洞窟735个，壁画4.5万平方米、泥质彩塑2415尊，是世界上现存规模最大、内容最丰富的佛教艺术地。",
+                    image: "dingwei.tupian/m.muogaoku.jpg"
+                },
+                {
+                    name: "敦煌市博物馆",
+                    location: new BMap.Point(94.71, 40.15),
+                    description: "敦煌市博物馆是一座综合性博物馆，收藏了大量敦煌地区的历史文物和艺术品，展示了敦煌的历史文化和艺术成就。",
+                    image: "dingwei.tupian/m.bowuguan.jpg"
+                },
+                {
+                    name: "榆林窟",
+                    location: new BMap.Point(95.90, 40.10),
+                    description: "榆林窟，又名万佛峡，位于瓜州县南70公里处，是敦煌莫高窟的姊妹窟，同样以精美的壁画和彩塑闻名。",
+                    image: "dingwei.tupian/m.yulinku.jpg"
+                },
+                {
+                    name: "西千佛洞",
+                    location: new BMap.Point(94.50, 40.10),
+                    description: "西千佛洞位于敦煌市区西南35公里处，是敦煌佛教艺术的重要组成部分，保存了从北魏到宋代的壁画和彩塑。",
+                    image: "dingwei.tupian/m.xiqianfuodong.jpg"
+                },
+                {
+                    name: "鸣沙山",
+                    location: new BMap.Point(94.65, 40.08),
+                    description: "鸣沙山位于敦煌市城南5公里处，因沙动有声而得名，是敦煌著名的自然景观。",
+                    image: "dingwei.tupian/m.mingshashan.jpg"
+                },
+                {
+                    name: "月牙泉",
+                    location: new BMap.Point(94.66, 40.09),
+                    description: "月牙泉位于鸣沙山北麓，因形似月牙而得名，是敦煌著名的自然景观，有'沙漠第一泉'之称。",
+                    image: "dingwei.tupian/m.yueyaquan.jpg"
+                },
+                {
+                    name: "敦煌雅丹国家地质公园",
+                    location: new BMap.Point(93.71, 40.26),
+                    description: "敦煌雅丹国家地质公园，俗称敦煌雅丹魔鬼城。是敦煌西线旅游大景区的一个重要组成部分，距离敦煌市区180公里，位于玉门关西北边，景区分南北两区，东西长约25公里，南北宽约13公里。",
+                    image: "dingwei.tupian/m.yadan.jpg"
+                },
+                {
+                    name: "玉门关",
+                    location: new BMap.Point(93.88, 40.20),
+                    description: "玉门关，始置于汉武帝开通西域道路、设置河西四郡之时，因西域输入玉石时取道于此而得名。汉时为通往西域各地的门户，故址在今甘肃敦煌西北小方盘城。",
+                    image: "dingwei.tupian/m.yumenguan.jpg"
+                },
+                {
+                    name: "阳关",
+                    location: new BMap.Point(95.08, 39.83),
+                    description: "阳关，位于甘肃省敦煌市西南的古董滩附近。西汉置关，因在玉门关之南，故名。和玉门关同为当时对西域交通的门户。",
+                    image: "dingwei.tupian/m.yangguan.jpg"
+                },
+                {
+                    name: "悬泉置",
+                    location: new BMap.Point(95.20, 40.05),
+                    description: "悬泉置是汉代设立的驿站，位于敦煌市东60公里处，是丝绸之路的重要节点，保存有大量简牍和文物。",
+                    image: "dingwei.tupian/m.xuanquanzhi.jpg"
+                },
+                {
+                    name: "三危山",
+                    location: new BMap.Point(94.75, 40.18),
+                    description: "三危山位于敦煌市东南25公里处，是敦煌的重要文化名山，与莫高窟隔河相望，山上有众多佛教遗迹。",
+                    image: "dingwei.tupian/m.sanweishan.jpg"
+                },
+                {
+                    name: "敦煌古城",
+                    location: new BMap.Point(94.60, 40.10),
+                    description: "敦煌古城又称敦煌影视城，位于敦煌市西南18公里处，是为拍摄电影而建的仿唐古城，现已成为旅游景点。",
+                    image: "dingwei.tupian/m.dunhuanggucheng.jpg"
+                }
+            ];
+
+            // 添加景点标记
+            var markers = [];
+            function addSpotMarkers() {
+                var zoom = map.getZoom();
+                
+                // 清除现有标记
+                for (var i = 0; i < markers.length; i++) {
+                    map.removeOverlay(markers[i]);
+                }
+                markers = [];
+                
+                // 当地图放大到一定级别时显示景点标记
+                if (zoom >= 9) {
+                    for (var i = 0; i < spots.length; i++) {
+                        var spot = spots[i];
+                        var marker = new BMap.Marker(spot.location);
+                        marker.setTitle(spot.name);
+                        marker.spotData = spot;
+                        
+                        // 添加点击事件
+                        marker.addEventListener("click", function(e) {
+                            var spotData = this.spotData;
+                            document.getElementById("spot-name").textContent = spotData.name;
+                            document.getElementById("spot-image").innerHTML = '<img src="' + spotData.image + '" alt="' + spotData.name + '" />';
+                            document.getElementById("spot-description").textContent = spotData.description;
+                            document.getElementById("spot-info").style.display = "block";
+                        });
+                        
+                        map.addOverlay(marker);
+                        markers.push(marker);
+                    }
+                }
+            }
+
+            // 地图缩放事件
+            map.addEventListener("zoomend", addSpotMarkers);
+            
+            // 初始化时添加标记
+            addSpotMarkers();
+
+            // 关闭景点信息面板
+            document.getElementById("close-btn").addEventListener("click", function() {
+                document.getElementById("spot-info").style.display = "none";
+            });
+        };
+    </script>
+</body>
+</html>

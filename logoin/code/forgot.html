@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字敦煌 - 忘记密码</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            padding-right: 100px;
+        }
+        
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+        
+        .forgot-container {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .forgot-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxmaWx0ZXIgaWQ9Im4iPgogICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNzUiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICA8L2ZpbHRlcj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbikiIG9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8L3N2Zz4=');
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .forgot-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .forgot-header h2 {
+            font-size: 28px;
+            color: #D4A76A;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .forgot-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 167, 106, 0.5);
+            border-radius: 25px;
+            padding: 0 20px 0 50px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #D4A76A;
+            box-shadow: 0 0 20px rgba(212, 167, 106, 0.3);
+        }
+        
+        .form-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #D4A76A;
+            font-size: 18px;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .reset-btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #D4A76A, #B8935A);
+            border: none;
+            border-radius: 25px;
+            color: #3E2723;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #C99A5D, #A8824B);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 167, 106, 0.4);
+        }
+        
+        .forgot-footer {
+            text-align: center;
+        }
+        
+        .forgot-footer a {
+            color: #D4A76A;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .forgot-container {
+                width: 90%;
+                padding: 30px;
+            }
+            
+            .forgot-header h2 {
+                font-size: 24px;
+            }
+            
+            body {
+                padding-right: 20px;
+                padding-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-bg">
+        <video src="敦煌主题2.mp4" autoplay loop muted></video>
+    </div>
+    
+    <div class="forgot-container">
+        <div class="forgot-header">
+            <h2>数字敦煌</h2>
+            <p>找回您的密码</p>
+            <p>请输入您的邮箱，我们将发送重置密码的链接</p>
+        </div>
+        
+        <form>
+            <div class="form-group">
+                <i class="fa fa-envelope"></i>
+                <input type="email" placeholder="邮箱">
+            </div>
+            
+            <button type="submit" class="reset-btn">发送重置链接</button>
+            
+            <div class="forgot-footer">
+                <p>想起密码了？ <a href="123.html">立即登录</a></p>
+                <p>还没有账号？ <a href="register.html">立即注册</a></p>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const forgotForm = document.querySelector('form');
+            forgotForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 这里可以添加忘记密码验证逻辑
+                alert('重置密码链接已发送到您的邮箱，请查收！');
+            });
+        });
+    </script>
+</body>
+</html>

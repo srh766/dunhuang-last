@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联系我们 - 数字敦煌</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  colors: {
+                      primary: '#D4A76A', // 敦煌土黄色
+                      secondary: '#8B4513', // 敦煌褐色
+                      accent: '#E6C29C', // 敦煌浅褐色
+                      dark: '#3E2723', // 深褐色
+                      light: '#F5F5DC', // 米色
+                      paper: '#F0E6D2' // 古卷纸色
+                  },
+                  fontFamily: {
+                      sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                      serif: ['Noto Serif SC', 'serif'],
+                      cursive: ['Ma Shan Zheng', 'cursive']
+                  }
+              }
+          }
+      }
+  </script>
+  <style type="text/tailwindcss">
+      @layer utilities {
+          .scrollbar-hide {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+              display: none;
+          }
+          .card-hover {
+              transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+          }
+          .card-hover:hover {
+              transform: translateY(-10px) scale(1.02);
+              box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+          }
+          .btn-hover {
+              transition: all 0.3s ease;
+          }
+          .btn-hover:hover {
+              transform: translateY(-3px);
+              box-shadow: 0 6px 16px rgba(161, 106, 67, 0.35);
+          }
+          .text-shadow {
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+          }
+          .bg-gradient-dunhuang {
+              background: linear-gradient(to bottom, rgba(75, 47, 30, 0.95), rgba(45, 27, 18, 0.95));
+          }
+          .input-focus {
+              transition: all 0.3s ease;
+          }
+          .input-focus:focus {
+              border-color: #D4A76A;
+              box-shadow: 0 0 0 3px rgba(212, 175, 126, 0.1);
+          }
+      }
+  </style>
+  <style>
+      /* 自定义样式 */
+      body {
+          background-color: #140D08;
+          color: #F7E9D4;
+          line-height: 1.7;
+      }
+      .header {
+          background: linear-gradient(to bottom, rgba(75, 47, 30, 0.7), rgba(45, 27, 18, 0.8)), url('../img/background.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          backdrop-filter: blur(10px);
+          border-bottom: 2px solid #D4AF7E;
+          box-shadow: 0 0 30px rgba(212, 175, 126, 0.15);
+      }
+      .header h1 {
+          font-family: "Ma Shan Zheng", cursive;
+          letter-spacing: 3px;
+          text-shadow: 0 2px 10px rgba(232, 196, 142, 0.3);
+      }
+      .card {
+          background-color: #2B1B12;
+          border: 1px solid #442C1F;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      }
+      .card:hover {
+          transform: translateY(-10px) scale(1.02);
+          box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+          border-color: #D4AF7E;
+      }
+      .card-title {
+          font-family: "Ma Shan Zheng", cursive;
+          color: #E8C48E;
+      }
+      .btn-primary {
+          background-color: #A16A43;
+          transition: all 0.3s ease;
+      }
+      .btn-primary:hover {
+          background-color: #c08255;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+      }
+      .btn-secondary {
+          background-color: #5C3C28;
+          transition: all 0.3s ease;
+      }
+      .btn-secondary:hover {
+          background-color: #754A30;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(92, 60, 40, 0.3);
+      }
+      .footer {
+          background-color: #1B100A;
+          border-top: 1px solid #442C1F;
+      }
+      .contact-input {
+          background-color: rgba(43, 27, 18, 0.8);
+          border: 1px solid #442C1F;
+          color: #F7E9D4;
+          transition: all 0.3s ease;
+      }
+      .contact-input:focus {
+          border-color: #D4AF7E;
+          box-shadow: 0 0 0 3px rgba(212, 175, 126, 0.1);
+      }
+      .map-container {
+          position: relative;
+          overflow: hidden;
+          border-radius: 12px;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+      .social-icon {
+          transition: all 0.3s ease;
+      }
+      .social-icon:hover {
+          transform: translateY(-3px) scale(1.1);
+          color: #D4A76A;
+      }
+      .faq-item {
+          transition: all 0.3s ease;
+      }
+      .faq-item:hover {
+          background-color: rgba(212, 175, 126, 0.1);
+      }
+      .faq-answer {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+      }
+      .faq-answer.active {
+          max-height: 200px;
+      }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0.778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </svg>
+      </div>
+      <div>梵境寻迹</div>
+    </div>
+    <div>
+      <div><a href="../index.html" style="color: inherit; text-decoration: none;">首页</a></div>
+      <div><a href="../yunyoushiku/index.html" style="color: inherit; text-decoration: none;">云游石窟</a></div>
+      <div><a href="../danqingbihua/index.html" style="color: inherit; text-decoration: none;">丹青壁画</a></div>
+      <div><a href="../shuzicangjing/index.html" style="color: inherit; text-decoration: none;">数字藏经</a></div>
+      <div><a href="../kaifangsucai/index.html" style="color: inherit; text-decoration: none;">开放素材</a></div>
+      <div><a href="../dunhuangxueshu/index.html" style="color: inherit; text-decoration: none;">敦煌学术</a></div>
+      <div class="active">联系我们</div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="favorite-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="user-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 头部区域 -->
+  <div class="header py-16 px-4 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4">联系我们</h1>
+    <p class="text-lg md:text-xl text-light opacity-85 max-w-3xl mx-auto">
+      无论您是敦煌文化爱好者、研究学者，还是寻求合作的机构，我们都期待与您建立联系
+    </p>
+  </div>
+
+  <!-- 联系信息和表单 -->
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <!-- 联系信息 -->
+      <div>
+        <h2 class="text-3xl font-bold text-primary mb-8">联系方式</h2>
+        
+        <!-- 联系卡片 -->
+        <div class="space-y-6">
+          <!-- 地址 -->
+          <div class="card rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-map-marker text-2xl text-primary"></i>
+              </div>
+              <div>
+                <h3 class="card-title text-xl font-bold mb-2">地址</h3>
+                <p class="text-light opacity-85">甘肃省敦煌市莫高窟</p>
+                <p class="text-light opacity-75 text-sm mt-1">邮编：736200</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 电话 -->
+          <div class="card rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-phone text-2xl text-primary"></i>
+              </div>
+              <div>
+                <h3 class="card-title text-xl font-bold mb-2">电话</h3>
+                <p class="text-light opacity-85">0937-8869000</p>
+                <p class="text-light opacity-75 text-sm mt-1">工作时间：周一至周五 9:00-17:00</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 邮箱 -->
+          <div class="card rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-envelope text-2xl text-primary"></i>
+              </div>
+              <div>
+                <h3 class="card-title text-xl font-bold mb-2">邮箱</h3>
+                <p class="text-light opacity-85">contact@dha.ac.cn</p>
+                <p class="text-light opacity-75 text-sm mt-1">学术合作：academic@dha.ac.cn</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 网站 -->
+          <div class="card rounded-xl p-6">
+            <div class="flex items-start gap-4">
+              <div class="bg-primary/20 p-3 rounded-full">
+                <i class="fa fa-globe text-2xl text-primary"></i>
+              </div>
+              <div>
+                <h3 class="card-title text-xl font-bold mb-2">官方网站</h3>
+                <p class="text-light opacity-85">www.dha.ac.cn</p>
+                <p class="text-light opacity-75 text-sm mt-1">微信公众号：数字敦煌</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 社交媒体 -->
+        <div class="mt-12">
+          <h3 class="text-2xl font-bold text-primary mb-4">关注我们</h3>
+          <div class="flex gap-6">
+            <a href="#" class="social-icon text-3xl text-light opacity-85">
+              <i class="fa fa-weixin"></i>
+            </a>
+            <a href="#" class="social-icon text-3xl text-light opacity-85">
+              <i class="fa fa-weibo"></i>
+            </a>
+            <a href="#" class="social-icon text-3xl text-light opacity-85">
+              <i class="fa fa-youtube-play"></i>
+            </a>
+            <a href="#" class="social-icon text-3xl text-light opacity-85">
+              <i class="fa fa-instagram"></i>
+            </a>
+            <a href="#" class="social-icon text-3xl text-light opacity-85">
+              <i class="fa fa-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 联系表单 -->
+      <div>
+        <h2 class="text-3xl font-bold text-primary mb-8">发送消息</h2>
+        <div class="card rounded-xl p-8">
+          <form id="contact-form">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label for="name" class="block text-light opacity-85 mb-2">姓名</label>
+                <input type="text" id="name" class="contact-input w-full py-3 px-4 rounded-lg" placeholder="请输入您的姓名">
+              </div>
+              <div>
+                <label for="email" class="block text-light opacity-85 mb-2">邮箱</label>
+                <input type="email" id="email" class="contact-input w-full py-3 px-4 rounded-lg" placeholder="请输入您的邮箱">
+              </div>
+            </div>
+            <div class="mb-6">
+              <label for="subject" class="block text-light opacity-85 mb-2">主题</label>
+              <input type="text" id="subject" class="contact-input w-full py-3 px-4 rounded-lg" placeholder="请输入消息主题">
+            </div>
+            <div class="mb-6">
+              <label for="message" class="block text-light opacity-85 mb-2">消息内容</label>
+              <textarea id="message" class="contact-input w-full py-3 px-4 rounded-lg h-48" placeholder="请输入您的消息内容"></textarea>
+            </div>
+            <div class="mb-6">
+              <label class="block text-light opacity-85 mb-2">联系类型</label>
+              <div class="flex flex-wrap gap-3">
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="contact-type" value="general" class="text-primary">
+                  <span>一般咨询</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="contact-type" value="academic" class="text-primary">
+                  <span>学术合作</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="contact-type" value="media" class="text-primary">
+                  <span>媒体采访</span>
+                </label>
+                <label class="flex items-center gap-2">
+                  <input type="radio" name="contact-type" value="other" class="text-primary">
+                  <span>其他</span>
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary w-full py-4 rounded-lg text-white text-lg font-medium flex items-center justify-center gap-2">
+              <span>发送消息</span>
+              <i class="fa fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 地图 -->
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center">地理位置</h2>
+    <div class="map-container h-96 mb-12">
+      <div id="map-container" class="w-full h-full rounded-lg"></div>
+    </div>
+  </div>
+  
+  <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=wtm0Cw3OYxi6gML7UjXWmaVwTmsgVwpU"></script>
+
+  <!-- 常见问题 -->
+  <div class="max-w-7xl mx-auto px-4 py-12 mb-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center">常见问题</h2>
+    <div class="space-y-4">
+      <!-- FAQ 1 -->
+      <div class="faq-item card rounded-xl overflow-hidden">
+        <div class="p-6 cursor-pointer faq-question flex justify-between items-center">
+          <h3 class="text-xl font-medium text-light">如何预约参观莫高窟？</h3>
+          <i class="fa fa-chevron-down text-primary transition-transform"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="p-6 pt-0 border-t border-dark">
+            <p class="text-light opacity-85">
+              您可以通过敦煌研究院官方网站或微信公众号进行预约，也可以拨打预约电话0937-8869000。建议提前1-2周预约，特别是在旅游旺季。
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- FAQ 2 -->
+      <div class="faq-item card rounded-xl overflow-hidden">
+        <div class="p-6 cursor-pointer faq-question flex justify-between items-center">
+          <h3 class="text-xl font-medium text-light">如何申请学术合作？</h3>
+          <i class="fa fa-chevron-down text-primary transition-transform"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="p-6 pt-0 border-t border-dark">
+            <p class="text-light opacity-85">
+              学术合作申请请发送邮件至academic@dha.ac.cn，邮件中请详细说明合作项目的内容、目的、预期成果等信息。我们的学术合作团队会在3个工作日内回复您。
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- FAQ 3 -->
+      <div class="faq-item card rounded-xl overflow-hidden">
+        <div class="p-6 cursor-pointer faq-question flex justify-between items-center">
+          <h3 class="text-xl font-medium text-light">如何获取敦煌文化素材？</h3>
+          <i class="fa fa-chevron-down text-primary transition-transform"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="p-6 pt-0 border-t border-dark">
+            <p class="text-light opacity-85">
+              您可以访问我们的"开放素材"页面，那里提供了大量可免费使用的敦煌文化素材。对于商业用途或需要更高分辨率的素材，请联系我们的素材管理部门。
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- FAQ 4 -->
+      <div class="faq-item card rounded-xl overflow-hidden">
+        <div class="p-6 cursor-pointer faq-question flex justify-between items-center">
+          <h3 class="text-xl font-medium text-light">如何成为敦煌研究院的志愿者？</h3>
+          <i class="fa fa-chevron-down text-primary transition-transform"></i>
+        </div>
+        <div class="faq-answer">
+          <div class="p-6 pt-0 border-t border-dark">
+            <p class="text-light opacity-85">
+              我们每年都会招募志愿者参与敦煌文化的保护和传播工作。您可以通过官方网站的"志愿者招募"页面提交申请，或关注我们的微信公众号获取最新的招募信息。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 个人中心模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="user-modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl cursor-move" id="user-modal-content">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-user-circle text-primary"></i>
+          个人中心
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-user-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      
+      <!-- 用户信息卡片 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+          <div class="relative">
+            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center border-4 border-dark shadow-lg">
+              <i class="fa fa-user text-4xl text-dark"></i>
+            </div>
+            <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-2 border-dark flex items-center justify-center">
+              <i class="fa fa-check text-white text-xs"></i>
+            </div>
+          </div>
+          <div class="text-center md:text-left">
+            <h4 class="text-xl font-bold text-primary mb-2">敦煌文化爱好者</h4>
+            <p class="text-light opacity-75 mb-4">welcome@dunhuang.com</p>
+            <div class="flex gap-3 justify-center md:justify-start">
+              <button class="btn-primary px-4 py-2 rounded-lg text-white text-sm">
+                <i class="fa fa-edit mr-1"></i> 编辑资料
+              </button>
+              <button class="btn-secondary px-4 py-2 rounded-lg text-white text-sm">
+                <i class="fa fa-sign-out mr-1"></i> 退出登录
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 数据概览 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">浏览次数</h5>
+            <i class="fa fa-eye text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">128</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +12</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">收藏数量</h5>
+            <i class="fa fa-heart text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">24</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +3</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">游览时长</h5>
+            <i class="fa fa-clock-o text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">4.5h</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +30min</p>
+        </div>
+        <div class="bg-dark/50 rounded-xl p-4 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40">
+          <div class="flex items-center justify-between mb-2">
+            <h5 class="text-light opacity-85 text-sm">联系次数</h5>
+            <i class="fa fa-envelope text-primary"></i>
+          </div>
+          <p class="text-2xl font-bold text-primary">5</p>
+          <p class="text-light opacity-60 text-xs mt-1">本周 +1</p>
+        </div>
+      </div>
+      
+      <!-- 最近浏览 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <h4 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+          <i class="fa fa-history text-primary"></i>
+          最近浏览
+        </h4>
+        <div class="space-y-4">
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/1.jpg" alt="联系我们" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">联系我们</h5>
+              <p class="text-light opacity-75 text-sm mb-2">敦煌研究院 · 联系方式</p>
+              <p class="text-light opacity-50 text-xs">2小时前</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/2.jpg" alt="敦煌研究院" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">敦煌研究院</h5>
+              <p class="text-light opacity-75 text-sm mb-2">机构介绍 · 研究成果</p>
+              <p class="text-light opacity-50 text-xs">昨天</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+          <div class="flex gap-4 p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors">
+            <img src="../img/3.jpg" alt="捐赠支持" class="w-20 h-20 object-cover rounded-lg">
+            <div class="flex-1">
+              <h5 class="text-light font-medium mb-1">捐赠支持</h5>
+              <p class="text-light opacity-75 text-sm mb-2">支持敦煌文化 · 贡献力量</p>
+              <p class="text-light opacity-50 text-xs">3天前</p>
+            </div>
+            <button class="text-primary hover:text-accent transition-colors">
+              <i class="fa fa-ellipsis-v"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 我的收藏 -->
+      <div class="bg-dark/50 rounded-xl p-6 mb-8 border border-accent/20">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="text-lg font-bold text-primary flex items-center gap-2">
+            <i class="fa fa-heart text-primary"></i>
+            我的收藏
+          </h4>
+          <a href="#" class="text-primary hover:text-accent text-sm transition-colors">
+            查看全部
+          </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="relative rounded-lg overflow-hidden group">
+            <img src="../img/4.jpg" alt="敦煌艺术" class="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end p-4">
+              <h5 class="text-light font-medium mb-1">敦煌艺术</h5>
+              <p class="text-light opacity-85 text-xs">艺术欣赏 · 文化传承</p>
+            </div>
+          </div>
+          <div class="relative rounded-lg overflow-hidden group">
+            <img src="../img/5.jpeg" alt="敦煌历史" class="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex flex-col justify-end p-4">
+              <h5 class="text-light font-medium mb-1">敦煌历史</h5>
+              <p class="text-light opacity-85 text-xs">历史研究 · 文化探索</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 设置选项 -->
+      <div class="bg-dark/50 rounded-xl p-6 border border-accent/20">
+        <h4 class="text-lg font-bold text-primary mb-4 flex items-center gap-2">
+          <i class="fa fa-cog text-primary"></i>
+          账户设置
+        </h4>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-user text-primary w-6"></i>
+              <span class="text-light">个人资料</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-lock text-primary w-6"></i>
+              <span class="text-light">隐私设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-bell text-primary w-6"></i>
+              <span class="text-light">通知设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-language text-primary w-6"></i>
+              <span class="text-light">语言设置</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-lg bg-dark/30 hover:bg-dark/50 transition-colors cursor-pointer">
+            <div class="flex items-center gap-3">
+              <i class="fa fa-question-circle text-primary w-6"></i>
+              <span class="text-light">帮助中心</span>
+            </div>
+            <i class="fa fa-chevron-right text-light opacity-50"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="footer py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">关于我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">敦煌研究院</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">机构设置</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">历史沿革</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术资源</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">研究论文</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术著作</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">考古报告</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术期刊</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术服务</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">学术会议</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术讲座</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">专家咨询</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">数据库访问</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">联系我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li class="flex items-center gap-2"><i class="fa fa-map-marker"></i> 甘肃省敦煌市莫高窟</li>
+            <li class="flex items-center gap-2"><i class="fa fa-phone"></i> 0937-8869000</li>
+            <li class="flex items-center gap-2"><i class="fa fa-envelope"></i> contact@dha.ac.cn</li>
+            <li class="flex items-center gap-2"><i class="fa fa-globe"></i> www.dha.ac.cn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-dark mt-8 pt-8 text-center text-light opacity-50 text-sm">
+        <p>© 2026 数字敦煌 版权所有</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 表单提交
+      const contactForm = document.getElementById('contact-form');
+      if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // 获取表单数据
+          const name = document.getElementById('name').value;
+          const email = document.getElementById('email').value;
+          const subject = document.getElementById('subject').value;
+          const message = document.getElementById('message').value;
+          const contactType = document.querySelector('input[name="contact-type"]:checked')?.value;
+          
+          // 简单验证
+          if (!name || !email || !subject || !message) {
+            alert('请填写所有必填字段');
+            return;
+          }
+          
+          // 模拟提交
+          const submitBtn = contactForm.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 发送中...';
+          submitBtn.disabled = true;
+          
+          setTimeout(() => {
+            submitBtn.innerHTML = '<i class="fa fa-check mr-2"></i> 发送成功';
+            
+            // 重置表单
+            setTimeout(() => {
+              contactForm.reset();
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+            }, 2000);
+          }, 1500);
+        });
+      }
+      
+      // FAQ 展开/收起
+      const faqQuestions = document.querySelectorAll('.faq-question');
+      faqQuestions.forEach(question => {
+        question.addEventListener('click', function() {
+          const answer = this.nextElementSibling;
+          const icon = this.querySelector('i');
+          
+          // 切换展开/收起状态
+          answer.classList.toggle('active');
+          icon.classList.toggle('rotate-180');
+        });
+      });
+      
+      // 输入框聚焦效果
+      const inputs = document.querySelectorAll('.contact-input');
+      inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+          this.classList.add('border-primary');
+        });
+        
+        input.addEventListener('blur', function() {
+          this.classList.remove('border-primary');
+        });
+      });
+      
+      // 地图初始化
+      window.onload = function() {
+        // 初始化地图
+        var map = new BMap.Map("map-container");
+        var point = new BMap.Point(94.68, 40.13); // 莫高窟位置
+        map.centerAndZoom(point, 13);
+        map.enableScrollWheelZoom(true);
+
+        // 添加控件
+        map.addControl(new BMap.NavigationControl());
+        map.addControl(new BMap.ScaleControl());
+        map.addControl(new BMap.OverviewMapControl());
+
+        // 添加莫高窟标记
+        var marker = new BMap.Marker(point);
+        marker.setTitle("莫高窟");
+        map.addOverlay(marker);
+
+        // 添加信息窗口
+        var infoWindow = new BMap.InfoWindow("<div style='padding:10px;'><h3 style='color:#D4A76A; margin-bottom:10px;'>莫高窟</h3><p style='color:#F7E9D4;'>甘肃省敦煌市东南25公里处</p><p style='color:#F7E9D4; margin-top:5px;'>世界文化遗产，中国四大石窟之一</p></div>");
+        marker.addEventListener("click", function() {
+          this.openInfoWindow(infoWindow);
+        });
+
+        // 自动打开信息窗口
+        marker.openInfoWindow(infoWindow);
+      };
+      
+      // 社交媒体图标点击事件
+      const socialIcons = document.querySelectorAll('.social-icon');
+      socialIcons.forEach(icon => {
+        icon.addEventListener('click', function(e) {
+          e.preventDefault();
+          const iconClass = this.querySelector('i').className;
+          
+          if (iconClass.includes('fa-weixin')) {
+            // 微信二维码
+            alert('微信公众号：数字敦煌\n\n请扫描下方二维码关注我们：\n[微信二维码图片]');
+          } else if (iconClass.includes('fa-weibo')) {
+            // 微博
+            alert('微博：@数字敦煌\n\n感谢您的关注！');
+          } else if (iconClass.includes('fa-youtube-play')) {
+            // YouTube
+            alert('YouTube频道：数字敦煌\n\n欢迎订阅我们的频道，观看更多敦煌文化视频！');
+          } else if (iconClass.includes('fa-instagram')) {
+            // Instagram
+            alert('Instagram：@digital_dunhuang\n\n关注我们，了解更多敦煌文化精彩瞬间！');
+          } else if (iconClass.includes('fa-linkedin')) {
+            // LinkedIn
+            alert('LinkedIn：数字敦煌研究院\n\n欢迎在LinkedIn上关注我们，了解更多学术合作机会！');
+          }
+        });
+      });
+    });
+
+    // 个人中心图标点击事件
+    const userIcon = document.getElementById('user-icon');
+    if (userIcon) {
+      userIcon.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
+        // 跳转到登录页面
+        window.location.href = '../logoin/code/123.html';
+      });
+    }
+  </script>
+</body>
+</html>

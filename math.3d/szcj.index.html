@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字藏经 - 敦煌遗书数字化展示</title>
+    <link rel="stylesheet" href="szcj.styles.css">
+</head>
+<body>
+    <!-- 主容器 -->
+    <div class="main-container">
+        <!-- 顶部装饰 -->
+        <div class="header-decoration">
+            <div class="header-bg">
+                <h1 class="site-title">数字藏经</h1>
+                <p class="site-subtitle">Digital Dunhuang Library</p>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="content-area">
+            <!-- 左侧经籍列表 -->
+            <div class="left-section">
+                <div class="scroll-box" onclick="toggleScroll('scroll1')">
+                    <h3>《金刚经》</h3>
+                    <div class="scroll-preview">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20Buddhist%20scripture%20scroll%20with%20Chinese%20characters%2C%20old%20paper%20texture%2C%20Dunhuang%20style&image_size=square" alt="金刚经">
+                    </div>
+                </div>
+                <div class="scroll-box" onclick="toggleScroll('scroll2')">
+                    <h3>《道德经》</h3>
+                    <div class="scroll-preview">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20Taoist%20scripture%20scroll%20with%20Chinese%20characters%2C%20old%20paper%20texture%2C%20traditional%20Chinese%20style&image_size=square" alt="道德经">
+                    </div>
+                </div>
+                <div class="scroll-box" onclick="toggleScroll('scroll3')">
+                    <h3>其他经书</h3>
+                    <div class="scroll-preview">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20Chinese%20Buddhist%20scriptures%2C%20old%20paper%20texture%2C%20traditional%20style&image_size=square" alt="其他经书">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中间背景图片 -->
+            <div class="middle-section">
+                <div class="scroll-container">
+                    <button class="scroll-btn scroll-btn-left" onclick="prevPage()">
+                        <span>‹</span>
+                    </button>
+                    <div class="scroll-image">
+                        <img src="tup/szcj.shujuan.png" alt="卷轴背景">
+                        <div class="scroll-content" id="scrollContent">
+                            <img src="tup/jingang1.png" alt="金刚经经文">
+                        </div>
+                    </div>
+                    <button class="scroll-btn scroll-btn-right" onclick="nextPage()">
+                        <span>›</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧信息区 -->
+            <div class="right-section">
+                <div class="info-card">
+                    <h3>《金刚经》</h3>
+                    <div class="info-detail">
+                        <p><strong>编号：</strong>金刚经龙藏</p>
+                        <p><strong>名称：</strong>金刚般若波罗蜜经</p>
+                        <p><strong>时期：</strong>晚唐长兴，流通编定 1352</p>
+                        <p><strong>格式：</strong>卷轴装，月径，轮册，珂罗版</p>
+                        <p><strong>经法：</strong>大般若经·第九会金刚般若波罗蜜多经</p>
+                        <p><strong>全卷：</strong>28页（共）</p>
+                    </div>
+                    <div class="info-actions">
+                        <button class="action-btn play-btn zoom-btn" onclick="document.querySelector('.scroll-content img').click()">
+                            <span>🔍</span>
+                        </button>
+                        <button class="action-btn play-btn intro-btn" onclick="toggleIntroduction()">
+                            <span>📖</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="szcj.script.js"></script>
+</body>
+</html>

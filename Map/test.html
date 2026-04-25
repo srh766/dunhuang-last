@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百度地图测试</title>
+    <style>
+        #map-container {
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container"></div>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=wtm0Cw3OYxi6gML7UjXWmaVwTmsgVwpU"></script>
+    <script>
+        // 初始化地图
+        var map = new BMap.Map("map-container");
+        var point = new BMap.Point(116.404, 39.915);
+        map.centerAndZoom(point, 15);
+        map.enableScrollWheelZoom(true);
+        console.log("地图初始化成功");
+    </script>
+</body>
+</html>

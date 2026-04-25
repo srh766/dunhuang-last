@@ -1,0 +1,376 @@
+/* 全局样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'SimSun', serif;
+    background-color: #8B4513;
+    background-image: url('tup/szcj.beijing.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* 主容器 */
+.main-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 顶部装饰 */
+.header-decoration {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.header-bg {
+    background-color: rgba(222, 184, 135, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid #CD853F;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    background-image: url('tup/szcj.beijing2.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.site-title {
+    font-size: 2.8rem;
+    color: #8B4513;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    margin-bottom: 8px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.site-subtitle {
+    font-size: 1rem;
+    color: #5D4037;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+/* 主内容区 */
+.content-area {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+/* 左侧经籍列表 */
+.left-section {
+    flex: 1;
+    min-width: 180px;
+    max-width: 220px;
+    align-self: flex-start;
+}
+
+/* 中间背景图片 */
+.middle-section {
+    flex: 3;
+    min-width: 600px;
+    max-width: 800px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+}
+
+.scroll-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(139, 69, 19, 0.8);
+    color: #F5DEB3;
+    border: 1px solid #CD853F;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.scroll-btn:hover {
+    background-color: rgba(205, 133, 63, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.scroll-btn-left {
+    left: -20px;
+}
+
+.scroll-btn-right {
+    right: -20px;
+}
+
+.scroll-image {
+    width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.scroll-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.scroll-content {
+    position: absolute;
+    top: 12%;
+    left: 12%;
+    width: 76%;
+    height: 76%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scroll-content img.enlarged {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 8px;
+    transition: all 0.5s ease;
+}
+
+.scroll-content img.fade-out {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.scroll-content img.fade-in {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 经文介绍样式 */
+.scroll-intro {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.scroll-intro h3 {
+    color: #8B4513;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.scroll-intro p {
+    color: #5D4037;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 999;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* 右侧信息区 */
+.right-section {
+    flex: 1;
+    min-width: 250px;
+    max-width: 300px;
+    align-self: flex-start;
+}
+
+.scroll-box {
+    background-color: rgba(222, 184, 135, 0.9);
+    background-image: url('tup/szcj.beijing3.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #CD853F;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.scroll-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.scroll-box h3 {
+    color: #8B4513;
+    margin-bottom: 8px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.scroll-preview {
+    height: 80px;
+    overflow: hidden;
+    border-radius: 4px;
+    border: 1px solid #CD853F;
+}
+
+.scroll-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.scroll-box:hover .scroll-preview img {
+    transform: scale(1.05);
+}
+
+.info-card {
+    background-color: rgba(222, 184, 135, 0.9);
+    background-image: url('tup/szcj.xiao.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border: 1px solid #CD853F;
+    width: 250px;
+    height: 400px;
+}
+
+.info-card h3 {
+    color: #8B4513;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #CD853F;
+    padding-bottom: 10px;
+}
+
+.info-detail p {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: #5D4037;
+}
+
+.info-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.action-btn {
+    background-color: rgba(139, 69, 19, 0.9);
+    color: #F5DEB3;
+    border: 1px solid #CD853F;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.action-btn:hover {
+    background-color: rgba(205, 133, 63, 0.9);
+    transform: translateY(-2px);
+}
+
+.play-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .content-area {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .left-section,
+    .middle-section,
+    .right-section {
+        max-width: 100%;
+        min-width: 100%;
+    }
+    
+    .middle-section {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px;
+    }
+    
+    .site-title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-title {
+        font-size: 2rem;
+    }
+}

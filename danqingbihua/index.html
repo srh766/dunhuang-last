@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>丹青壁画 - 数字敦煌</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  colors: {
+                      primary: '#D4A76A', // 敦煌土黄色
+                      secondary: '#8B4513', // 敦煌褐色
+                      accent: '#E6C29C', // 敦煌浅褐色
+                      dark: '#3E2723', // 深褐色
+                      light: '#F5F5DC', // 米色
+                      paper: '#F0E6D2' // 古卷纸色
+                  },
+                  fontFamily: {
+                      sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                      serif: ['Noto Serif SC', 'serif'],
+                      cursive: ['Ma Shan Zheng', 'cursive']
+                  },
+                  animation: {
+                      'float': 'float 6s ease-in-out infinite',
+                      'fade-in': 'fadeIn 0.8s ease-out forwards',
+                      'slide-up': 'slideUp 0.8s ease-out forwards',
+                      'zoom-in': 'zoomIn 0.8s ease-out forwards',
+                      'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                  },
+                  keyframes: {
+                      float: {
+                          '0%, 100%': { transform: 'translateY(0)' },
+                          '50%': { transform: 'translateY(-10px)' }
+                      },
+                      fadeIn: {
+                          '0%': { opacity: '0' },
+                          '100%': { opacity: '1' }
+                      },
+                      slideUp: {
+                          '0%': { opacity: '0', transform: 'translateY(30px)' },
+                          '100%': { opacity: '1', transform: 'translateY(0)' }
+                      },
+                      zoomIn: {
+                          '0%': { opacity: '0', transform: 'scale(0.8)' },
+                          '100%': { opacity: '1', transform: 'scale(1)' }
+                      }
+                  }
+              }
+          }
+      }
+  </script>
+
+  <style>
+      /* 自定义样式 */
+      :root {
+          --primary: #D4A76A;
+          --secondary: #8B4513;
+          --accent: #E6C29C;
+          --dark: #3E2723;
+          --light: #F5F5DC;
+          --paper: #F0E6D2;
+          --bg-color: #140D08;
+          --text-color: #F7E9D4;
+      }
+      
+      body {
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          line-height: 1.7;
+          transition: all 0.3s ease;
+      }
+      
+      body.light-mode {
+          --bg-color: #F7F3E9;
+          --text-color: #3E2723;
+      }
+      
+      .header {
+          background: linear-gradient(to bottom, rgba(75, 47, 30, 0.7), rgba(45, 27, 18, 0.8)), url('../img/background.png');
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          backdrop-filter: blur(10px);
+          border-bottom: 2px solid #D4AF7E;
+          box-shadow: 0 0 30px rgba(212, 175, 126, 0.15);
+          position: relative;
+          overflow: hidden;
+      }
+      
+      .header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+CiAgPHBhdGggZD0iTTAgMCBMNjAgNjAgTTAwIDYwIEw2MCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNENEE3NkEiIHN0cm9rZS13aWR0aD0iMC41Ij48L3BhdGg+Cjwvc3ZnPg==');
+          opacity: 0.1;
+          pointer-events: none;
+      }
+      
+      .header h1 {
+          font-family: "Ma Shan Zheng", cursive;
+          letter-spacing: 3px;
+          text-shadow: 0 2px 10px rgba(232, 196, 142, 0.3);
+      }
+      
+      .card {
+          background: linear-gradient(135deg, rgba(43, 27, 18, 0.9), rgba(68, 44, 31, 0.8));
+          border: 1px solid #442C1F;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+          position: relative;
+      }
+      
+      .card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(212, 175, 126, 0.05), rgba(212, 175, 126, 0.15));
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+      }
+      
+      .card:hover::before {
+          opacity: 1;
+      }
+      
+      .card:hover {
+          transform: translateY(-10px) scale(1.02) rotateY(5deg);
+          box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+          border-color: #D4AF7E;
+      }
+      
+      .card img {
+          transition: transform 0.4s ease, filter 0.4s ease;
+          filter: brightness(0.9) saturate(1.1);
+      }
+      
+      .card:hover img {
+          transform: scale(1.05);
+          filter: brightness(1.1) saturate(1.3);
+      }
+      
+      .card-title {
+          font-family: "Ma Shan Zheng", cursive;
+          color: #E8C48E;
+      }
+      
+      .btn-primary {
+          background-color: #A16A43;
+          transition: all 0.3s ease;
+      }
+      
+      .btn-primary:hover {
+          background-color: #c08255;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+      }
+      
+      .btn-secondary {
+          background-color: #5C3C28;
+          transition: all 0.3s ease;
+      }
+      
+      .btn-secondary:hover {
+          background-color: #754A30;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(92, 60, 40, 0.3);
+      }
+      
+      .footer {
+          background-color: #1B100A;
+          border-top: 1px solid #442C1F;
+      }
+      
+      .filter-tag {
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+      }
+      
+      .filter-tag::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(212, 175, 126, 0.2), transparent);
+          transition: left 0.6s ease;
+      }
+      
+      .filter-tag:hover::before {
+          left: 100%;
+      }
+      
+      .filter-tag.active {
+          background-color: #D4A76A;
+          color: #3E2723;
+      }
+      
+      .modal {
+          background-color: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(10px);
+          transition: all 0.3s ease;
+      }
+      
+      .modal-content {
+          background: linear-gradient(135deg, rgba(43, 27, 18, 0.95), rgba(68, 44, 31, 0.95));
+          border: 1px solid #D4AF7E;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+          animation: zoomIn 0.3s ease-out forwards;
+      }
+      
+      .search-input {
+          background-color: rgba(43, 27, 18, 0.8);
+          border: 1px solid #442C1F;
+          color: #F7E9D4;
+          transition: all 0.3s ease;
+      }
+      
+      .search-input:focus {
+          border-color: #D4AF7E;
+          box-shadow: 0 0 0 3px rgba(212, 175, 126, 0.1);
+      }
+      
+      .theme-toggle {
+          transition: all 0.3s ease;
+      }
+      
+      .theme-toggle:hover {
+          transform: rotate(180deg);
+      }
+      
+      .loading-skeleton {
+          background: linear-gradient(90deg, #2B1B12 25%, #3A251A 50%, #2B1B12 75%);
+          background-size: 200% 100%;
+          animation: loading 1.5s ease-in-out infinite;
+      }
+      
+      @keyframes loading {
+          0% {
+              background-position: 200% 0;
+          }
+          100% {
+              background-position: -200% 0;
+          }
+      }
+      
+      .canvas-container {
+          position: relative;
+          border: 1px solid #442C1F;
+          border-radius: 8px;
+          overflow: hidden;
+      }
+      
+      .color-picker {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+      
+      .color-option {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: 2px solid transparent;
+      }
+      
+      .color-option:hover {
+          transform: scale(1.1);
+      }
+      
+      .color-option.active {
+          border-color: #D4AF7E;
+          transform: scale(1.1);
+      }
+
+      /* 瀑布流布局 */
+      .masonry-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          grid-gap: 20px;
+          grid-auto-rows: minmax(100px, auto);
+      }
+
+      .masonry-item {
+          break-inside: avoid;
+          margin-bottom: 20px;
+      }
+
+      @media (max-width: 640px) {
+          .masonry-grid {
+              grid-template-columns: 1fr;
+          }
+      }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0.778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </svg>
+      </div>
+      <div>梵境寻迹</div>
+    </div>
+    <div>
+      <div><a href="../index.html" style="color: inherit; text-decoration: none;">首页</a></div>
+      <div><a href="../yunyoushiku/index.html" style="color: inherit; text-decoration: none;">云游石窟</a></div>
+      <div class="active">丹青壁画</div>
+      <div><a href="../shuzicangjing/index.html" style="color: inherit; text-decoration: none;">数字藏经</a></div>
+      <div><a href="../kaifangsucai/index.html" style="color: inherit; text-decoration: none;">开放素材</a></div>
+      <div><a href="../dunhuangxueshu/index.html" style="color: inherit; text-decoration: none;">敦煌学术</a></div>
+      <div><a href="../lianxiwomen/index.html" style="color: inherit; text-decoration: none;">联系我们</a></div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="favorite-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="user-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 头部区域 -->
+  <div class="header py-16 px-4 text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4 relative z-10 animate-float">丹青壁画</h1>
+    <p class="text-lg md:text-xl text-light opacity-85 max-w-3xl mx-auto relative z-10">
+      探索敦煌壁画的艺术魅力，感受千年文化的传承与辉煌
+    </p>
+  </div>
+
+  <!-- 搜索和筛选 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <div class="flex-1 relative">
+        <input type="text" id="search-input" class="search-input w-full py-3 px-4 pr-12 rounded-full text-light" placeholder="搜索壁画... (例如：飞天、九色鹿、唐代)">
+        <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary">
+          <i class="fa fa-search text-xl"></i>
+        </button>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+          <i class="fa fa-filter"></i>
+          <span>筛选</span>
+        </button>
+        <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+          <i class="fa fa-download"></i>
+          <span>下载</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 筛选标签 -->
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">按朝代：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light" data-category="dynasty" data-value="all">全部朝代</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="北凉">北凉</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="北魏">北魏</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="西魏">西魏</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="北周">北周</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="隋">隋</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="唐">唐</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="五代">五代</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="宋">宋</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="西夏">西夏</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="dynasty" data-value="元">元</button>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">按题材：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light" data-category="theme" data-value="all">全部题材</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="飞天">飞天</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="佛像">佛像</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="经变画">经变画</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="故事画">故事画</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="供养人">供养人</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="theme" data-value="装饰图案">装饰图案</button>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">按洞窟：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light" data-category="cave" data-value="all">全部洞窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="cave" data-value="莫高窟">莫高窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="cave" data-value="榆林窟">榆林窟</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="cave" data-value="西千佛洞">西千佛洞</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light" data-category="cave" data-value="东千佛洞">东千佛洞</button>
+    </div>
+  </div>
+
+  <!-- 壁画展示 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">壁画精品</h2>
+    
+    <!-- 瀑布流布局 -->
+    <div class="masonry-grid" id="mural-container">
+      <!-- 壁画卡片 1 -->
+      <div class="masonry-item animate-fade-in">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/dan1.jpeg" alt="飞天壁画" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">飞天壁画</h3>
+              <p class="text-light opacity-85 text-sm mb-4">唐代 · 莫高窟第320窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="1">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="1">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 壁画卡片 2 -->
+      <div class="masonry-item animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/f7.jpg" alt="九色鹿本生" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">九色鹿本生</h3>
+              <p class="text-light opacity-85 text-sm mb-4">北魏 · 莫高窟第257窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="2">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="2">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 壁画卡片 3 -->
+      <div class="masonry-item animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/dan3.jpeg" alt="维摩诘经变" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">维摩诘经变</h3>
+              <p class="text-light opacity-85 text-sm mb-4">唐代 · 莫高窟第103窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="3">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="3">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-3"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 壁画卡片 4 -->
+      <div class="masonry-item animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/dan4.jpeg" alt="反弹琵琶" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">反弹琵琶</h3>
+              <p class="text-light opacity-85 text-sm mb-4">唐代 · 莫高窟第112窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="4">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="4">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-4"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 壁画卡片 5 -->
+      <div class="masonry-item animate-fade-in" style="animation-delay: 0.4s;">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/dan5.jpeg" alt="药师经变" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">药师经变</h3>
+              <p class="text-light opacity-85 text-sm mb-4">唐代 · 莫高窟第217窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="5">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="5">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 壁画卡片 6 -->
+      <div class="masonry-item animate-fade-in" style="animation-delay: 0.5s;">
+        <div class="card rounded-xl overflow-hidden card-hover">
+          <div class="relative overflow-hidden group">
+            <img src="../img/dan6.jpeg" alt="无量寿经变" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+              <h3 class="card-title text-xl font-bold mb-2">无量寿经变</h3>
+              <p class="text-light opacity-85 text-sm mb-4">唐代 · 莫高窟第172窟</p>
+              <div class="flex gap-2">
+                <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="6">
+                  查看详情
+                </button>
+                <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="6">
+                  <i class="fa fa-heart-o"></i> 收藏
+                </button>
+              </div>
+            </div>
+            <div class="magnifier" id="magnifier-6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载更多按钮 -->
+    <div class="text-center mt-12">
+      <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto" id="load-more">
+        <span>加载更多</span>
+        <i class="fa fa-refresh"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas 绘制功能 -->
+  <div class="max-w-7xl mx-auto px-4 py-12 mb-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center">壁画线稿涂色</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="canvas-container">
+        <canvas id="mural-canvas" width="600" height="400" class="w-full h-auto"></canvas>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-primary mb-4">涂色工具</h3>
+        <div class="space-y-6">
+          <div>
+            <h4 class="text-light mb-2">选择线稿</h4>
+            <div class="flex flex-wrap gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm lineart-option active" data-lineart="flying-apsara">
+                飞天
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm lineart-option" data-lineart="nine-colored-deer">
+                九色鹿
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm lineart-option" data-lineart="lotus">
+                莲花
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm lineart-option" data-lineart="buddha">
+                佛像
+              </button>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-light mb-2">选择颜色</h4>
+            <div class="color-picker">
+              <div class="color-option active" style="background-color: #D4A76A;"></div>
+              <div class="color-option" style="background-color: #8B4513;"></div>
+              <div class="color-option" style="background-color: #E6C29C;"></div>
+              <div class="color-option" style="background-color: #3E2723;"></div>
+              <div class="color-option" style="background-color: #F5F5DC;"></div>
+              <div class="color-option" style="background-color: #F0E6D2;"></div>
+              <div class="color-option" style="background-color: #C19A6B;"></div>
+              <div class="color-option" style="background-color: #7D5A50;"></div>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-light mb-2">画笔大小</h4>
+            <input type="range" min="1" max="20" value="5" class="w-full" id="brush-size">
+          </div>
+          <div class="flex gap-3">
+            <button class="btn-primary px-4 py-2 rounded-lg text-white" id="clear-canvas">
+              清空画布
+            </button>
+            <button class="btn-secondary px-4 py-2 rounded-lg text-white" id="save-canvas">
+              保存作品
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 收藏夹模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="favorite-modal-container">
+    <div class="modal-content rounded-xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-heart text-primary"></i>
+          我的收藏夹
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-favorite-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div id="favorite-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 收藏内容将动态添加 -->
+      </div>
+      <div id="favorite-empty" class="text-center py-16 text-light opacity-75 hidden">
+        <div class="inline-block p-6 rounded-full bg-dark/50 mb-6">
+          <i class="fa fa-heart-o text-6xl text-accent/50"></i>
+        </div>
+        <h4 class="text-xl font-semibold mb-2">暂无收藏内容</h4>
+        <p class="text-sm mt-2 max-w-md mx-auto">浏览内容并点击收藏按钮添加到收藏夹，方便随时查看</p>
+        <button class="btn-primary px-6 py-2 rounded-lg text-white mt-6" onclick="window.location.href='../index.html'">
+          <i class="fa fa-explore mr-2"></i> 去浏览内容
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-2xl font-bold text-primary" id="modal-title">壁画详情</h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl" id="close-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="relative">
+          <img src="../img/2.jpg" alt="壁画详情" class="w-full h-auto rounded-lg" id="modal-image">
+          <div class="absolute top-4 right-4 flex gap-2">
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="download-image">
+              <i class="fa fa-download"></i>
+            </button>
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="share-image">
+              <i class="fa fa-share-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-bold text-light mb-2" id="modal-subtitle">飞天壁画</h4>
+          <p class="text-light opacity-85 mb-4" id="modal-period">唐代 · 莫高窟第320窟</p>
+          <div class="mb-6">
+            <h4 class="text-lg font-medium text-light mb-2">壁画描述</h4>
+            <p class="text-light opacity-75" id="modal-description">
+              飞天是敦煌壁画中的经典形象，她们姿态优美，衣袂飘飘，充满了艺术感染力。这幅飞天壁画绘制于唐代，色彩鲜艳，线条流畅，展现了唐代壁画艺术的高超水平。飞天们手持乐器，翱翔在天空中，象征着自由与美好的向往。
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-primary px-4 py-2 rounded-lg text-white" id="favorite-modal">
+              <i class="fa fa-heart-o"></i> 收藏
+            </button>
+            <button class="btn-secondary px-4 py-2 rounded-lg text-white" id="copy-link">
+              <i class="fa fa-link"></i> 复制链接
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- 页脚 -->
+  <div class="footer py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">关于我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">敦煌研究院</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">机构设置</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">历史沿革</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术资源</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">研究论文</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术著作</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">考古报告</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术期刊</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术服务</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">学术会议</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术讲座</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">专家咨询</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">数据库访问</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">联系我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li class="flex items-center gap-2"><i class="fa fa-map-marker"></i> 甘肃省敦煌市莫高窟</li>
+            <li class="flex items-center gap-2"><i class="fa fa-phone"></i> 0937-8869000</li>
+            <li class="flex items-center gap-2"><i class="fa fa-envelope"></i> contact@dha.ac.cn</li>
+            <li class="flex items-center gap-2"><i class="fa fa-globe"></i> www.dha.ac.cn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-dark mt-8 pt-8 text-center text-light opacity-50 text-sm">
+        <p>© 2026 数字敦煌 版权所有</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 收藏夹模态框元素
+      const favoriteModalContainer = document.getElementById('favorite-modal-container');
+      const closeFavoriteModal = document.getElementById('close-favorite-modal');
+      const favoriteList = document.getElementById('favorite-list');
+      const favoriteEmpty = document.getElementById('favorite-empty');
+      
+      // 显示收藏夹
+      function showFavoriteModal() {
+        loadFavoriteItems();
+        favoriteModalContainer.classList.remove('hidden');
+      }
+      
+      // 加载收藏内容
+      function loadFavoriteItems() {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        const favoriteArray = [];
+        
+        // 收集所有收藏内容
+        for (const page in favorites) {
+          if (favorites[page] && Array.isArray(favorites[page])) {
+            favorites[page].forEach(item => {
+              favoriteArray.push({...item, page: page});
+            });
+          }
+        }
+        
+        // 清空当前列表
+        favoriteList.innerHTML = '';
+        
+        if (favoriteArray.length === 0) {
+          favoriteEmpty.classList.remove('hidden');
+          favoriteList.classList.add('hidden');
+        } else {
+          favoriteEmpty.classList.add('hidden');
+          favoriteList.classList.remove('hidden');
+          
+          favoriteArray.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card rounded-xl overflow-hidden card-hover bg-dark/50 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40';
+            card.innerHTML = `
+              <div class="relative overflow-hidden group">
+                <img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3">
+                  <span class="bg-accent/90 text-dark text-xs font-bold px-2 py-1 rounded-full">${item.page}</span>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <h4 class="text-lg font-bold text-primary mb-1">${item.title}</h4>
+                  <p class="text-light text-sm opacity-90 mb-3">${item.period || item.subtitle || item.category || item.description?.substring(0, 60) || ''}</p>
+                  <div class="flex gap-2">
+                    <button class="view-btn px-3 py-1 rounded-lg text-white text-sm flex-1 flex items-center justify-center gap-1" style="background-color: #d4a76a;">
+                      <i class="fa fa-eye"></i> 查看
+                    </button>
+                    <button class="remove-favorite px-3 py-1 rounded-lg text-white text-sm" style="background-color: #8b5a2b;" data-page="${item.page}" data-id="${item.id}">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            favoriteList.appendChild(card);
+            
+            // 为查看按钮绑定事件
+            const viewBtn = card.querySelector('.view-btn');
+            if (viewBtn) {
+              viewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = item.page;
+                
+                // 关闭收藏夹模态框
+                favoriteModalContainer.classList.add('hidden');
+                
+                // 显示详情模态框
+                if (document.getElementById('modal')) {
+                  document.getElementById('modal-title').textContent = item.title;
+                  document.getElementById('modal-subtitle').textContent = item.title;
+                  document.getElementById('modal-period').textContent = item.subtitle || item.period || item.category || item.date || '';
+                  document.getElementById('modal-image').src = item.image;
+                  document.getElementById('modal-image').alt = item.title;
+                  document.getElementById('modal-description').textContent = item.description || '';
+                  document.getElementById('modal').classList.remove('hidden');
+                }
+              });
+            }
+            
+            // 为移除按钮绑定事件
+            const removeBtn = card.querySelector('.remove-favorite');
+
+      // 个人中心图标点击事件
+      const userIcon = document.getElementById('user-icon');
+      if (userIcon) {
+        userIcon.addEventListener('click', function(e) {
+          e.stopPropagation(); // 阻止事件冒泡
+          // 跳转到登录页面
+          window.location.href = '../logoin/code/123.html';
+        });
+      }
+            if (removeBtn) {
+              removeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = this.getAttribute('data-page');
+                const id = this.getAttribute('data-id');
+                removeFavorite(page, id);
+                loadFavoriteItems();
+              });
+            }
+          });
+        }
+      }
+      
+      // 移除收藏
+      function removeFavorite(page, id) {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        if (favorites[page]) {
+          favorites[page] = favorites[page].filter(item => item.id !== id);
+          localStorage.setItem('allFavorites', JSON.stringify(favorites));
+        }
+      }
+      
+      // 收藏图标点击事件
+      const favoriteIcon = document.getElementById('favorite-icon');
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('click', function() {
+          showFavoriteModal();
+        });
+      }
+      
+      // 导航栏搜索功能
+      const navSearchInput = document.getElementById('nav-search-input');
+      const navSearchBtn = document.getElementById('nav-search-btn');
+      
+      function performNavSearch() {
+        const searchTerm = navSearchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+          // 将搜索词传递给页面搜索框并执行搜索
+          const pageSearchInput = document.getElementById('search-input');
+          if (pageSearchInput) {
+            pageSearchInput.value = searchTerm;
+            // 触发页面搜索
+            const searchEvent = new Event('input');
+            pageSearchInput.dispatchEvent(searchEvent);
+          }
+        }
+      }
+      
+      // 导航栏搜索按钮点击事件
+      if (navSearchBtn) {
+        navSearchBtn.addEventListener('click', performNavSearch);
+      }
+      
+      // 导航栏搜索框回车键事件
+      if (navSearchInput) {
+        navSearchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performNavSearch();
+          }
+        });
+      }
+      
+      // 关闭收藏夹模态框
+      if (closeFavoriteModal) {
+        closeFavoriteModal.addEventListener('click', function() {
+          favoriteModalContainer.classList.add('hidden');
+        });
+      }
+      
+      // 点击模态框外部关闭
+      if (favoriteModalContainer) {
+        favoriteModalContainer.addEventListener('click', function(e) {
+          if (e.target === favoriteModalContainer) {
+            favoriteModalContainer.classList.add('hidden');
+          }
+        });
+      }
+
+      // 筛选标签功能
+      const filterTags = document.querySelectorAll('.filter-tag');
+      
+      // 保存当前筛选状态
+      const currentFilters = {
+        dynasty: 'all',
+        theme: 'all',
+        cave: 'all'
+      };
+      
+      // 筛选函数
+      function filterMurals() {
+        // 获取所有壁画卡片
+        const muralItems = document.querySelectorAll('.masonry-item');
+        
+        // 遍历所有壁画数据
+        muralData.forEach((mural, index) => {
+          const item = muralItems[index];
+          if (item) {
+            // 检查是否符合所有筛选条件
+            const matchesDynasty = currentFilters.dynasty === 'all' || mural.dynasty === currentFilters.dynasty;
+            const matchesTheme = currentFilters.theme === 'all' || mural.theme === currentFilters.theme;
+            const matchesCave = currentFilters.cave === 'all' || mural.cave === currentFilters.cave;
+            
+            // 显示或隐藏壁画卡片
+            if (matchesDynasty && matchesTheme && matchesCave) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          }
+        });
+      }
+      
+      filterTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+          // 移除同组其他标签的active类
+          const siblings = Array.from(this.parentElement.children).filter(child => child !== this && child.classList.contains('filter-tag'));
+          siblings.forEach(sibling => {
+            sibling.classList.remove('active', 'bg-secondary');
+            sibling.classList.add('bg-dark');
+          });
+          
+          // 添加当前标签的active类
+          this.classList.add('active', 'bg-secondary');
+          this.classList.remove('bg-dark');
+          
+          // 更新筛选状态
+          const category = this.getAttribute('data-category');
+          const value = this.getAttribute('data-value');
+          currentFilters[category] = value;
+          
+          // 执行筛选
+          filterMurals();
+          
+          // 输出筛选信息
+          console.log('筛选:', category, value);
+        });
+      });
+
+      // 搜索功能
+      const searchInput = document.getElementById('search-input');
+      const searchBtn = searchInput.nextElementSibling;
+      const muralCards = document.querySelectorAll('.masonry-item');
+      
+      // 搜索函数
+      function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm) {
+          console.log('搜索:', searchTerm);
+          
+          // 遍历所有壁画卡片
+          muralCards.forEach(card => {
+            const cardTitle = card.querySelector('.card-title').textContent;
+            const cardPeriod = card.querySelector('.text-light.opacity-85.text-sm').textContent;
+            
+            // 检查标题或时期是否包含搜索词
+            if (cardTitle.includes(searchTerm) || cardPeriod.includes(searchTerm)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      }
+      
+      // 按Enter键搜索
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+      
+      // 点击搜索按钮搜索
+      searchBtn.addEventListener('click', performSearch);
+
+      // 模态框功能
+      const modal = document.getElementById('modal');
+      const closeModal = document.getElementById('close-modal');
+      const viewDetailsBtns = document.querySelectorAll('.view-details');
+      
+      viewDetailsBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          // 加载对应的壁画数据
+          const mural = muralData.find(item => item.id === id);
+          if (mural) {
+            // 更新模态框内容
+            document.getElementById('modal-title').textContent = '壁画详情';
+            document.getElementById('modal-subtitle').textContent = mural.title;
+            document.getElementById('modal-period').textContent = mural.period;
+            document.getElementById('modal-image').src = mural.image;
+            document.getElementById('modal-image').alt = mural.title;
+            document.getElementById('modal-description').textContent = mural.description;
+            // 显示模态框
+            modal.classList.remove('hidden');
+          }
+        });
+      });
+      
+      closeModal.addEventListener('click', function() {
+        modal.classList.add('hidden');
+      });
+      
+      // 点击模态框外部关闭
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+
+      // 收藏功能
+      const favoriteBtns = document.querySelectorAll('.add-favorite');
+      const favoriteModalBtn = document.getElementById('favorite-modal');
+      
+      favoriteBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          // 切换收藏状态
+          const icon = this.querySelector('i');
+          if (icon.classList.contains('fa-heart-o')) {
+            icon.classList.remove('fa-heart-o');
+            icon.classList.add('fa-heart');
+            this.classList.add('text-primary');
+            // 保存到统一的本地存储
+            const mural = muralData.find(item => item.id === id);
+            if (mural) {
+              const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+              if (!allFavorites['丹青壁画']) {
+                allFavorites['丹青壁画'] = [];
+              }
+              const exists = allFavorites['丹青壁画'].some(item => item.id === id);
+              if (!exists) {
+                allFavorites['丹青壁画'].push(mural);
+                localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+              }
+            }
+          } else {
+            icon.classList.remove('fa-heart');
+            icon.classList.add('fa-heart-o');
+            this.classList.remove('text-primary');
+            // 从统一的本地存储移除
+            const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+            if (allFavorites['丹青壁画']) {
+              allFavorites['丹青壁画'] = allFavorites['丹青壁画'].filter(item => item.id !== id);
+              localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+            }
+          }
+        });
+      });
+      
+      favoriteModalBtn.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('fa-heart-o')) {
+          icon.classList.remove('fa-heart-o');
+          icon.classList.add('fa-heart');
+          this.classList.add('text-primary');
+        } else {
+          icon.classList.remove('fa-heart');
+          icon.classList.add('fa-heart-o');
+          this.classList.remove('text-primary');
+        }
+      });
+
+      // 壁画数据
+      const muralData = [
+        {
+          id: '1',
+          title: '飞天壁画',
+          period: '唐代 · 莫高窟第320窟',
+          image: '../img/dan1.jpeg',
+          description: '飞天是敦煌壁画中的经典形象，她们姿态优美，衣袂飘飘，充满了艺术感染力。这幅飞天壁画绘制于唐代，色彩鲜艳，线条流畅，展现了唐代壁画艺术的高超水平。飞天们手持乐器，翱翔在天空中，象征着自由与美好的向往。',
+          dynasty: '唐',
+          theme: '飞天',
+          cave: '莫高窟'
+        },
+        {
+          id: '2',
+          title: '九色鹿本生',
+          period: '北魏 · 莫高窟第257窟',
+          image: '../img/f7.jpg',
+          description: '九色鹿本生故事画是敦煌壁画的经典之作，讲述了九色鹿救人的故事。画面色彩鲜艳，构图巧妙，人物形象生动，是北魏时期壁画艺术的杰出代表。这幅壁画体现了佛教慈悲为怀的精神，具有深刻的道德寓意。',
+          dynasty: '北魏',
+          theme: '故事画',
+          cave: '莫高窟'
+        },
+        {
+          id: '3',
+          title: '维摩诘经变',
+          period: '唐代 · 莫高窟第103窟',
+          image: '../img/dan3.jpeg',
+          description: '维摩诘经变壁画以其精湛的线描技法和生动的人物形象著称，是唐代壁画的杰作。画面中维摩诘与文殊菩萨辩论的场景栩栩如生，展现了唐代绘画的高超技艺，是中国古代绘画艺术的珍品。',
+          dynasty: '唐',
+          theme: '经变画',
+          cave: '莫高窟'
+        },
+        {
+          id: '4',
+          title: '反弹琵琶',
+          period: '唐代 · 莫高窟第112窟',
+          image: '../img/dan4.jpeg',
+          description: '反弹琵琶是敦煌艺术中最具代表性的形象之一，体现了唐代音乐舞蹈的繁荣和艺术家的丰富想象力。画面中舞者姿态优美，手持琵琶，展现了唐代乐舞的高超技艺，成为中国文化的重要符号。',
+          dynasty: '唐',
+          theme: '飞天',
+          cave: '莫高窟'
+        },
+        {
+          id: '5',
+          title: '药师经变',
+          period: '唐代 · 莫高窟第217窟',
+          image: '../img/dan5.jpeg',
+          description: '药师经变壁画描绘了药师佛净土的庄严景象，画面色彩绚丽，构图宏伟，是中唐时期壁画艺术的杰出代表。壁画中展现了药师佛及其眷属的形象，体现了佛教艺术的庄严与神圣。',
+          dynasty: '唐',
+          theme: '经变画',
+          cave: '莫高窟'
+        },
+        {
+          id: '6',
+          title: '无量寿经变',
+          period: '唐代 · 莫高窟第172窟',
+          image: '../img/dan6.jpeg',
+          description: '无量寿经变壁画描绘了西方极乐世界的美好景象，画面色彩鲜艳，人物形象生动，是唐代壁画的经典之作。壁画中展现了无量寿佛及其眷属的形象，体现了佛教对极乐世界的美好向往。',
+          dynasty: '唐',
+          theme: '经变画',
+          cave: '莫高窟'
+        },
+        {
+          id: '7',
+          title: '张骞出使西域',
+          period: '初唐 · 莫高窟第323窟',
+          image: '../img/dan1.jpeg',
+          description: '张骞出使西域壁画生动描绘了张骞出使西域的历史场景，是研究丝绸之路历史的重要资料。画面中展现了张骞及其随从的形象，体现了中国古代对外交流的历史，具有重要的历史价值。',
+          dynasty: '唐',
+          theme: '故事画',
+          cave: '莫高窟'
+        },
+        {
+          id: '8',
+          title: '水月观音',
+          period: '西夏 · 东千佛洞第2窟',
+          image: '../img/dan2.jpeg',
+          description: '水月观音壁画是西夏时期的杰作，画面宁静典雅，展现了观音菩萨的慈悲形象。观音坐于水边，月色朦胧，意境深远，体现了西夏佛教艺术的独特风格，是研究西夏艺术的重要资料。',
+          dynasty: '西夏',
+          theme: '佛像',
+          cave: '东千佛洞'
+        },
+        {
+          id: '9',
+          title: '西方净土变',
+          period: '中唐 · 榆林窟第25窟',
+          image: '../img/dan3.jpeg',
+          description: '西方净土变壁画色彩绚丽，构图宏伟，是中唐时期壁画艺术的杰出代表。画面中展现了西方极乐世界的美好景象，人物形象生动，色彩鲜艳，对研究唐代宗教艺术具有重要价值。',
+          dynasty: '唐',
+          theme: '经变画',
+          cave: '榆林窟'
+        },
+        {
+          id: '10',
+          title: '飞天壁画',
+          period: '北魏 · 西千佛洞第12窟',
+          image: '../img/5.jpeg',
+          description: '西千佛洞第12窟的飞天壁画展现了北魏时期的艺术风格，飞天姿态轻盈，线条流畅，体现了佛教艺术与中国传统艺术的融合。壁画色彩古朴，风格独特，对研究古代绘画艺术具有重要价值。',
+          dynasty: '北魏',
+          theme: '飞天',
+          cave: '西千佛洞'
+        },
+        {
+          id: '11',
+          title: '供养人画像',
+          period: '晚唐 · 莫高窟第156窟',
+          image: '../img/6.jpg',
+          description: '供养人画像壁画描绘了唐代贵族的形象，展现了唐代服饰和礼仪的细节。画面中供养人形象生动，服饰华丽，体现了唐代社会的繁荣和文化的繁荣，对研究唐代社会历史具有重要价值。',
+          dynasty: '唐',
+          theme: '供养人',
+          cave: '莫高窟'
+        },
+        {
+          id: '12',
+          title: '莲花纹样',
+          period: '隋 · 莫高窟第401窟',
+          image: '../img/dan8.jpeg',
+          description: '莲花纹样壁画是隋代装饰图案的代表作，画面中莲花纹样精美，色彩鲜艳，体现了隋代装饰艺术的高超水平。莲花纹样象征着纯洁和神圣，是佛教艺术中常见的装饰图案。',
+          dynasty: '隋',
+          theme: '装饰图案',
+          cave: '莫高窟'
+        }
+      ];
+
+      // 加载更多功能
+      const loadMoreBtn = document.getElementById('load-more');
+      let loadedCount = 6; // 初始已加载的壁画数量
+      
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', function() {
+          // 保存按钮引用
+          const btn = this;
+          
+          // 显示加载动画
+          btn.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+          
+          // 模拟加载延迟
+          setTimeout(() => {
+            try {
+              // 生成新的壁画卡片
+              const muralContainer = document.getElementById('mural-container');
+              
+              if (!muralContainer) {
+                throw new Error('Mural container not found');
+              }
+              
+              // 加载接下来的3个壁画
+              const endIndex = Math.min(loadedCount + 3, muralData.length);
+              
+              if (loadedCount < muralData.length) {
+                for (let i = loadedCount; i < endIndex; i++) {
+                  const mural = muralData[i];
+                  const card = document.createElement('div');
+                  card.className = 'masonry-item animate-fade-in';
+                  card.style.animationDelay = `${(i - loadedCount) * 0.1}s`;
+                  
+                  card.innerHTML = `
+                    <div class="card rounded-xl overflow-hidden card-hover">
+                      <div class="relative overflow-hidden group">
+                        <img src="${mural.image}" alt="${mural.title}" class="w-full h-auto filter-dunhuang lazyload" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                          <h3 class="card-title text-xl font-bold mb-2">${mural.title}</h3>
+                          <p class="text-light opacity-85 text-sm mb-4">${mural.period}</p>
+                          <div class="flex gap-2">
+                            <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-details" data-id="${mural.id}">
+                              查看详情
+                            </button>
+                            <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="${mural.id}">
+                              <i class="fa fa-heart-o"></i> 收藏
+                            </button>
+                          </div>
+                        </div>
+                        <div class="magnifier" id="magnifier-${mural.id}"></div>
+                      </div>
+                    </div>
+                  `;
+                  
+                  muralContainer.appendChild(card);
+                }
+                
+                // 更新已加载数量
+                loadedCount = endIndex;
+              }
+              
+              // 检查是否还有更多数据
+              if (loadedCount >= muralData.length) {
+                btn.innerHTML = '<span>没有更多了</span>';
+                btn.disabled = true;
+                btn.classList.add('opacity-50', 'cursor-not-allowed');
+              } else {
+                btn.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+              }
+              
+              // 为新添加的按钮绑定事件
+              bindNewButtons();
+            } catch (error) {
+              console.error('Error loading more murals:', error);
+              // 恢复按钮状态
+              btn.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+            }
+          }, 1500);
+        });
+      }
+      
+      // 绑定新添加按钮的事件
+      function bindNewButtons() {
+        // 为新添加的查看按钮绑定事件
+        const newViewBtns = document.querySelectorAll('.view-details:not([data-bound])');
+        newViewBtns.forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            // 加载对应的壁画数据
+            const mural = muralData.find(item => item.id === id);
+            if (mural) {
+              // 更新模态框内容
+              document.getElementById('modal-title').textContent = '壁画详情';
+              document.getElementById('modal-subtitle').textContent = mural.title;
+              document.getElementById('modal-period').textContent = mural.period;
+              document.getElementById('modal-image').src = mural.image;
+              document.getElementById('modal-image').alt = mural.title;
+              document.getElementById('modal-description').textContent = mural.description;
+              // 显示模态框
+              document.getElementById('modal').classList.remove('hidden');
+            }
+          });
+        });
+        
+        // 为新添加的收藏按钮绑定事件
+        const newFavoriteBtns = document.querySelectorAll('.add-favorite:not([data-bound])');
+        newFavoriteBtns.forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            // 切换收藏状态
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fa-heart-o')) {
+              icon.classList.remove('fa-heart-o');
+              icon.classList.add('fa-heart');
+              this.classList.add('text-primary');
+              // 保存到统一的本地存储
+              const mural = muralData.find(item => item.id === id);
+              if (mural) {
+                const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+                if (!allFavorites['丹青壁画']) {
+                  allFavorites['丹青壁画'] = [];
+                }
+                const exists = allFavorites['丹青壁画'].some(item => item.id === id);
+                if (!exists) {
+                  allFavorites['丹青壁画'].push(mural);
+                  localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+                }
+              }
+            } else {
+              icon.classList.remove('fa-heart');
+              icon.classList.add('fa-heart-o');
+              this.classList.remove('text-primary');
+              // 从统一的本地存储移除
+              const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+              if (allFavorites['丹青壁画']) {
+                allFavorites['丹青壁画'] = allFavorites['丹青壁画'].filter(item => item.id !== id);
+                localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+              }
+            }
+          });
+        });
+      }
+
+
+
+      // Canvas 绘制功能
+      const canvas = document.getElementById('mural-canvas');
+      const ctx = canvas.getContext('2d');
+      const brushSize = document.getElementById('brush-size');
+      const clearCanvas = document.getElementById('clear-canvas');
+      const saveCanvas = document.getElementById('save-canvas');
+      const colorOptions = document.querySelectorAll('.color-option');
+      const lineartOptions = document.querySelectorAll('.lineart-option');
+      
+      let isDrawing = false;
+      let currentColor = '#D4A76A';
+      let currentLineart = 'flying-apsara';
+      
+      // 线稿绘制函数
+      const lineartFunctions = {
+        'flying-apsara': function() {
+          // 保存绘图状态
+          ctx.save();
+          // 绘制飞天线稿
+          ctx.strokeStyle = '#D4A76A';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          // 头部
+          ctx.beginPath();
+          ctx.arc(300, 150, 30, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 身体
+          ctx.beginPath();
+          ctx.moveTo(300, 180);
+          ctx.lineTo(300, 250);
+          ctx.stroke();
+          
+          // 手臂
+          ctx.beginPath();
+          ctx.moveTo(300, 190);
+          ctx.lineTo(250, 160);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(300, 190);
+          ctx.lineTo(350, 160);
+          ctx.stroke();
+          
+          // 腿部
+          ctx.beginPath();
+          ctx.moveTo(300, 250);
+          ctx.lineTo(270, 300);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(300, 250);
+          ctx.lineTo(330, 300);
+          ctx.stroke();
+          
+          // 飘带
+          ctx.beginPath();
+          ctx.moveTo(300, 180);
+          ctx.bezierCurveTo(280, 140, 260, 120, 240, 100);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(300, 180);
+          ctx.bezierCurveTo(320, 140, 340, 120, 360, 100);
+          ctx.stroke();
+          
+          // 恢复绘图状态
+          ctx.restore();
+        },
+        'nine-colored-deer': function() {
+          // 保存绘图状态
+          ctx.save();
+          // 绘制九色鹿线稿
+          ctx.strokeStyle = '#D4A76A';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          // 鹿头
+          ctx.beginPath();
+          ctx.arc(300, 120, 25, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 鹿角
+          ctx.beginPath();
+          ctx.moveTo(285, 100);
+          ctx.lineTo(270, 60);
+          ctx.lineTo(280, 65);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(315, 100);
+          ctx.lineTo(330, 60);
+          ctx.lineTo(320, 65);
+          ctx.stroke();
+          
+          // 鹿身
+          ctx.beginPath();
+          ctx.moveTo(275, 145);
+          ctx.lineTo(250, 250);
+          ctx.lineTo(350, 250);
+          ctx.lineTo(325, 145);
+          ctx.stroke();
+          
+          // 鹿腿
+          ctx.beginPath();
+          ctx.moveTo(260, 250);
+          ctx.lineTo(250, 320);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(280, 250);
+          ctx.lineTo(270, 320);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(320, 250);
+          ctx.lineTo(330, 320);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(340, 250);
+          ctx.lineTo(350, 320);
+          ctx.stroke();
+          
+          // 鹿尾
+          ctx.beginPath();
+          ctx.moveTo(350, 250);
+          ctx.lineTo(380, 230);
+          ctx.stroke();
+          
+          // 恢复绘图状态
+          ctx.restore();
+        },
+        'lotus': function() {
+          // 保存绘图状态
+          ctx.save();
+          // 绘制莲花线稿
+          ctx.strokeStyle = '#D4A76A';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          // 花瓣
+          for (let i = 0; i < 8; i++) {
+            const angle = (i * Math.PI * 2) / 8;
+            ctx.beginPath();
+            ctx.moveTo(300, 200);
+            ctx.quadraticCurveTo(
+              300 + Math.cos(angle) * 80,
+              200 + Math.sin(angle) * 80,
+              300 + Math.cos(angle) * 60,
+              200 + Math.sin(angle) * 60
+            );
+            ctx.stroke();
+          }
+          
+          // 花心
+          ctx.beginPath();
+          ctx.arc(300, 200, 20, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 茎
+          ctx.beginPath();
+          ctx.moveTo(300, 220);
+          ctx.lineTo(300, 350);
+          ctx.stroke();
+          
+          // 叶子
+          ctx.beginPath();
+          ctx.moveTo(300, 280);
+          ctx.quadraticCurveTo(250, 270, 240, 290);
+          ctx.quadraticCurveTo(250, 310, 300, 300);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(300, 280);
+          ctx.quadraticCurveTo(350, 270, 360, 290);
+          ctx.quadraticCurveTo(350, 310, 300, 300);
+          ctx.stroke();
+          
+          // 恢复绘图状态
+          ctx.restore();
+        },
+        'buddha': function() {
+          // 保存绘图状态
+          ctx.save();
+          // 绘制佛像线稿
+          ctx.strokeStyle = '#D4A76A';
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          // 佛头
+          ctx.beginPath();
+          ctx.arc(300, 100, 40, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 肉髻
+          ctx.beginPath();
+          ctx.arc(300, 60, 15, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 眉毛
+          ctx.beginPath();
+          ctx.moveTo(280, 90);
+          ctx.lineTo(295, 95);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(320, 90);
+          ctx.lineTo(305, 95);
+          ctx.stroke();
+          
+          // 眼睛
+          ctx.beginPath();
+          ctx.arc(285, 105, 5, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.arc(315, 105, 5, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 身体
+          ctx.beginPath();
+          ctx.moveTo(260, 140);
+          ctx.lineTo(250, 280);
+          ctx.lineTo(350, 280);
+          ctx.lineTo(340, 140);
+          ctx.stroke();
+          
+          // 手
+          ctx.beginPath();
+          ctx.moveTo(270, 200);
+          ctx.lineTo(230, 220);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(330, 200);
+          ctx.lineTo(370, 220);
+          ctx.stroke();
+          
+          // 莲花座
+          ctx.beginPath();
+          ctx.moveTo(250, 280);
+          ctx.quadraticCurveTo(200, 320, 220, 350);
+          ctx.lineTo(380, 350);
+          ctx.quadraticCurveTo(400, 320, 350, 280);
+          ctx.stroke();
+          
+          // 恢复绘图状态
+          ctx.restore();
+        }
+      };
+      
+      // 初始化画布
+      function initCanvas() {
+        // 清空画布并设置背景
+        ctx.fillStyle = '#1B100A';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        if (lineartFunctions[currentLineart]) {
+          lineartFunctions[currentLineart]();
+        }
+      }
+      
+      // 初始化画布
+      initCanvas();
+      
+      // 线稿选择
+      lineartOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          // 移除其他按钮的active类
+          lineartOptions.forEach(opt => {
+            opt.classList.remove('active', 'btn-primary');
+            opt.classList.add('btn-secondary');
+          });
+          
+          // 添加当前按钮的active类
+          this.classList.add('active', 'btn-primary');
+          this.classList.remove('btn-secondary');
+          
+          // 更新当前线稿
+          currentLineart = this.getAttribute('data-lineart');
+          
+          // 重新初始化画布
+          initCanvas();
+        });
+      });
+      
+      // 颜色选择
+      colorOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          colorOptions.forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+          currentColor = this.style.backgroundColor;
+        });
+      });
+      
+      // 绘制功能
+      canvas.addEventListener('mousedown', function(e) {
+        isDrawing = true;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      });
+      
+      canvas.addEventListener('mousemove', function(e) {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = currentColor;
+        ctx.lineWidth = brushSize.value;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+      });
+      
+      canvas.addEventListener('mouseup', function() {
+        isDrawing = false;
+      });
+      
+      canvas.addEventListener('mouseout', function() {
+        isDrawing = false;
+      });
+      
+      // 清空画布
+      clearCanvas.addEventListener('click', function() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        initCanvas();
+      });
+      
+      // 保存画布
+      saveCanvas.addEventListener('click', function() {
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = '敦煌壁画涂色作品.png';
+        link.href = dataURL;
+        link.click();
+      });
+
+
+
+
+
+      // 下载功能
+      document.getElementById('download-image').addEventListener('click', function() {
+        const img = document.getElementById('modal-image');
+        const link = document.createElement('a');
+        link.download = '敦煌壁画.jpg';
+        link.href = img.src;
+        link.click();
+      });
+
+      // 分享功能
+      document.getElementById('share-image').addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: '敦煌壁画',
+            text: '来欣赏精美的敦煌壁画',
+            url: window.location.href
+          });
+        } else {
+          // 复制链接
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(function() {
+            alert('链接已复制到剪贴板');
+          });
+        }
+      });
+
+      // 复制链接功能
+      document.getElementById('copy-link').addEventListener('click', function() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(function() {
+          alert('链接已复制到剪贴板');
+        });
+      });
+
+
+
+
+
+
+    });
+
+    // 个人中心图标点击事件
+    const userIcon = document.getElementById('user-icon');
+    if (userIcon) {
+      userIcon.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
+        // 跳转到登录页面
+        window.location.href = '../logoin/code/123.html';
+      });
+    }
+
+  </script>
+  </body>
+</html>

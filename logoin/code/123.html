@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字敦煌 - 登录</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            padding-right: 100px;
+        }
+        
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+        
+        .login-container {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxmaWx0ZXIgaWQ9Im4iPgogICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNzUiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICA8L2ZpbHRlcj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbikiIG9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8L3N2Zz4=');
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h2 {
+            font-size: 28px;
+            color: #D4A76A;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .login-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 167, 106, 0.5);
+            border-radius: 25px;
+            padding: 0 20px 0 50px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #D4A76A;
+            box-shadow: 0 0 20px rgba(212, 167, 106, 0.3);
+        }
+        
+        .form-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #D4A76A;
+            font-size: 18px;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .login-btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #D4A76A, #B8935A);
+            border: none;
+            border-radius: 25px;
+            color: #3E2723;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, #C99A5D, #A8824B);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 167, 106, 0.4);
+        }
+        
+        .login-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .login-footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .login-footer a:hover {
+            color: #D4A76A;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .divider span {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            background: rgba(212, 167, 106, 0.2);
+            border-color: #D4A76A;
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                padding: 30px;
+            }
+            
+            .login-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-bg">
+        <video src="敦煌主题2.mp4" autoplay loop muted></video>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <h2>数字敦煌</h2>
+            <p>请登录您的账号</p>
+        </div>
+        
+        <form>
+            <div class="form-group">
+                <i class="fa fa-user"></i>
+                <input type="text" placeholder="账号">
+            </div>
+            
+            <div class="form-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" placeholder="密码">
+            </div>
+            
+            <button type="submit" class="login-btn">登录</button>
+            
+            <div class="login-footer">
+                <a href="forgot.html">忘记密码？</a>
+                <a href="register.html">注册账号</a>
+            </div>
+            
+            <div class="divider">
+                <span>其他登录方式</span>
+            </div>
+            
+            <div class="social-login">
+                <div class="social-btn">
+                    <i class="fa fa-weixin"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fa fa-weibo"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fa fa-qq"></i>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('form');
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取账号和密码
+                const username = document.querySelector('input[type="text"]').value;
+                const password = document.querySelector('input[type="password"]').value;
+                
+                // 登录验证逻辑
+                if (username === '123' && password === '123') {
+                    // 登录成功，保存登录状态到localStorage
+                    localStorage.setItem('userLoggedIn', 'true');
+                    // 跳转到首页
+                    window.location.href = '../../index.html';
+                } else {
+                    // 登录失败，显示错误提示
+                    alert('账号或密码错误，请重新输入！');
+                }
+            });
+            
+            // 社交登录按钮点击事件
+            const socialBtns = document.querySelectorAll('.social-btn');
+            socialBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const icon = this.querySelector('i').className;
+                    if (icon.includes('fa-weixin')) {
+                        alert('微信登录功能即将开放，敬请期待！');
+                    } else if (icon.includes('fa-weibo')) {
+                        alert('微博登录功能即将开放，敬请期待！');
+                    } else if (icon.includes('fa-qq')) {
+                        alert('QQ登录功能即将开放，敬请期待！');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

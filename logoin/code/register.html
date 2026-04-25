@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字敦煌 - 注册</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            padding-right: 100px;
+        }
+        
+        .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .video-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.6);
+        }
+        
+        .register-container {
+            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPgogIDxmaWx0ZXIgaWQ9Im4iPgogICAgPGZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2VGcmVxdWVuY3k9IjAuNzUiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz4KICA8L2ZpbHRlcj4KICA8cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbikiIG9wYWNpdHk9IjAuMSI+PC9yZWN0Pgo8L3N2Zz4=');
+            opacity: 0.1;
+            pointer-events: none;
+        }
+        
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .register-header h2 {
+            font-size: 28px;
+            color: #D4A76A;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .register-header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(212, 167, 106, 0.5);
+            border-radius: 25px;
+            padding: 0 20px 0 50px;
+            font-size: 16px;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #D4A76A;
+            box-shadow: 0 0 20px rgba(212, 167, 106, 0.3);
+        }
+        
+        .form-group i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #D4A76A;
+            font-size: 18px;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .register-btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #D4A76A, #B8935A);
+            border: none;
+            border-radius: 25px;
+            color: #3E2723;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .register-btn:hover {
+            background: linear-gradient(135deg, #C99A5D, #A8824B);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 167, 106, 0.4);
+        }
+        
+        .register-footer {
+            text-align: center;
+        }
+        
+        .register-footer a {
+            color: #D4A76A;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        
+        .register-footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 480px) {
+            .register-container {
+                width: 90%;
+                padding: 30px;
+            }
+            
+            .register-header h2 {
+                font-size: 24px;
+            }
+            
+            body {
+                padding-right: 20px;
+                padding-left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="video-bg">
+        <video src="敦煌主题2.mp4" autoplay loop muted></video>
+    </div>
+    
+    <div class="register-container">
+        <div class="register-header">
+            <h2>数字敦煌</h2>
+            <p>创建新账号</p>
+        </div>
+        
+        <form>
+            <div class="form-group">
+                <i class="fa fa-user"></i>
+                <input type="text" placeholder="用户名">
+            </div>
+            
+            <div class="form-group">
+                <i class="fa fa-envelope"></i>
+                <input type="email" placeholder="邮箱">
+            </div>
+            
+            <div class="form-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" placeholder="密码">
+            </div>
+            
+            <div class="form-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" placeholder="确认密码">
+            </div>
+            
+            <button type="submit" class="register-btn">注册</button>
+            
+            <div class="register-footer">
+                <p>已有账号？ <a href="123.html">立即登录</a></p>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.querySelector('form');
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取表单数据
+                const username = document.querySelector('input[type="text"]').value;
+                const email = document.querySelector('input[type="email"]').value;
+                const password = document.querySelector('input[type="password"]').value;
+                const confirmPassword = document.querySelectorAll('input[type="password"]')[1].value;
+                
+                // 简单验证
+                if (!username || !email || !password || !confirmPassword) {
+                    alert('请填写所有必填字段！');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    alert('两次输入的密码不一致！');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    alert('密码长度至少为6位！');
+                    return;
+                }
+                
+                // 注册成功提示
+                alert('注册成功！即将跳转到登录页面');
+                
+                // 跳转到登录页面
+                setTimeout(function() {
+                    window.location.href = '123.html';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="styleesheet" type="text/css" herf="style.css">
+</head>
+<style>
+*{
+    margin: o;
+    padding: o;
+    box-sizing: border-box;
+}
+    body
+{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 90vh;
+    background: #efeeea;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    min-height: 100vh;
+    border-radius: 50px;
+}
+.video-bg
+{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+.video-bg video
+{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.login-form
+{
+
+    margin-right: 70px;
+    width: 350px;
+    padding: 7px 20px;
+    background-color:rgba(255,255,255,0.3);
+    box-shadow: 0 15px 20px rgba(5, 5, 5, 0.2);
+    border-top: 1px solid rgba(255,255,255,0.5);
+    border-left: 1px solid rgba(255,255,255,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    border-right: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 7px;
+    transition: 0.2s;
+    overflow: hidden;
+    border-radius: 40px;
+
+}
+.login-form h2
+{
+    margin:15px 0 40px;
+    padding: 5;
+    text-align: center;
+}
+.login-form .form-input
+{
+    position: relative;
+    margin: 0 0 40px;    
+}
+.login-form .form-input input
+{
+    outline: none;
+    height: 30px;
+    padding: 1px;
+    box-sizing: border-box;
+    width: 100%;
+    border: 1px solid rgba(0,0,0,.5);
+    background: rgba(220, 204, 204, 0.5);
+    font-size: 18px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 5px;
+    transition: 0.2s;
+  
+}
+.login-form .form-input input[type="submit"]
+{
+    background: linear-gradient(
+        45deg,
+        rgba(234, 230, 222, 0.8) 0%,
+        transparent 25%,
+        transparent 75%,
+        rgba(233, 227, 216, 0.8) 100%
+    );
+    box-shadow: inset 2px -2px 1px -1px rgba(255,255,255,0.9),
+    inset  -2px 2px 1px -1px rgba(255,255,255,0.9),
+    inset 6px -6px 1px -6px rgba(255,255,255,0.55),
+    inset -6px 6px 1px -6px rgba(255,255,255,0.55),
+    inset 0 0 2px rgba(0,0,0,0.8),
+    0 4px 8px rgba(0,0,0,0.2);
+    border: 1px double rgba(51,51,51,0.8);
+    color: #000000;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.login-form .form-input input[type="submit"]:hover 
+{
+    background: #0090ff;
+}
+.login-form  .forget
+{
+    color: #000000;
+    display: block;
+    margin-top: 3px;
+    font-weight: bold;
+    text-align: right;
+}
+.bg-img
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    z-index: -1;
+}
+
+</style>
+<body>
+    <div class="login-form">
+        <img src="登录.png" class="bg-img">
+        <h2>Sign In</h2>
+         <div class="form-input">
+             <input type="text" name="" placeholder="账号">
+        </div>
+        <div class="form-input">
+            <input type="password" name="" placeholder="密码">
+        </div>
+        
+        <div class="form-input">
+            <input type="submit" name="" value="登录">
+        </div>
+        <a href="#" class="forget">忘记密码</a>
+    </div>
+    <div class="video-bg">
+        <video src="敦煌主题.mp4" autoplay loop muted ></video>
+
+
+    </div>
+ 
+
+</div>
+</body>
+</html>

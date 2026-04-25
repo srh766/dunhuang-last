@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字藏经 - 数字敦煌</title>
+  <link rel="stylesheet" href="../style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#D4A76A',
+            secondary: '#8B4513',
+            accent: '#E6C29C',
+            dark: '#3E2723',
+            light: '#F5F5DC',
+            paper: '#F0E6D2'
+          },
+          fontFamily: {
+            cursive: ['Ma Shan Zheng', 'cursive']
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'fade-in': 'fadeIn 0.8s ease-out forwards',
+            'slide-up': 'slideUp 0.8s ease-out forwards',
+            'zoom-in': 'zoomIn 0.8s ease-out forwards'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' }
+            },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            },
+            zoomIn: {
+              '0%': { opacity: '0', transform: 'scale(0.8)' },
+              '100%': { opacity: '1', transform: 'scale(1)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary: #D4A76A;
+      --secondary: #8B4513;
+      --accent: #E6C29C;
+      --dark: #3E2723;
+      --light: #F5F5DC;
+      --paper: #F0E6D2;
+      --bg-color: #140D08;
+      --text-color: #F7E9D4;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.7;
+    }
+    
+    .header {
+      background: linear-gradient(to bottom, rgba(75, 47, 30, 0.7), rgba(45, 27, 18, 0.8)), url('../img/background.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-bottom: 2px solid #D4AF7E;
+      box-shadow: 0 0 30px rgba(212, 175, 126, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCI+CiAgPHBhdGggZD0iTTAgMCBMNjAgNjAgTTAwIDYwIEw2MCAwIiBmaWxsPSJub25lIiBzdHJva2U9IiNENEE3NkEiIHN0cm9rZS13aWR0aD0iMC41Ij48L3BhdGg+Cjwvc3ZnPg==');
+      opacity: 0.1;
+      pointer-events: none;
+    }
+    
+    .header h1 {
+      font-family: "Ma Shan Zheng", cursive;
+      letter-spacing: 3px;
+      text-shadow: 0 2px 10px rgba(232, 196, 142, 0.3);
+    }
+    
+    .card {
+      background: linear-gradient(135deg, rgba(43, 27, 18, 0.9), rgba(68, 44, 31, 0.8));
+      border: 1px solid #442C1F;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+    }
+    
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(212, 175, 126, 0.05), rgba(212, 175, 126, 0.15));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .card:hover::before {
+      opacity: 1;
+    }
+    
+    .card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.4);
+      border-color: #D4AF7E;
+    }
+    
+    .card img {
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: brightness(0.9) saturate(1.1);
+    }
+    
+    .card:hover img {
+      transform: scale(1.05);
+      filter: brightness(1.1) saturate(1.3);
+    }
+    
+    .card-title {
+      font-family: "Ma Shan Zheng", cursive;
+      color: #E8C48E;
+    }
+    
+    .btn-primary {
+      background-color: #A16A43;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+      background-color: #c08255;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+    }
+    
+    .btn-secondary {
+      background-color: #5C3C28;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #754A30;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(92, 60, 40, 0.3);
+    }
+    
+    .footer {
+      background-color: #1B100A;
+      border-top: 1px solid #442C1F;
+    }
+    
+    .filter-tag {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-tag::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 126, 0.2), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    .filter-tag:hover::before {
+      left: 100%;
+    }
+    
+    .filter-tag.active {
+      background-color: #D4A76A;
+      color: #3E2723;
+    }
+    
+    .modal {
+      background-color: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    
+    .modal-content {
+      background: linear-gradient(135deg, rgba(43, 27, 18, 0.95), rgba(68, 44, 31, 0.95));
+      border: 1px solid #D4AF7E;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      animation: zoomIn 0.3s ease-out forwards;
+    }
+    
+    .scroll-text {
+      animation: scroll 20s linear infinite;
+    }
+    
+    @keyframes scroll {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+    
+    /* 经卷展示区样式 */
+    .scroll-box {
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    
+    .scroll-box:hover {
+      transform: translateY(-5px);
+      border-color: #D4A76A;
+    }
+    
+    .scroll-box.active {
+      border-color: #D4A76A;
+      background-color: rgba(212, 167, 106, 0.1);
+    }
+    
+    .scroll-box.active .scroll-indicator {
+      display: block;
+    }
+    
+    .scroll-preview {
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    
+    .scroll-preview img {
+      transition: transform 0.3s ease;
+      width: 100%;
+      height: auto;
+    }
+    
+    .scroll-box:hover .scroll-preview img {
+      transform: scale(1.05);
+    }
+    
+    .scroll-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: #D4A76A;
+      display: none;
+    }
+    
+    .scroll-container {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .scroll-image {
+      position: relative;
+    }
+    
+    .scroll-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .scroll-content img {
+      transition: all 0.3s ease;
+      max-width: 100%;
+      max-height: 100%;
+      object-contain;
+      border-radius: 4px;
+    }
+    
+    .scroll-content img.enlarged {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+      max-width: 95%;
+      max-height: 95%;
+      box-shadow: 0 0 40px rgba(212, 167, 106, 0.8);
+      border: 3px solid #D4A76A;
+      background-color: rgba(247, 233, 212, 0.98);
+      padding: 20px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .scroll-intro {
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      border: 1px solid #D4A76A;
+    }
+    
+    .scroll-intro:hover {
+      background-color: rgba(20, 13, 8, 0.95);
+      border-color: #E6C29C;
+    }
+    
+    .scroll-intro h3 {
+      font-family: "Ma Shan Zheng", cursive;
+      margin-bottom: 1rem;
+    }
+    
+    .scroll-intro p {
+      line-height: 1.8;
+      text-align: justify;
+    }
+    
+    .scroll-btn {
+      transition: all 0.3s ease;
+      opacity: 0.7;
+    }
+    
+    .scroll-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+    
+    .info-card {
+      transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+      border-color: #D4A76A;
+      box-shadow: 0 5px 15px rgba(212, 167, 106, 0.2);
+    }
+    
+    .action-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(161, 106, 67, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <!-- 导航栏 -->
+  <nav>
+    <div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0.778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </svg>
+      </div>
+      <div>梵境寻迹</div>
+    </div>
+    <div>
+      <div><a href="../index.html" style="color: inherit; text-decoration: none;">首页</a></div>
+      <div><a href="../yunyoushiku/index.html" style="color: inherit; text-decoration: none;">云游石窟</a></div>
+      <div><a href="../danqingbihua/index.html" style="color: inherit; text-decoration: none;">丹青壁画</a></div>
+      <div class="active">数字藏经</div>
+      <div><a href="../kaifangsucai/index.html" style="color: inherit; text-decoration: none;">开放素材</a></div>
+      <div><a href="../dunhuangxueshu/index.html" style="color: inherit; text-decoration: none;">敦煌学术</a></div>
+      <div><a href="../lianxiwomen/index.html" style="color: inherit; text-decoration: none;">联系我们</a></div>
+      <div class="svg-container">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="favorite-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6.32 2.577a49.255 49.255 0 0111.36 0c1.497.174 2.57 1.46 2.57 2.93V21a.75.75 0 01-1.085.67L12 18.089l-7.165 3.583A.75.75 0 013.75 21V5.507c0-1.47 1.073-2.756 2.57-2.93z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+      <div class="svg-container" id="user-icon" style="cursor: pointer;">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0.75.75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 头部区域 -->
+  <div class="header py-16 px-4 text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent opacity-50"></div>
+    <h1 class="text-4xl md:text-5xl font-bold text-primary mb-4 relative z-10 animate-float">数字藏经</h1>
+    <p class="text-lg md:text-xl text-light opacity-85 max-w-3xl mx-auto relative z-10">
+      数字化保护与传承敦煌珍贵经卷，让千年智慧重放光芒
+    </p>
+  </div>
+
+  <!-- 搜索和筛选 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex flex-col md:flex-row gap-4 mb-8">
+      <div class="flex-1 relative">
+        <input type="text" id="search-input" class="search-input w-full py-3 px-4 pr-12 rounded-full text-light" placeholder="搜索经卷... (例如：金刚经、般若波罗蜜多心经)">
+        <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary">
+          <i class="fa fa-search text-xl"></i>
+        </button>
+      </div>
+      <div class="flex gap-2">
+        <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+          <i class="fa fa-filter"></i>
+          <span>筛选</span>
+        </button>
+        <button class="btn-secondary px-4 py-2 rounded-full flex items-center gap-2">
+          <i class="fa fa-download"></i>
+          <span>下载</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 筛选标签 -->
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">经卷类型：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light">全部类型</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">佛经</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">道经</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">儒经</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">历史文献</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">文学作品</button>
+    </div>
+
+    <div class="flex flex-wrap gap-3 mb-12">
+      <h3 class="text-lg font-medium text-light mr-4 whitespace-nowrap">朝代：</h3>
+      <button class="filter-tag active px-4 py-2 rounded-full bg-secondary text-light">全部朝代</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">东晋</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">南北朝</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">隋</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">唐</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">五代</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">宋</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">西夏</button>
+      <button class="filter-tag px-4 py-2 rounded-full bg-dark text-light">元</button>
+    </div>
+  </div>
+
+  <!-- 经卷展示 -->
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">经卷精选</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- 经卷卡片 1 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu1.jpeg" alt="金刚经" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">金刚经</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="1">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="1">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《金刚般若波罗蜜经》是佛教重要经典，敦煌出土的金刚经写本保存完好，是研究唐代书法和佛教文化的重要资料。
+          </p>
+        </div>
+      </div>
+
+      <!-- 经卷卡片 2 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu2.jpeg" alt="般若波罗蜜多心经" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">般若波罗蜜多心经</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="2">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="2">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《般若波罗蜜多心经》是般若经系列的核心经典，敦煌出土的写本字迹清晰，体现了唐代书法的精湛技艺。
+          </p>
+        </div>
+      </div>
+
+      <!-- 经卷卡片 3 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu3.jpeg" alt="妙法莲华经" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">妙法莲华经</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="3">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="3">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《妙法莲华经》是佛教重要经典之一，敦煌出土的写本保存了完整的经文内容，具有极高的文献价值。
+          </p>
+        </div>
+      </div>
+
+      <!-- 经卷卡片 4 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu4.jpeg" alt="大藏经" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">大藏经</h3>
+            <p class="text-light opacity-85 text-sm mb-4">宋代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="4">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="4">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《大藏经》是佛教经典的总集，敦煌出土的大藏经写本为研究佛教经典的传承和演变提供了重要资料。
+          </p>
+        </div>
+      </div>
+
+      <!-- 经卷卡片 5 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.4s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu5.jpeg" alt="道德经" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">道德经</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="5">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="5">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《道德经》是道家经典，敦煌出土的道德经写本展示了唐代道家思想的传播情况，具有重要的历史价值。
+          </p>
+        </div>
+      </div>
+
+      <!-- 经卷卡片 6 -->
+      <div class="card rounded-xl overflow-hidden card-hover animate-fade-in" style="animation-delay: 0.5s;">
+        <div class="relative overflow-hidden group">
+          <img src="../img/shu6.jpeg" alt="论语" class="w-full h-64 object-cover filter-dunhuang">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+            <h3 class="card-title text-xl font-bold mb-2">论语</h3>
+            <p class="text-light opacity-85 text-sm mb-4">唐代 · 敦煌藏经洞出土</p>
+            <div class="flex gap-2">
+              <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="6">
+                查看详情
+              </button>
+              <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="6">
+                <i class="fa fa-heart-o"></i> 收藏
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-light opacity-75 text-sm">
+            《论语》是儒家经典，敦煌出土的论语写本为研究儒家思想在唐代的传播和影响提供了重要资料。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载更多按钮 -->
+    <div class="text-center mt-12">
+      <button class="btn-primary px-8 py-3 rounded-full text-white font-medium flex items-center gap-2 mx-auto" id="load-more">
+        <span>加载更多</span>
+        <i class="fa fa-refresh"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- 经卷展示区 -->
+  <div class="max-w-7xl mx-auto px-4 py-12 mb-12">
+    <h2 class="text-3xl font-bold text-primary mb-8 text-center animate-fade-in">经卷高清展示</h2>
+    <div class="bg-gradient-to-br from-dark to-secondary rounded-xl p-8 border border-accent relative overflow-hidden shadow-xl">
+      <div class="absolute inset-0 paper-texture opacity-10"></div>
+      <div class="relative z-10">
+        <!-- 主内容区 -->
+        <div class="content-area flex flex-col lg:flex-row gap-8">
+          <!-- 左侧经籍列表 -->
+          <div class="left-section w-full lg:w-1/4 bg-dark/50 rounded-xl p-6 border border-secondary/30 shadow-lg">
+            <h3 class="text-xl font-bold text-primary mb-6 text-center">经籍选择</h3>
+            <div class="space-y-4">
+              <div class="scroll-box cursor-pointer active" id="scroll1-box" onclick="toggleScroll('scroll1')">
+                <div class="flex items-center gap-4 p-4 rounded-lg hover:bg-dark/70 transition-all">
+                  <div class="scroll-preview flex-shrink-0 w-20 h-20">
+                    <img src="tup/szcj.beijing.png" alt="金刚经" class="w-full h-full object-cover rounded">
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-medium text-light">《金刚经》</h4>
+                    <p class="text-sm text-light opacity-75">唐代 · 敦煌藏经洞出土</p>
+                  </div>
+                  <div class="scroll-indicator"></div>
+                </div>
+              </div>
+              <div class="scroll-box cursor-pointer" id="scroll2-box" onclick="toggleScroll('scroll2')">
+                <div class="flex items-center gap-4 p-4 rounded-lg hover:bg-dark/70 transition-all">
+                  <div class="scroll-preview flex-shrink-0 w-20 h-20">
+                    <img src="tup/szcj.beijing2.png" alt="道德经" class="w-full h-full object-cover rounded">
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-medium text-light">《道德经》</h4>
+                    <p class="text-sm text-light opacity-75">唐代 · 敦煌藏经洞出土</p>
+                  </div>
+                  <div class="scroll-indicator"></div>
+                </div>
+              </div>
+              <div class="scroll-box cursor-pointer" id="scroll3-box" onclick="toggleScroll('scroll3')">
+                <div class="flex items-center gap-4 p-4 rounded-lg hover:bg-dark/70 transition-all">
+                  <div class="scroll-preview flex-shrink-0 w-20 h-20">
+                    <img src="tup/szcj.beijing3.png" alt="其他经书" class="w-full h-full object-cover rounded">
+                  </div>
+                  <div>
+                    <h4 class="text-lg font-medium text-light">其他经书</h4>
+                    <p class="text-sm text-light opacity-75">公元4-11世纪</p>
+                  </div>
+                  <div class="scroll-indicator"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 中间背景图片 -->
+          <div class="middle-section w-full lg:w-2/4 bg-dark/50 rounded-xl p-6 border border-secondary/30 shadow-lg flex flex-col items-center justify-center">
+            <h3 class="text-xl font-bold text-primary mb-6 text-center">经卷浏览</h3>
+            <div class="scroll-container relative w-full max-w-2xl">
+              <button class="scroll-btn scroll-btn-left absolute left-2 top-1/2 transform -translate-y-1/2 bg-dark/80 hover:bg-dark text-primary rounded-full w-12 h-12 flex items-center justify-center z-10" onclick="prevPage()">
+                <span class="text-2xl">‹</span>
+              </button>
+              <div class="scroll-image relative">
+                <img src="tup/szcj.shujuan.png" alt="卷轴背景" class="w-full h-auto rounded-lg shadow-md">
+                <div class="scroll-content absolute inset-0 flex items-center justify-center p-8" id="scrollContent">
+                  <img src="tup/jingang1.png" alt="金刚经经文" class="max-w-full max-h-full object-contain rounded">
+                </div>
+              </div>
+              <button class="scroll-btn scroll-btn-right absolute right-2 top-1/2 transform -translate-y-1/2 bg-dark/80 hover:bg-dark text-primary rounded-full w-12 h-12 flex items-center justify-center z-10" onclick="nextPage()">
+                <span class="text-2xl">›</span>
+              </button>
+            </div>
+            <div class="mt-6 flex gap-4">
+              <button class="action-btn bg-secondary hover:bg-secondary/80 text-white px-4 py-2 rounded-lg flex items-center justify-center" onclick="document.querySelector('.scroll-content img').click()">
+                <i class="fa fa-search mr-2"></i> 放大查看
+              </button>
+              <button class="action-btn bg-secondary hover:bg-secondary/80 text-white px-4 py-2 rounded-lg flex items-center justify-center" onclick="toggleIntroduction()">
+                <i class="fa fa-book mr-2"></i> 查看介绍
+              </button>
+            </div>
+          </div>
+
+          <!-- 右侧信息区 -->
+          <div class="right-section w-full lg:w-1/4 bg-dark/50 rounded-xl p-6 border border-secondary/30 shadow-lg">
+            <h3 class="text-xl font-bold text-primary mb-6 text-center">经卷信息</h3>
+            <div class="info-card">
+              <h4 class="text-lg font-bold text-light mb-4" id="info-title">《金刚经》</h4>
+              <div class="info-detail space-y-3">
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">编号：</span>
+                  <span class="text-light" id="info-id">金刚经龙藏</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">名称：</span>
+                  <span class="text-light" id="info-name">金刚般若波罗蜜经</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">时期：</span>
+                  <span class="text-light" id="info-period">晚唐长兴，流通编定 1352</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">格式：</span>
+                  <span class="text-light" id="info-format">卷轴装，月径，轮册，珂罗版</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">经法：</span>
+                  <span class="text-light" id="info-teachings">大般若经·第九会金刚般若波罗蜜多经</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-light opacity-75">全卷：</span>
+                  <span class="text-light" id="info-total">28页（共）</span>
+                </div>
+              </div>
+              <div class="mt-6 pt-6 border-t border-secondary/30">
+                <button id="play-audio-btn" class="w-full action-btn bg-primary hover:bg-primary/80 text-dark font-medium px-4 py-2 rounded-lg flex items-center justify-center" onclick="toggleAudio()">
+                  <i class="fa fa-volume-up mr-2"></i> 语音朗读
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 滚动公告 -->
+  <div class="bg-secondary/20 py-4 mb-12">
+    <div class="max-w-7xl mx-auto px-4 overflow-hidden">
+      <div class="flex items-center">
+        <span class="text-primary font-bold mr-4 whitespace-nowrap">最新动态：</span>
+        <div class="overflow-hidden">
+          <div class="scroll-text flex">
+            <span class="mr-8">敦煌藏经洞出土文献数字化工程进展顺利</span>
+            <span class="mr-8">《金刚经》写本高清扫描完成</span>
+            <span class="mr-8">敦煌学国际学术研讨会即将召开</span>
+            <span class="mr-8">新增100卷经卷数字化资源上线</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-2xl font-bold text-primary" id="modal-title">经卷详情</h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl" id="close-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="relative">
+          <img src="../img/f1.jpg" alt="经卷详情" class="w-full h-auto rounded-lg" id="modal-image">
+          <div class="absolute top-4 right-4 flex gap-2">
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="download-image">
+              <i class="fa fa-download"></i>
+            </button>
+            <button class="bg-dark/80 hover:bg-dark p-2 rounded-full text-light" id="share-image">
+              <i class="fa fa-share-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-bold text-light mb-2" id="modal-subtitle">金刚经</h4>
+          <p class="text-light opacity-85 mb-4" id="modal-period">唐代 · 敦煌藏经洞出土</p>
+          <div class="mb-6">
+            <h4 class="text-lg font-medium text-light mb-2">经卷描述</h4>
+            <p class="text-light opacity-75" id="modal-description">
+              《金刚般若波罗蜜经》是佛教重要经典，敦煌出土的金刚经写本保存完好，字迹清晰，是研究唐代书法和佛教文化的重要资料。该写本采用卷轴形式，纸质优良，墨色饱满，体现了唐代高超的抄经技艺。
+            </p>
+          </div>
+          <div class="mb-6">
+            <h4 class="text-lg font-medium text-light mb-2">历史价值</h4>
+            <p class="text-light opacity-75">
+              敦煌出土的金刚经写本不仅是珍贵的宗教文献，也是研究唐代社会、文化、艺术的重要实物资料。它为我们了解唐代佛教的传播、抄经制度以及书法艺术的发展提供了宝贵的第一手资料。
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-primary px-4 py-2 rounded-lg text-white" id="view-full-text">
+              <i class="fa fa-file-text"></i> 查看全文
+            </button>
+            <button class="btn-secondary px-4 py-2 rounded-lg text-white" id="copy-link">
+              <i class="fa fa-link"></i> 复制链接
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全文查看模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="full-text-modal">
+    <div class="modal-content rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-start mb-6">
+        <h3 class="text-2xl font-bold text-primary" id="full-text-title">经卷全文</h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl" id="close-full-text-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="mb-4">
+        <h4 class="text-xl font-bold text-light mb-2" id="full-text-subtitle">金刚经</h4>
+        <p class="text-light opacity-85" id="full-text-period">唐代 · 敦煌藏经洞出土</p>
+      </div>
+      <!-- 全文交互工具栏 -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <div class="relative flex-grow max-w-md">
+          <input type="text" id="full-text-search" placeholder="搜索经文内容..." class="w-full px-4 py-2 rounded-lg bg-dark border border-secondary/50 text-light focus:outline-none focus:ring-2 focus:ring-primary">
+          <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-light opacity-75 hover:opacity-100" id="search-btn">
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+        <div class="flex gap-1">
+          <button class="btn-secondary px-3 py-2 rounded-lg text-white" id="font-size-decrease">
+            <i class="fa fa-font"></i> A-
+          </button>
+          <button class="btn-secondary px-3 py-2 rounded-lg text-white" id="font-size-increase">
+            <i class="fa fa-font"></i> A+
+          </button>
+        </div>
+        <button class="btn-secondary px-3 py-2 rounded-lg text-white" id="copy-full-text">
+          <i class="fa fa-copy"></i> 复制全文
+        </button>
+      </div>
+      <div class="bg-dark/50 rounded-lg p-6 border border-secondary/30 mb-6">
+        <pre class="text-light whitespace-pre-wrap font-serif leading-relaxed" id="full-text-content">
+          <!-- 全文内容将通过JavaScript动态填充 -->
+        </pre>
+      </div>
+      <div class="flex gap-2 justify-end">
+        <button class="btn-secondary px-4 py-2 rounded-lg text-white" id="download-full-text">
+          <i class="fa fa-download"></i> 下载全文
+        </button>
+        <button class="btn-primary px-4 py-2 rounded-lg text-white" id="close-full-text-btn">
+          <i class="fa fa-times"></i> 关闭
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 收藏夹模态框 -->
+  <div class="modal fixed inset-0 flex items-center justify-center z-50 hidden" id="favorite-modal-container">
+    <div class="modal-content rounded-xl p-6 max-w-5xl w-full max-h-[90vh] overflow-y-auto bg-gradient-to-br from-dark to-dark/95 border border-accent/30 shadow-2xl">
+      <div class="flex justify-between items-center mb-8">
+        <h3 class="text-2xl font-bold text-primary flex items-center gap-3">
+          <i class="fa fa-heart text-primary"></i>
+          我的收藏夹
+        </h3>
+        <button class="text-light opacity-75 hover:opacity-100 text-2xl transition-all duration-300 hover:scale-110" id="close-favorite-modal">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div id="favorite-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 收藏内容将动态添加 -->
+      </div>
+      <div id="favorite-empty" class="text-center py-16 text-light opacity-75 hidden">
+        <div class="inline-block p-6 rounded-full bg-dark/50 mb-6">
+          <i class="fa fa-heart-o text-6xl text-accent/50"></i>
+        </div>
+        <h4 class="text-xl font-semibold mb-2">暂无收藏内容</h4>
+        <p class="text-sm mt-2 max-w-md mx-auto">浏览内容并点击收藏按钮添加到收藏夹，方便随时查看</p>
+        <button class="btn-primary px-6 py-2 rounded-lg text-white mt-6" onclick="window.location.href='../index.html'">
+          <i class="fa fa-explore mr-2"></i> 去浏览内容
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- 页脚 -->
+  <div class="footer py-12 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">关于我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">敦煌研究院</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">机构设置</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">历史沿革</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">联系我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术资源</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">研究论文</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术著作</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">考古报告</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术期刊</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">学术服务</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li><a href="#" class="hover:text-primary transition-colors">学术会议</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">学术讲座</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">专家咨询</a></li>
+            <li><a href="#" class="hover:text-primary transition-colors">数据库访问</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-4">联系我们</h3>
+          <ul class="space-y-2 text-light opacity-75">
+            <li class="flex items-center gap-2"><i class="fa fa-map-marker"></i> 甘肃省敦煌市莫高窟</li>
+            <li class="flex items-center gap-2"><i class="fa fa-phone"></i> 0937-8869000</li>
+            <li class="flex items-center gap-2"><i class="fa fa-envelope"></i> contact@dha.ac.cn</li>
+            <li class="flex items-center gap-2"><i class="fa fa-globe"></i> www.dha.ac.cn</li>
+          </ul>
+        </div>
+      </div>
+      <div class="border-t border-dark mt-8 pt-8 text-center text-light opacity-50 text-sm">
+        <p>© 2026 数字敦煌 版权所有</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // 经籍数据管理
+    const scrollData = {
+      scroll1: {
+        title: '金刚经',
+        images: ['tup/jingang1.png', 'tup/jingang2.png', 'tup/jingang3.png'],
+        currentIndex: 0,
+        info: {
+          编号: '金刚经龙藏',
+          名称: '金刚般若波罗蜜经',
+          时期: '晚唐长兴，流通编定 1352',
+          格式: '卷轴装，月径，轮册，珂罗版',
+          经法: '大般若经·第九会金刚般若波罗蜜多经',
+          全卷: '28页（共）'
+        },
+        audio: '《金刚经》全称《金刚般若波罗蜜经》，是敦煌遗书中保存最完整、流传最广泛的佛教经典之一，也是中古时期佛教思想传播与抄经文化的核心载体。 敦煌石窟所藏《金刚经》写卷跨越北朝至宋元数百年，以楷书、行书等多种书体书写，内容完整、题记丰富，兼具宗教价值、文献价值与艺术价值。经文以 "空性智慧" 为核心，阐释诸法实相、破执见性的哲学思想，是大乘佛教般若体系的关键经典。 在敦煌佛教艺术体系中，《金刚经》不仅是信众日常诵读、祈福抄经的核心文本，更与石窟造像、壁画内容形成深度呼应，真实反映了古代丝绸之路上佛教文化的传播脉络、民众信仰形态与书写传统。其传世写卷笔法精湛、章法严谨，是中国书法史与佛教文献史的珍贵实物遗存。'
+      },
+      scroll2: {
+        title: '道德经',
+        images: ['tup/szcj.ddj1.png', 'tup/szcj.ddj2.png', 'tup/szcj.ddj3.png'],
+        currentIndex: 0,
+        info: {
+          编号: '道德经',
+          名称: '道德经',
+          时期: '公元前6世纪左右',
+          作者: '老子（李耳）',
+          格式: '卷轴装',
+          全卷: '81章'
+        },
+        audio: '《道德经》（又称《老子》）是敦煌文献中极为重要的道家与哲学经典，代表了丝绸之路多元文明交融背景下道教文化的珍贵遗存。 敦煌本《道德经》多为六朝至唐代写本，保留了大量早期文本面貌，与传世版本存在重要异文，具有极高的校勘价值与文献研究价值。经文以 "道" 为核心范畴，阐述自然无为、守柔处下、天人合一的古典哲学体系，影响中国思想、政治、艺术与文化数千年。 在敦煌石窟的文化格局中，《道德经》写卷的大量出土，印证了中古时期佛道共存、三教融合的文化生态。这些写卷字体古朴、装帧简约，既是道家思想传播的重要物证，也是研究唐代道教发展、民间信仰、书写制度与丝路文化交流的不可替代资料。'
+      },
+      scroll3: {
+        title: '其他经书',
+        images: ['tup/szcj.qita1.png', 'tup/szcj.qita2.png', 'tup/szcj.qita3.png'],
+        currentIndex: 0,
+        info: {
+          编号: '敦煌遗书·其他经书',
+          名称: '敦煌其他古籍文献',
+          时期: '公元4-11世纪',
+          内容: '佛经、道经、儒家经典等',
+          格式: '卷轴装、经折装',
+          数量: '约20000卷'
+        },
+        audio: '敦煌石窟藏经洞出土的各类经文数量庞大、体系庞杂，涵盖佛教经律论、道教典籍、儒家文献、民间宝卷、仪式文疏等多种类型，构成了中古时期东亚最丰富的民间文献宝库之一。 这些经文包括佛教大乘、小乘、密教经典，道教仪轨文书，儒教劝善、礼忏、抄经题记，以及大量反映地方信仰、民俗活动、社会生活的世俗文本。它们书写时代跨度长、书写者身份多元，内容涉及哲学、宗教、语言、艺术、医学、历法等诸多领域。 作为丝路文明的实物见证，敦煌各类经文真实记录了古代中国与西域、中亚文化交流的历史轨迹，展现了民间信仰的鲜活形态与抄经、诵经、礼佛等传统习俗。其文献价值、艺术价值与历史价值相辅相成，成为研究中古社会、宗教传播与文化融合的核心资料。'
+      }
+    };
+    
+    // 当前显示的经籍类型
+    let currentScrollType = 'scroll1';
+    
+    // 页面加载完成后初始化
+    window.onload = function() {
+      // 添加页面加载动画
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        document.body.style.transition = 'opacity 1s ease';
+        document.body.style.opacity = '1';
+      }, 100);
+      
+      // 绑定操作按钮事件
+      bindActionButtons();
+      
+      // 绑定图片点击事件
+      addImageClickEvent();
+    };
+    
+    // 切换卷轴内容
+    function toggleScroll(scrollId) {
+      // 更新当前显示的经籍类型
+      currentScrollType = scrollId;
+      
+      // 更新经籍列表的选中状态
+      document.querySelectorAll('.scroll-box').forEach(box => {
+        box.classList.remove('active');
+      });
+      document.getElementById(`${scrollId}-box`).classList.add('active');
+      
+      // 获取当前经籍数据
+      const scroll = scrollData[scrollId];
+      if (scroll) {
+        // 更新信息卡片
+        updateInfoCard(scroll.title);
+        
+        // 检查是否当前显示的是文字介绍
+        const scrollContent = document.getElementById('scrollContent');
+        const introElement = scrollContent ? scrollContent.querySelector('.scroll-intro') : null;
+        
+        if (introElement) {
+          // 如果当前显示的是文字介绍，更新介绍内容
+          let introContent = `<h3>${scroll.title === '金刚经' || scroll.title === '道德经' ? `《${scroll.title}》` : scroll.title}</h3>`;
+          introContent += `<p>${scroll.audio}</p>`;
+          introElement.innerHTML = introContent;
+          
+          // 重新绑定点击事件
+          introElement.onclick = function() {
+            introElement.remove();
+            const imgElement = scrollContent.querySelector('img');
+            if (imgElement) {
+              imgElement.style.display = 'block';
+            }
+          };
+        } else {
+          // 如果当前显示的是图片，更新图片
+          updateScrollContentWithAnimation(scroll.images[scroll.currentIndex]);
+          // 重新绑定点击事件
+          setTimeout(addImageClickEvent, 400);
+        }
+      }
+    }
+    
+    // 上一页
+    function prevPage() {
+      const scroll = scrollData[currentScrollType];
+      if (scroll) {
+        // 计算上一页索引
+        scroll.currentIndex = (scroll.currentIndex - 1 + scroll.images.length) % scroll.images.length;
+        // 更新卷轴内容
+        updateScrollContentWithAnimation(scroll.images[scroll.currentIndex]);
+      }
+    }
+    
+    // 下一页
+    function nextPage() {
+      const scroll = scrollData[currentScrollType];
+      if (scroll) {
+        // 计算下一页索引
+        scroll.currentIndex = (scroll.currentIndex + 1) % scroll.images.length;
+        // 更新卷轴内容
+        updateScrollContentWithAnimation(scroll.images[scroll.currentIndex]);
+      }
+    }
+    
+    // 添加放大功能
+    function addImageClickEvent() {
+      const scrollImage = document.querySelector('.scroll-content img');
+      if (scrollImage) {
+        // 先移除可能存在的点击事件监听器，避免重复绑定
+        scrollImage.removeEventListener('click', handleImageClick);
+        // 添加新的点击事件监听器
+        scrollImage.addEventListener('click', handleImageClick);
+      }
+    }
+    
+    // 处理图片点击事件 - 实现真正的放大查看功能
+    function handleImageClick() {
+      const img = this;
+      const originalSrc = img.src;
+      
+      // 创建一个新的放大查看容器
+      const modal = document.createElement('div');
+      modal.className = 'image-modal';
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(20, 13, 8, 0.8)';
+      modal.style.zIndex = '10000';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.backdropFilter = 'blur(5px)';
+      modal.style.transition = 'all 0.3s ease';
+      modal.style.opacity = '0';
+      
+      // 创建放大的图片
+      const enlargedImg = document.createElement('img');
+      enlargedImg.src = originalSrc;
+      enlargedImg.style.maxWidth = '95%';
+      enlargedImg.style.maxHeight = '95%';
+      enlargedImg.style.objectFit = 'contain';
+      enlargedImg.style.boxShadow = '0 0 40px rgba(212, 167, 106, 0.8)';
+      enlargedImg.style.border = '3px solid #D4A76A';
+      enlargedImg.style.background = 'rgba(247, 233, 212, 0.98)';
+      enlargedImg.style.padding = '20px';
+      enlargedImg.style.borderRadius = '8px';
+      enlargedImg.style.transition = 'all 0.3s ease';
+      
+      // 创建关闭按钮
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '<i class="fa fa-times"></i>';
+      closeBtn.style.position = 'absolute';
+      closeBtn.style.top = '20px';
+      closeBtn.style.right = '20px';
+      closeBtn.style.width = '40px';
+      closeBtn.style.height = '40px';
+      closeBtn.style.borderRadius = '50%';
+      closeBtn.style.backgroundColor = 'rgba(212, 167, 106, 0.8)';
+      closeBtn.style.color = '#000';
+      closeBtn.style.border = 'none';
+      closeBtn.style.cursor = 'pointer';
+      closeBtn.style.display = 'flex';
+      closeBtn.style.alignItems = 'center';
+      closeBtn.style.justifyContent = 'center';
+      closeBtn.style.fontSize = '20px';
+      closeBtn.style.transition = 'all 0.3s ease';
+      
+      closeBtn.addEventListener('mouseenter', function() {
+        this.backgroundColor = 'rgba(212, 167, 106, 1)';
+        this.transform = 'scale(1.1)';
+      });
+      
+      closeBtn.addEventListener('mouseleave', function() {
+        this.backgroundColor = 'rgba(212, 167, 106, 0.8)';
+        this.transform = 'scale(1)';
+      });
+      
+      // 添加关闭功能
+      closeBtn.addEventListener('click', function() {
+        modal.remove();
+      });
+      
+      // 点击模态框背景关闭
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+      
+      // 添加到模态框
+      modal.appendChild(enlargedImg);
+      modal.appendChild(closeBtn);
+      
+      // 添加到页面
+      document.body.appendChild(modal);
+      
+      // 淡入效果
+      setTimeout(() => {
+        modal.style.opacity = '1';
+      }, 10);
+    }
+    
+    // 添加过渡动画的内容更新
+    function updateScrollContentWithAnimation(imageSrc) {
+      const scrollContent = document.getElementById('scrollContent');
+      if (scrollContent) {
+        if (imageSrc) {
+          // 确保scrollContent显示
+          scrollContent.style.display = 'flex';
+          
+          const imgElement = scrollContent.querySelector('img');
+          if (imgElement) {
+            // 添加淡出动画
+            imgElement.style.transition = 'opacity 0.3s ease';
+            imgElement.style.opacity = '0';
+            
+            // 等待动画完成后更新图片
+            setTimeout(() => {
+              imgElement.src = imageSrc;
+              // 移除淡出类，添加淡入类
+              imgElement.style.opacity = '1';
+              
+              // 等待淡入动画完成后移除淡入类
+              setTimeout(() => {
+                // 重新绑定点击事件
+                addImageClickEvent();
+              }, 300);
+            }, 300);
+          }
+        } else {
+          // 隐藏scrollContent
+          scrollContent.style.display = 'none';
+        }
+      }
+    }
+    
+    // 更新信息卡片
+    function updateInfoCard(title) {
+      // 遍历scrollData找到对应的经籍
+      for (const key in scrollData) {
+        if (scrollData[key].title === title) {
+          const scroll = scrollData[key];
+          
+          // 更新标题
+          document.getElementById('info-title').textContent = scroll.title === '金刚经' || scroll.title === '道德经' ? `《${scroll.title}》` : scroll.title;
+          
+          // 更新信息详情
+          document.getElementById('info-id').textContent = scroll.info.编号 || '';
+          document.getElementById('info-name').textContent = scroll.info.名称 || '';
+          document.getElementById('info-period').textContent = scroll.info.时期 || '';
+          document.getElementById('info-format').textContent = scroll.info.格式 || '';
+          document.getElementById('info-teachings').textContent = scroll.info.经法 || scroll.info.作者 || '';
+          document.getElementById('info-total').textContent = scroll.info.全卷 || scroll.info.数量 || '';
+          
+          break;
+        }
+      }
+    }
+    
+    // 绑定操作按钮事件
+    function bindActionButtons() {
+      // 语音朗读按钮已经直接绑定了onclick事件，不需要再通过addEventListener绑定
+    }
+    
+    // 全局语音合成实例
+    let currentUtterance = null;
+    
+    // 切换音频状态（播放/暂停/停止）
+    function toggleAudio() {
+      if ('speechSynthesis' in window) {
+        if (speechSynthesis.paused) {
+          // 已暂停，继续
+          speechSynthesis.resume();
+          document.getElementById('play-audio-btn').innerHTML = '<i class="fa fa-pause mr-2"></i> 暂停朗读';
+        } else if (speechSynthesis.speaking) {
+          // 正在朗读，暂停
+          speechSynthesis.pause();
+          document.getElementById('play-audio-btn').innerHTML = '<i class="fa fa-play mr-2"></i> 继续朗读';
+        } else {
+          // 未开始，播放
+          const infoCardTitle = document.getElementById('info-title').textContent;
+          let text = '';
+          
+          // 遍历scrollData找到对应的经籍
+          for (const key in scrollData) {
+            const scroll = scrollData[key];
+            const formattedTitle = scroll.title === '金刚经' || scroll.title === '道德经' ? `《${scroll.title}》` : scroll.title;
+            if (formattedTitle === infoCardTitle) {
+              text = scroll.audio;
+              break;
+            }
+          }
+          
+          if (text) {
+            // 先停止之前的语音
+            speechSynthesis.cancel();
+            
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.lang = 'zh-CN';
+            
+            // 语音结束时重置状态
+            currentUtterance.onend = function() {
+              currentUtterance = null;
+              document.getElementById('play-audio-btn').innerHTML = '<i class="fa fa-volume-up mr-2"></i> 语音朗读';
+            };
+            
+            speechSynthesis.speak(currentUtterance);
+            document.getElementById('play-audio-btn').innerHTML = '<i class="fa fa-pause mr-2"></i> 暂停朗读';
+          } else {
+            alert('未找到对应经卷的朗读内容');
+          }
+        }
+      } else {
+        alert('您的浏览器不支持文字朗读功能');
+      }
+    }
+    
+    // 停止音频（用于其他需要停止的场景）
+    function stopAudio() {
+      if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        currentUtterance = null;
+        document.getElementById('play-audio-btn').innerHTML = '<i class="fa fa-volume-up mr-2"></i> 语音朗读';
+      }
+    }
+    
+    // 切换经文介绍
+    function toggleIntroduction() {
+      const scrollContent = document.getElementById('scrollContent');
+      if (scrollContent) {
+        // 检查是否已经显示介绍
+        const introElement = scrollContent.querySelector('.scroll-intro');
+        if (introElement) {
+          // 隐藏介绍，显示图片
+          introElement.remove();
+          const imgElement = scrollContent.querySelector('img');
+          if (imgElement) {
+            imgElement.style.display = 'block';
+          }
+        } else {
+          // 隐藏图片，显示介绍
+          const imgElement = scrollContent.querySelector('img');
+          if (imgElement) {
+            imgElement.style.display = 'none';
+          }
+          
+          // 创建介绍元素
+          const introElement = document.createElement('div');
+          introElement.className = 'scroll-intro';
+          introElement.style.width = '100%';
+          introElement.style.height = '100%';
+          introElement.style.display = 'flex';
+          introElement.style.flexDirection = 'column';
+          introElement.style.justifyContent = 'center';
+          introElement.style.alignItems = 'center';
+          introElement.style.padding = '20px';
+          introElement.style.backgroundColor = 'rgba(20, 13, 8, 0.9)';
+          introElement.style.color = '#F7E9D4';
+          introElement.style.textAlign = 'center';
+          introElement.style.overflowY = 'auto';
+          
+          // 获取当前经籍的信息
+          const scroll = scrollData[currentScrollType];
+          if (scroll) {
+            // 生成介绍内容
+            let introContent = `<h3 class="text-xl font-bold text-primary mb-4">${scroll.title === '金刚经' || scroll.title === '道德经' ? `《${scroll.title}》` : scroll.title}</h3>`;
+            introContent += `<p class="text-light opacity-75">${scroll.audio}</p>`;
+            introElement.innerHTML = introContent;
+          }
+          
+          // 添加到scrollContent
+          scrollContent.appendChild(introElement);
+          
+          // 绑定介绍元素点击事件，点击后返回原样
+          introElement.onclick = function() {
+            introElement.remove();
+            if (imgElement) {
+              imgElement.style.display = 'block';
+            }
+          };
+        }
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // 收藏夹模态框元素
+      const favoriteModalContainer = document.getElementById('favorite-modal-container');
+      const closeFavoriteModal = document.getElementById('close-favorite-modal');
+      const favoriteList = document.getElementById('favorite-list');
+      const favoriteEmpty = document.getElementById('favorite-empty');
+      
+      // 显示收藏夹
+      function showFavoriteModal() {
+        loadFavoriteItems();
+        favoriteModalContainer.classList.remove('hidden');
+      }
+      
+      // 加载收藏内容
+      function loadFavoriteItems() {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        const favoriteArray = [];
+        
+        // 收集所有收藏内容
+        for (const page in favorites) {
+          if (favorites[page] && Array.isArray(favorites[page])) {
+            favorites[page].forEach(item => {
+              favoriteArray.push({...item, page: page});
+            });
+          }
+        }
+        
+        // 清空当前列表
+        favoriteList.innerHTML = '';
+        
+        if (favoriteArray.length === 0) {
+          favoriteEmpty.classList.remove('hidden');
+          favoriteList.classList.add('hidden');
+        } else {
+          favoriteEmpty.classList.add('hidden');
+          favoriteList.classList.remove('hidden');
+          
+          favoriteArray.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card rounded-xl overflow-hidden card-hover bg-dark/50 border border-accent/20 transform transition-all duration-300 hover:scale-105 hover:border-accent/40';
+            card.innerHTML = `
+              <div class="relative overflow-hidden group">
+                <img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3">
+                  <span class="bg-accent/90 text-dark text-xs font-bold px-2 py-1 rounded-full">${item.page}</span>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <h4 class="text-lg font-bold text-primary mb-1">${item.title}</h4>
+                  <p class="text-light text-sm opacity-90 mb-3">${item.period || item.subtitle || item.category || item.description?.substring(0, 60) || ''}</p>
+                  <div class="flex gap-2">
+                    <button class="view-btn px-3 py-1 rounded-lg text-white text-sm flex-1 flex items-center justify-center gap-1" style="background-color: #d4a76a;">
+                      <i class="fa fa-eye"></i> 查看
+                    </button>
+                    <button class="remove-favorite px-3 py-1 rounded-lg text-white text-sm" style="background-color: #8b5a2b;" data-page="${item.page}" data-id="${item.id}">
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+            favoriteList.appendChild(card);
+            
+            // 为查看按钮绑定事件
+            const viewBtn = card.querySelector('.view-btn');
+            if (viewBtn) {
+              viewBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = item.page;
+                
+                // 关闭收藏夹模态框
+                favoriteModalContainer.classList.add('hidden');
+                
+                // 显示详情模态框
+                if (document.getElementById('modal')) {
+                  document.getElementById('modal-title').textContent = item.title;
+                  document.getElementById('modal-subtitle').textContent = item.title;
+                  document.getElementById('modal-period').textContent = item.subtitle || item.period || item.category || item.date || '';
+                  document.getElementById('modal-image').src = item.image;
+                  document.getElementById('modal-image').alt = item.title;
+                  document.getElementById('modal-description').textContent = item.description || '';
+                  document.getElementById('modal').classList.remove('hidden');
+                }
+              });
+            }
+            
+            // 为移除按钮绑定事件
+            const removeBtn = card.querySelector('.remove-favorite');
+            if (removeBtn) {
+              removeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = this.getAttribute('data-page');
+                const id = this.getAttribute('data-id');
+                removeFavorite(page, id);
+                loadFavoriteItems();
+              });
+            }
+          });
+        }
+      }
+      
+      // 移除收藏
+      function removeFavorite(page, id) {
+        const favorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+        if (favorites[page]) {
+          favorites[page] = favorites[page].filter(item => item.id !== id);
+          localStorage.setItem('allFavorites', JSON.stringify(favorites));
+        }
+      }
+      
+      // 收藏图标点击事件
+      const favoriteIcon = document.getElementById('favorite-icon');
+      if (favoriteIcon) {
+        favoriteIcon.addEventListener('click', function() {
+          showFavoriteModal();
+        });
+      }
+      
+      // 导航栏搜索功能
+      const navSearchInput = document.getElementById('nav-search-input');
+      const navSearchBtn = document.getElementById('nav-search-btn');
+      
+      function performNavSearch() {
+        const searchTerm = navSearchInput.value.toLowerCase().trim();
+        if (searchTerm) {
+          // 将搜索词传递给页面搜索框并执行搜索
+          const pageSearchInput = document.getElementById('search-input');
+          if (pageSearchInput) {
+            pageSearchInput.value = searchTerm;
+            // 触发页面搜索
+            const searchEvent = new Event('input');
+            pageSearchInput.dispatchEvent(searchEvent);
+          }
+        }
+      }
+      
+      // 导航栏搜索按钮点击事件
+      if (navSearchBtn) {
+        navSearchBtn.addEventListener('click', performNavSearch);
+      }
+      
+      // 导航栏搜索框回车键事件
+      if (navSearchInput) {
+        navSearchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            performNavSearch();
+          }
+        });
+      }
+      
+      // 关闭收藏夹模态框
+      if (closeFavoriteModal) {
+        closeFavoriteModal.addEventListener('click', function() {
+          favoriteModalContainer.classList.add('hidden');
+        });
+      }
+      
+      // 点击模态框外部关闭
+      if (favoriteModalContainer) {
+        favoriteModalContainer.addEventListener('click', function(e) {
+          if (e.target === favoriteModalContainer) {
+            favoriteModalContainer.classList.add('hidden');
+          }
+        });
+      }
+      
+      // 经卷数据
+      const scrollItems = [
+        {
+          id: '1',
+          title: '金刚经',
+          subtitle: '唐代 · 敦煌藏经洞出土',
+          image: '../img/shu1.jpg',
+          description: '《金刚般若波罗蜜经》是佛教重要经典，敦煌出土的金刚经写本保存完好，字迹清晰，是研究唐代书法和佛教文化的重要资料。该写本采用卷轴形式，纸质优良，墨色饱满，体现了唐代高超的抄经技艺。',
+          history: '敦煌出土的金刚经写本不仅是珍贵的宗教文献，也是研究唐代社会、文化、艺术的重要实物资料。它为我们了解唐代佛教的传播、抄经制度以及书法艺术的发展提供了宝贵的第一手资料。',
+          fullText: '金刚般若波罗蜜经\n\n如是我闻：一时，佛在舍卫国祇树给孤独园，与大比丘众千二百五十人俱。尔时，世尊食时，著衣持钵，入舍卫大城乞食。于其城中，次第乞已，还至本处。饭食讫，收衣钵，洗足已，敷座而坐。\n\n时长老须菩提在大众中，即从座起，偏袒右肩，右膝着地，合掌恭敬而白佛言：「希有，世尊！如来善护念诸菩萨，善付嘱诸菩萨。世尊，善男子、善女人发阿耨多罗三藐三菩提心，应云何住，云何降伏其心？」佛言：「善哉，善哉！须菩提，如汝所说，如来善护念诸菩萨，善付嘱诸菩萨。汝今谛听，当为汝说。善男子、善女人发阿耨多罗三藐三菩提心，应如是住，如是降伏其心。」「唯然，世尊，愿乐欲闻。」\n\n佛告须菩提：「诸菩萨摩诃萨应如是降伏其心：所有一切众生之类，若卵生、若胎生、若湿生、若化生，若有色、若无色，若有想、若无想，若非有想非无想，我皆令入无余涅槃而灭度之。如是灭度无量无数无边众生，实无众生得灭度者。何以故？须菩提，若菩萨有我相、人相、众生相、寿者相，即非菩萨。\n\n「复次，须菩提，菩萨于法，应无所住，行于布施。所谓不住色布施，不住声、香、味、触、法布施。须菩提，菩萨应如是布施，不住于相。何以故？若菩萨不住相布施，其福德不可思量。须菩提，于意云何？东方虚空可思量不？」「不也，世尊。」「须菩提，南、西、北方、四维、上下虚空可思量不？」「不也，世尊。」「须菩提，菩萨无住相布施，福德亦复如是不可思量。须菩提，菩萨但应如所教住。\n\n「须菩提，于意云何？可以身相见如来不？」「不也，世尊。不可以身相得见如来。何以故？如来所说身相，即非身相。」佛告须菩提：「凡所有相，皆是虚妄。若见诸相非相，即见如来。」\n\n「须菩提，汝勿谓如来作是念：「我当度众生」。须菩提，莫作是念。何以故？实无有众生如来度者。若有众生如来度者，如来即有我、人、众生、寿者。须菩提，如来说有我者，即非有我，而凡夫之人以为有我。须菩提，凡夫者，如来说即非凡夫，是名凡夫。\n\n「须菩提，于意云何？可以三十二相见如来不？」「不也，世尊。不可以三十二相得见如来。何以故？如来说三十二相，即是非相，是名三十二相。」\n\n「须菩提，若有善男子、善女人，以恒河沙等身命布施，若复有人，于此经中，乃至受持四句偈等，为他人说，其福甚多。」' 
+        },
+        {
+          id: '2',
+          title: '般若波罗蜜多心经',
+          subtitle: '唐代 · 敦煌藏经洞出土',
+          image: '../img/f2.jpg',
+          description: '《般若波罗蜜多心经》是般若经系列的核心经典，敦煌出土的写本字迹清晰，体现了唐代书法的精湛技艺。该经卷篇幅短小精悍，内容深奥，是佛教修行的重要经典。',
+          history: '敦煌出土的心经写本数量众多，版本各异，为研究心经的传播和演变提供了丰富的资料。这些写本不仅具有宗教价值，也是研究唐代书法艺术的重要实物。',
+          fullText: '般若波罗蜜多心经\n\n观自在菩萨，行深般若波罗蜜多时，照见五蕴皆空，度一切苦厄。\n\n舍利子，色不异空，空不异色，色即是空，空即是色，受想行识亦复如是。\n\n舍利子，是诸法空相，不生不灭，不垢不净，不增不减。\n\n是故空中无色，无受想行识，无眼耳鼻舌身意，无色声香味触法，无眼界，乃至无意识界，无无明，亦无无明尽，乃至无老死，亦无老死尽。无苦集灭道，无智亦无得。以无所得故。\n\n菩提萨埵，依般若波罗蜜多故，心无挂碍。无挂碍故，无有恐怖，远离一切颠倒梦想，究竟涅槃。\n\n三世诸佛，依般若波罗蜜多故，得阿耨多罗三藐三菩提。\n\n故知般若波罗蜜多，是大神咒，是大明咒，是无上咒，是无等等咒，能除一切苦，真实不虚。\n\n故说般若波罗蜜多咒，即说咒曰：揭谛揭谛，波罗揭谛，波罗僧揭谛，菩提萨婆诃。' 
+        },
+        {
+          id: '3',
+          title: '妙法莲华经',
+          subtitle: '唐代 · 敦煌藏经洞出土',
+          image: '../img/f3.jpg',
+          description: '《妙法莲华经》是佛教重要经典之一，敦煌出土的写本保存了完整的经文内容，具有极高的文献价值。该经卷内容丰富，教义深邃，是佛教大乘经典的代表之作。',
+          history: '敦煌出土的妙法莲华经写本数量庞大，版本众多，为研究该经的传播、翻译和演变提供了重要资料。这些写本体现了唐代抄经的高超技艺和佛教文化的繁荣。',
+          fullText: '妙法莲华经·方便品第二\n\n尔时，世尊从三昧安详而起，告舍利弗：「诸佛世尊唯以一大事因缘故，出现于世。舍利弗，云何名诸佛世尊唯以一大事因缘故，出现于世？诸佛世尊欲令众生开佛知见，使得清净故，出现于世；欲示众生佛之知见故，出现于世；欲令众生悟佛知见故，出现于世；欲令众生入佛知见道故，出现于世。舍利弗，是为诸佛以一大事因缘故，出现于世。\n\n「佛告舍利弗：「诸佛如来但教化菩萨，诸有所作，常为一事，唯以佛之知见示悟众生。舍利弗，如来但以一佛乘故，为众生说法，无有余乘若二若三。舍利弗，一切十方诸佛法亦如是。\n\n「舍利弗，过去诸佛，以无量无数方便、种种因缘、譬喻言辞，而为众生演说诸法，是法皆为一佛乘故。是诸众生，从诸佛闻法，究竟皆得一切种智。\n\n「舍利弗，未来诸佛当出于世，亦以无量无数方便、种种因缘、譬喻言辞，而为众生演说诸法，是法皆为一佛乘故。是诸众生，从佛闻法，究竟皆得一切种智。\n\n「舍利弗，现在十方无量百千万亿佛土中诸佛世尊，多所饶益、安乐众生。是诸佛亦以无量无数方便、种种因缘、譬喻言辞，而为众生演说诸法，是法皆为一佛乘故。是诸众生，从佛闻法，究竟皆得一切种智。\n\n「舍利弗，是诸佛但教化菩萨，欲以佛之知见示众生故，欲以佛之知见悟众生故，欲令众生入佛之知见故。」' 
+        },
+        {
+          id: '4',
+          title: '大藏经',
+          subtitle: '宋代 · 敦煌藏经洞出土',
+          image: '../img/f4.jpg',
+          description: '《大藏经》是佛教经典的总集，敦煌出土的大藏经写本为研究佛教经典的传承和演变提供了重要资料。这些写本涵盖了佛教的各个宗派和经典，内容丰富。',
+          history: '敦煌出土的大藏经写本是研究中国佛教历史和文化的重要资料，它们反映了佛教经典在敦煌地区的传播和发展情况，为我们了解古代佛教文化提供了宝贵的窗口。',
+          fullText: '大藏经概述\n\n大藏经是佛教经典的总集，内容包括经、律、论三藏，是佛教文化的重要载体。敦煌出土的大藏经写本是研究中国佛教历史和文化的重要资料，它们反映了佛教经典在敦煌地区的传播和发展情况。\n\n经藏：收录佛陀所说的教法，包括四阿含经、般若经、法华经、华严经等。\n\n律藏：收录佛陀制定的戒律，包括比丘戒、比丘尼戒等。\n\n论藏：收录后世论师对经律的解释和发挥，包括中观论、瑜伽师地论等。\n\n敦煌大藏经写本的特点：\n1. 数量众多，涵盖了佛教的各个宗派和经典\n2. 保存完好，字迹清晰，体现了古代抄经的高超技艺\n3. 版本多样，为研究佛教经典的传承和演变提供了重要资料\n4. 内容丰富，不仅包括佛教经典，还包括一些世俗文献，为研究古代社会文化提供了宝贵资料' 
+        },
+        {
+          id: '5',
+          title: '道德经',
+          subtitle: '唐代 · 敦煌藏经洞出土',
+          image: '../img/f5.jpg',
+          description: '《道德经》是道家经典，敦煌出土的道德经写本展示了唐代道家思想的传播情况，具有重要的历史价值。该写本字迹清晰，保存完好，是研究道家思想的重要资料。',
+          history: '敦煌出土的道德经写本为研究道家思想在唐代的传播和影响提供了重要资料，它们反映了唐代社会对道家思想的接受和发展情况，是中国思想史研究的重要实物。',
+          fullText: '道德经·第一章\n\n道可道，非常道；名可名，非常名。无，名天地之始；有，名万物之母。故常无，欲以观其妙；常有，欲以观其徼。此两者同出而异名，同谓之玄，玄之又玄，众妙之门。\n\n道德经·第二章\n\n天下皆知美之为美，斯恶已；皆知善之为善，斯不善已。故有无相生，难易相成，长短相形，高下相倾，音声相和，前后相随。是以圣人处无为之事，行不言之教，万物作焉而不辞，生而不有，为而不恃，功成而弗居。夫唯弗居，是以不去。\n\n道德经·第三章\n\n不尚贤，使民不争；不贵难得之货，使民不为盗；不见可欲，使民心不乱。是以圣人之治，虚其心，实其腹，弱其志，强其骨。常使民无知无欲，使夫智者不敢为也。为无为，则无不治。' 
+        },
+        {
+          id: '6',
+          title: '论语',
+          subtitle: '唐代 · 敦煌藏经洞出土',
+          image: '../img/f6.jpg',
+          description: '《论语》是儒家经典，敦煌出土的论语写本为研究儒家思想在唐代的传播和影响提供了重要资料。该写本保存完好，字迹清晰，体现了唐代抄经的高超技艺。',
+          history: '敦煌出土的论语写本是研究儒家思想在唐代西北地区传播情况的重要资料，它们反映了唐代社会对儒家文化的重视和传承，为我们了解古代文化交流提供了宝贵的实物证据。',
+          fullText: '论语·学而第一\n\n子曰：「学而时习之，不亦说乎？有朋自远方来，不亦乐乎？人不知而不愠，不亦君子乎？」\n\n有子曰：「其为人也孝弟，而好犯上者，鲜矣；不好犯上，而好作乱者，未之有也。君子务本，本立而道生。孝弟也者，其为仁之本与！」\n\n子曰：「巧言令色，鲜矣仁！」\n\n曾子曰：「吾日三省吾身：为人谋而不忠乎？与朋友交而不信乎？传不习乎？」\n\n子曰：「道千乘之国，敬事而信，节用而爱人，使民以时。」\n\n论语·为政第二\n\n子曰：「为政以德，譬如北辰，居其所而众星共之。」\n\n子曰：「《诗》三百，一言以蔽之，曰：『思无邪』。」\n\n子曰：「道之以政，齐之以刑，民免而无耻；道之以德，齐之以礼，有耻且格。」' 
+        }
+      ];
+
+      // 筛选标签功能
+      const filterTags = document.querySelectorAll('.filter-tag');
+      filterTags.forEach(tag => {
+        tag.addEventListener('click', function() {
+          // 移除同组其他标签的active类
+          const siblings = Array.from(this.parentElement.children).filter(child => child !== this && child.classList.contains('filter-tag'));
+          siblings.forEach(sibling => {
+            sibling.classList.remove('active', 'bg-secondary');
+            sibling.classList.add('bg-dark');
+          });
+          
+          // 添加当前标签的active类
+          this.classList.add('active', 'bg-secondary');
+          this.classList.remove('bg-dark');
+          
+          // 模拟筛选逻辑
+          console.log('筛选:', this.textContent.trim());
+        });
+      });
+
+      // 搜索功能
+      const searchInput = document.getElementById('search-input');
+      const searchBtn = searchInput.nextElementSibling;
+      const scrollCards = document.querySelectorAll('.card');
+      
+      // 搜索函数
+      function performSearch() {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm) {
+          console.log('搜索:', searchTerm);
+          
+          // 遍历所有经卷卡片
+          scrollCards.forEach(card => {
+            const cardTitle = card.querySelector('.card-title').textContent;
+            const cardDesc = card.querySelector('p').textContent;
+            
+            // 检查标题或描述是否包含搜索词
+            if (cardTitle.includes(searchTerm) || cardDesc.includes(searchTerm)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      }
+      
+      // 按Enter键搜索
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+      
+      // 点击搜索按钮搜索
+      searchBtn.addEventListener('click', performSearch);
+
+      // 模态框功能
+      const modal = document.getElementById('modal');
+      const closeModal = document.getElementById('close-modal');
+      const viewScrollBtns = document.querySelectorAll('.view-scroll');
+      
+      viewScrollBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          // 加载对应的经卷数据
+          let scroll = null;
+          // 先从scrollItems中查找
+          scroll = scrollItems.find(item => item.id === id);
+          // 如果没找到，从allScrolls中查找
+          if (!scroll) {
+            scroll = allScrolls.find(item => item.id == id);
+          }
+          if (scroll) {
+            // 更新模态框内容
+            document.getElementById('modal-title').textContent = scroll.title;
+            document.getElementById('modal-subtitle').textContent = scroll.title;
+            document.getElementById('modal-period').textContent = scroll.subtitle || scroll.period;
+            document.getElementById('modal-image').src = scroll.image;
+            document.getElementById('modal-image').alt = scroll.title;
+            document.getElementById('modal-description').textContent = scroll.description;
+            // 显示模态框
+            modal.classList.remove('hidden');
+            
+            // 切换到对应的scrollData经卷信息
+            if (scroll.title.includes('金刚')) {
+              toggleScroll('scroll1');
+            } else if (scroll.title.includes('道德')) {
+              toggleScroll('scroll2');
+            } else {
+              toggleScroll('scroll3');
+            }
+          }
+        });
+      });
+      
+      closeModal.addEventListener('click', function() {
+        modal.classList.add('hidden');
+      });
+      
+      // 点击模态框外部关闭
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
+
+      // 收藏功能
+      const favoriteBtns = document.querySelectorAll('.add-favorite');
+      
+      favoriteBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          // 切换收藏状态
+          const icon = this.querySelector('i');
+          if (icon.classList.contains('fa-heart-o')) {
+            icon.classList.remove('fa-heart-o');
+            icon.classList.add('fa-heart');
+            this.classList.add('text-primary');
+            // 保存到统一的本地存储
+            let scroll = null;
+            // 先从scrollItems中查找
+            scroll = scrollItems.find(item => item.id === id);
+            // 如果没找到，从allScrolls中查找
+            if (!scroll) {
+              scroll = allScrolls.find(item => item.id == id);
+            }
+            if (scroll) {
+              const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+              if (!allFavorites['数字藏经']) {
+                allFavorites['数字藏经'] = [];
+              }
+              const exists = allFavorites['数字藏经'].some(item => item.id === id);
+              if (!exists) {
+                allFavorites['数字藏经'].push(scroll);
+                localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+              }
+            }
+          } else {
+            icon.classList.remove('fa-heart');
+            icon.classList.add('fa-heart-o');
+            this.classList.remove('text-primary');
+            // 从统一的本地存储移除
+            const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+            if (allFavorites['数字藏经']) {
+              allFavorites['数字藏经'] = allFavorites['数字藏经'].filter(item => item.id !== id);
+              localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+            }
+          }
+        });
+      });
+
+      // 经卷数据
+      const allScrolls = [
+        {
+          id: 1,
+          title: '金刚般若波罗蜜经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《金刚般若波罗蜜经》是佛教重要经典，敦煌出土的金刚经写本保存完好，是研究唐代书法和佛教文化的重要资料。',
+          image: '../img/shu1.jpeg'
+        },
+        {
+          id: 2,
+          title: '般若波罗蜜多心经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《般若波罗蜜多心经》是般若经系列的核心经典，敦煌出土的写本字迹清晰，体现了唐代书法的精湛技艺。',
+          image: '../img/shu2.jpeg'
+        },
+        {
+          id: 3,
+          title: '妙法莲华经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《妙法莲华经》是佛教重要经典之一，敦煌出土的写本保存了完整的经文内容，具有极高的文献价值。',
+          image: '../img/shu3.jpeg'
+        },
+        {
+          id: 4,
+          title: '大藏经',
+          period: '宋代 · 敦煌藏经洞出土',
+          description: '《大藏经》是佛教经典的总集，敦煌出土的大藏经写本为研究佛教经典的传承和演变提供了重要资料。',
+          image: '../img/shu4.jpeg'
+        },
+        {
+          id: 5,
+          title: '道德经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《道德经》是道家经典，敦煌出土的写本为研究道家思想在唐代的传播提供了珍贵资料。',
+          image: '../img/shu5.jpeg'
+        },
+        {
+          id: 6,
+          title: '论语集解',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《论语集解》是儒家经典，敦煌出土的论语写本为研究儒家思想在唐代的传播和影响提供了重要资料。',
+          image: '../img/shu6.jpeg'
+        },
+        {
+          id: 7,
+          title: '维摩诘经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《维摩诘经》是佛教重要经典，敦煌出土的写本保存了大量古代注疏，具有极高的学术价值。',
+          image: '../img/shu8.jpeg'
+        },
+        {
+          id: 8,
+          title: '无量寿经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《无量寿经》是净土宗核心经典，敦煌出土的写本为研究净土宗在敦煌地区的传播提供了重要资料。',
+          image: '../img/xue9.jpg'
+        },
+        {
+          id: 9,
+          title: '地藏菩萨本愿经',
+          period: '唐代 · 敦煌藏经洞出土',
+          description: '《地藏菩萨本愿经》是佛教重要经典，敦煌出土的写本为研究地藏菩萨信仰在敦煌地区的传播提供了珍贵资料。',
+          image: '../img/yun9.jpeg'
+        }
+      ];
+      
+      let loadedScrollCount = 5;
+      const scrollContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.gap-8');
+      
+      // 加载更多功能
+      const loadMoreBtn = document.getElementById('load-more');
+      loadMoreBtn.addEventListener('click', function() {
+        // 显示加载动画
+        this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+        this.disabled = true;
+        
+        // 模拟加载延迟
+        setTimeout(() => {
+          const endIndex = Math.min(loadedScrollCount + 3, allScrolls.length);
+          
+          for (let i = loadedScrollCount; i < endIndex; i++) {
+            const scroll = allScrolls[i];
+            const card = document.createElement('div');
+            card.className = 'card rounded-xl overflow-hidden card-hover animate-fade-in';
+            card.style.animationDelay = `${(i - loadedScrollCount) * 0.1}s`;
+            card.innerHTML = `
+              <div class="relative overflow-hidden group">
+                <img src="${scroll.image}" alt="${scroll.title}" class="w-full h-64 object-cover filter-dunhuang">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <h3 class="card-title text-xl font-bold mb-2">${scroll.title}</h3>
+                  <p class="text-light opacity-85 text-sm mb-4">${scroll.period}</p>
+                  <div class="flex gap-2">
+                    <button class="btn-primary px-3 py-1 rounded-lg text-white text-sm view-scroll" data-id="${scroll.id}">
+                      查看详情
+                    </button>
+                    <button class="btn-secondary px-3 py-1 rounded-lg text-white text-sm add-favorite" data-id="${scroll.id}">
+                      <i class="fa fa-heart-o"></i> 收藏
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="p-4">
+                <p class="text-light opacity-75 text-sm">${scroll.description}</p>
+              </div>
+            `;
+            scrollContainer.appendChild(card);
+          }
+          
+          loadedScrollCount = endIndex;
+          
+          // 检查是否还有更多数据
+          if (loadedScrollCount >= allScrolls.length) {
+            this.innerHTML = '<span>没有更多了</span>';
+            this.disabled = true;
+            this.classList.add('opacity-50', 'cursor-not-allowed');
+          } else {
+            this.innerHTML = '<span>加载更多</span><i class="fa fa-refresh"></i>';
+            this.disabled = false;
+          }
+          
+          // 为新添加的按钮绑定事件
+          bindNewScrollButtons();
+        }, 1500);
+      });
+      
+      // 为新添加的经卷卡片绑定按钮事件
+      function bindNewScrollButtons() {
+        document.querySelectorAll('.view-scroll:not([data-bound])').forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', function() {
+            const id = parseInt(this.getAttribute('data-id'));
+            const scroll = allScrolls.find(item => item.id === id);
+            if (scroll) {
+              document.getElementById('modal-title').textContent = scroll.title;
+              document.getElementById('modal-subtitle').textContent = scroll.title;
+              document.getElementById('modal-period').textContent = scroll.period;
+              document.getElementById('modal-image').src = scroll.image;
+              document.getElementById('modal-description').textContent = scroll.description;
+              document.getElementById('modal').classList.remove('hidden');
+              
+              // 切换到对应的scrollData经卷信息
+              if (scroll.title.includes('金刚')) {
+                toggleScroll('scroll1');
+              } else if (scroll.title.includes('道德')) {
+                toggleScroll('scroll2');
+              } else {
+                toggleScroll('scroll3');
+              }
+            }
+          });
+        });
+        
+        document.querySelectorAll('.add-favorite:not([data-bound])').forEach(btn => {
+          btn.setAttribute('data-bound', 'true');
+          btn.addEventListener('click', function() {
+            const id = parseInt(this.getAttribute('data-id'));
+            const scroll = allScrolls.find(item => item.id === id);
+            if (scroll) {
+              const allFavorites = JSON.parse(localStorage.getItem('allFavorites') || '{}');
+              if (!allFavorites['数字藏经']) {
+                allFavorites['数字藏经'] = [];
+              }
+              const exists = allFavorites['数字藏经'].some(item => item.id === id);
+              if (exists) {
+                allFavorites['数字藏经'] = allFavorites['数字藏经'].filter(item => item.id !== id);
+                this.innerHTML = '<i class="fa fa-heart-o"></i> 收藏';
+                this.classList.remove('text-red-400');
+              } else {
+                allFavorites['数字藏经'].push(scroll);
+                this.innerHTML = '<i class="fa fa-heart"></i> 已收藏';
+                this.classList.add('text-red-400');
+              }
+              localStorage.setItem('allFavorites', JSON.stringify(allFavorites));
+            }
+          });
+        });
+      }
+
+      // 下载功能
+      document.getElementById('download-image').addEventListener('click', function() {
+        const img = document.getElementById('modal-image');
+        const link = document.createElement('a');
+        link.download = '敦煌经卷.jpg';
+        link.href = img.src;
+        link.click();
+      });
+
+      // 分享功能
+      document.getElementById('share-image').addEventListener('click', function() {
+        if (navigator.share) {
+          navigator.share({
+            title: '敦煌经卷',
+            text: '来数字敦煌查看珍贵经卷',
+            url: window.location.href
+          });
+        } else {
+          // 复制链接
+          const url = window.location.href;
+          navigator.clipboard.writeText(url).then(function() {
+            alert('链接已复制到剪贴板');
+          });
+        }
+      });
+
+      // 复制链接功能
+      document.getElementById('copy-link').addEventListener('click', function() {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(function() {
+          alert('链接已复制到剪贴板');
+        });
+      });
+
+      // 查看全文功能
+      let currentScrollId = null;
+      
+      document.getElementById('view-full-text').addEventListener('click', function() {
+        // 获取当前显示的经卷ID
+        const title = document.getElementById('modal-title').textContent;
+        const scroll = scrollItems.find(item => item.title === title);
+        if (scroll) {
+          currentScrollId = scroll.id;
+          // 更新全文模态框内容
+          document.getElementById('full-text-title').textContent = scroll.title + ' - 全文';
+          document.getElementById('full-text-subtitle').textContent = scroll.title;
+          document.getElementById('full-text-period').textContent = scroll.subtitle;
+          document.getElementById('full-text-content').textContent = scroll.fullText;
+          // 显示全文模态框
+          document.getElementById('full-text-modal').classList.remove('hidden');
+        }
+      });
+      
+      // 关闭全文模态框
+      document.getElementById('close-full-text-modal').addEventListener('click', function() {
+        document.getElementById('full-text-modal').classList.add('hidden');
+      });
+      
+      document.getElementById('close-full-text-btn').addEventListener('click', function() {
+        document.getElementById('full-text-modal').classList.add('hidden');
+      });
+      
+      // 点击全文模态框外部关闭
+      document.getElementById('full-text-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.add('hidden');
+        }
+      });
+      
+      // 下载全文功能
+      document.getElementById('download-full-text').addEventListener('click', function() {
+        if (currentScrollId) {
+          const scroll = scrollItems.find(item => item.id === currentScrollId);
+          if (scroll) {
+            // 创建文本内容
+            const content = `${scroll.title}\n${scroll.subtitle}\n\n${scroll.fullText}`;
+            // 创建Blob对象
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            // 创建下载链接
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${scroll.title}.txt`;
+            link.click();
+            // 释放URL对象
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+          }
+        }
+      });
+      
+      // 全文搜索功能
+      document.getElementById('search-btn').addEventListener('click', function() {
+        const searchTerm = document.getElementById('full-text-search').value.trim();
+        if (searchTerm) {
+          const contentElement = document.getElementById('full-text-content');
+          const content = contentElement.textContent;
+          const regex = new RegExp(searchTerm, 'gi');
+          const highlightedContent = content.replace(regex, match => `<mark class="bg-primary/30 text-light">${match}</mark>`);
+          // 注意：这里使用innerHTML可能存在XSS风险，但在这个上下文中是安全的
+          contentElement.innerHTML = highlightedContent;
+        }
+      });
+      
+      // 按Enter键搜索
+      document.getElementById('full-text-search').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          document.getElementById('search-btn').click();
+        }
+      });
+      
+      // 字体大小调整
+      let fontSize = 16;
+      const contentElement = document.getElementById('full-text-content');
+      
+      document.getElementById('font-size-increase').addEventListener('click', function() {
+        if (fontSize < 24) {
+          fontSize += 2;
+          contentElement.style.fontSize = fontSize + 'px';
+        }
+      });
+      
+      document.getElementById('font-size-decrease').addEventListener('click', function() {
+        if (fontSize > 12) {
+          fontSize -= 2;
+          contentElement.style.fontSize = fontSize + 'px';
+        }
+      });
+      
+      // 复制全文功能
+      document.getElementById('copy-full-text').addEventListener('click', function() {
+        const content = document.getElementById('full-text-content').textContent;
+        navigator.clipboard.writeText(content).then(function() {
+          alert('全文已复制到剪贴板');
+        }).catch(function(err) {
+          console.error('复制失败:', err);
+          alert('复制失败，请手动复制');
+        });
+      });
+
+      // 经卷高清浏览功能
+      document.getElementById('start-scroll-view').addEventListener('click', function() {
+        alert('经卷高清浏览功能即将开放，敬请期待！');
+      });
+
+
+    });
+
+    // 个人中心图标点击事件
+    const userIcon = document.getElementById('user-icon');
+    if (userIcon) {
+      userIcon.addEventListener('click', function(e) {
+        e.stopPropagation(); // 阻止事件冒泡
+        // 跳转到登录页面
+        window.location.href = '../logoin/code/123.html';
+      });
+    }
+  </script>
+</body>
+</html>

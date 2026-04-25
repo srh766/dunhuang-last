@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敦煌</title>
+    <style>
+       * {
+            padding:0;
+            margin: 0;
+            box-sizing: border-box;
+        
+        }
+       body {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        overflow-y: auto;
+        margin: 0;
+        padding: o;
+    }
+        article img{
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            display: block;
+            margin: 0;
+            padding: 0;
+            border: none;
+        }
+        main{
+            width: 100%;
+            height: auto;
+            margin-bottom: 80px;
+        }
+
+        article{
+            max-width: 100vh;
+            display: grid;
+            grid-template-rows: 60vh 40vh;
+
+        }
+        .article_img {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 40vh;
+        }
+
+        main h2 {
+            font-size: 4rem;
+        }
+
+        main p {
+            font-size: 2rem;
+        }
+
+        .article_info {
+            text-align: center;
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            align-content: center;
+            gap: 5vh;
+            box-shadow: 0 0 20px 10px;
+        }
+        .article_info {
+            background: rgba(255, 255, 255, 0.7)
+        }
+        
+
+
+        .home-btn-box {
+            width: 100%;
+            padding: 20px 0;
+            background:#8d6b3b;
+            text-align:center;
+            position:relative;
+            bottom:0;
+            left:0;
+            z-index:999; 
+            margin-top: 20px;
+            }
+        
+         .home-btn {
+            display: inline-block;
+            padding: 20px 60px;
+            font-size: 25px;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px 30px;
+            background: #8B4513;
+            color: #FFE4B5;
+            border: 2px solid #CD853F;
+            background-image: linear-gradient(rgba(255,255,255,0.08), rgba(0,0,0,0.2));
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+            transition: all 0.3s ease;
+            }
+            .home-btn:hover {
+            background: #A0522D;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(0,0,0,0.45);
+            }
+
+    </style>
+</head>
+<body>
+  <main>
+    <article>
+        <div class="article_img" >
+            <img src="img/f7.jpg" alt="" >
+        </div>
+        <div class="article_info">
+            <h2>千年壁画</h2>
+            <p>莫高窟开凿，敦煌壁画诞生，留存丝路文明与佛教艺术的千年瑰宝。</p>
+        </div>
+    </article>
+     <article>
+        <div class="article_img" >
+            <img src="img/fly1.jpg" alt="" >
+        </div>
+        <div class="article_info">
+            <h2>岁月侵蚀</h2>
+            <p>自然风化与人为损耗，让千年壁画面临褪色、脱落的濒危困境。</p>
+        </div>
+    </article>
+     <article>
+        <div class="article_img" >
+            <img src="img/fly9.jpg" alt="" >
+        </div>
+        <div class="article_info">
+            <h2>抢救保护</h2>
+            <p>文物工作者开展修复与保护，为濒危壁画筑牢第一道生命防线。</p>
+        </div>
+    </article>
+     <article>
+        <div class="article_img" >
+            <img src="img/f6.jpg" alt="数字采集" >
+        </div>
+        <div class="article_info">
+            <h2>数字采集</h2>
+            <p>高精度数字化采集技术，1:1复刻壁画细节， 实现文物永久存档。</p>
+        </div>
+    </article>
+     <article>
+        <div class="article_img" >
+            <img src="img/f9.jpg" alt="" >
+        </div>
+        <div class="article_info">
+            <h2>数字敦煌</h2>
+            <p>云端开放数字资源，让千年敦煌突破时空，走向全球、永续传承。</p>
+        </div>
+    </article>
+  </main> 
+    <div class="home-btn-box">
+        <a href="index.html" class="home-btn" target="_blank">点击进入首页</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background: #1a1a1a;
+            user-select: none;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .scene {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1.3);
+            overflow: hidden;
+        }
+
+        .scene.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+            z-index: 5;
+        }
+
+        .scene.exiting {
+            opacity: 0;
+            transform: scale(0.85);
+            z-index: 1;
+        }
+
+        .scene.entering {
+            opacity: 1;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 133.33%;
+            height: 133.33%;
+            left: -16.665%;
+            top: -16.665%;
+            cursor: grab;
+            transition: transform 0.1s ease-out;
+            transform-origin: center center;
+        }
+
+        .image-wrapper:active {
+            cursor: grabbing;
+        }
+
+        .scene img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(3px);
+            z-index: 20;
+        }
+
+        .nav-arrow:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        .nav-arrow svg {
+            width: 24px;
+            height: 24px;
+            fill: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+        }
+
+        .nav-arrow:hover svg {
+            fill: rgba(255, 255, 255, 0.95);
+        }
+
+        .left-arrow {
+            left: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .left-arrow:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .right-arrow {
+            right: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .right-arrow:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .down-arrow {
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .down-arrow:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .enter-arrow {
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: gentle-pulse 2.5s ease-in-out infinite;
+        }
+
+        .enter-arrow:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        @keyframes gentle-pulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        .enter-hint {
+            position: absolute;
+            bottom: 6%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-family: "Microsoft YaHei", sans-serif;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+
+        .drag-hint {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            font-family: "Microsoft YaHei", sans-serif;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            text-align: center;
+        }
+
+        .scene.active .drag-hint {
+            opacity: 1;
+        }
+
+        .scene-title {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+            font-family: "Microsoft YaHei", sans-serif;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            letter-spacing: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="scene active" id="menkou">
+            <div class="image-wrapper" id="menkou-wrapper">
+                <img src="menkou.jpg" alt="门口">
+                <div class="nav-arrow enter-arrow" onclick="navigateTo('zhu')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 4l-8 8h5v8h6v-8h5z"/>
+                    </svg>
+                </div>
+                <div class="enter-hint">点击进入</div>
+                <div class="drag-hint">拖动查看全景<br>滚轮缩放图片</div>
+            </div>
+        </div>
+
+        <div class="scene" id="zhu">
+            <div class="image-wrapper" id="zhu-wrapper">
+                <img src="zhu.jpg" alt="石柱">
+                <div class="nav-arrow left-arrow" onclick="navigateTo('zuo')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15 4l-8 8 8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="nav-arrow right-arrow" onclick="navigateTo('you')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 4l8 8-8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="nav-arrow down-arrow" onclick="navigateTo('menkou')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4 12l8 8 8-8H4z"/>
+                    </svg>
+                </div>
+                <div class="drag-hint">拖动查看全景<br>滚轮缩放图片</div>
+                <div class="scene-title">主室</div>
+            </div>
+        </div>
+
+        <div class="scene" id="zuo">
+            <div class="image-wrapper" id="zuo-wrapper">
+                <img src="zuo.jpg" alt="左侧">
+                <div class="nav-arrow left-arrow" onclick="navigateTo('bei')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15 4l-8 8 8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="nav-arrow right-arrow" onclick="navigateTo('zhu')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 4l8 8-8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="drag-hint">拖动查看全景<br>滚轮缩放图片</div>
+                <div class="scene-title">中心柱左</div>
+            </div>
+        </div>
+
+        <div class="scene" id="you">
+            <div class="image-wrapper" id="you-wrapper">
+                <img src="you.jpg" alt="右侧">
+                <div class="nav-arrow left-arrow" onclick="navigateTo('zhu')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 4l-8 8h16z"/>
+                    </svg>
+                </div>
+                <div class="nav-arrow right-arrow" onclick="navigateTo('bei')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 4l8 8-8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="drag-hint">拖动查看全景<br>滚轮缩放图片</div>
+                <div class="scene-title">中心柱右</div>
+            </div>
+        </div>
+
+        <div class="scene" id="bei">
+            <div class="image-wrapper" id="bei-wrapper">
+                <img src="bei.jpg" alt="背面">
+                <div class="nav-arrow left-arrow" onclick="navigateTo('zuo')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15 4l-8 8 8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="nav-arrow right-arrow" onclick="navigateTo('you')">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 4l8 8-8 8V4z"/>
+                    </svg>
+                </div>
+                <div class="drag-hint">拖动查看全景<br>滚轮缩放图片</div>
+                <div class="scene-title">中心柱背后</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentScene = 'menkou';
+        let isAnimating = false;
+
+        const dragState = {
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            currentX: 0,
+            currentY: 0,
+            translateX: 0,
+            translateY: 0
+        };
+
+        const scaleState = {
+            scale: 1,
+            minScale: 1,
+            maxScale: 1.5
+        };
+
+        function initDrag(wrapperId) {
+            const wrapper = document.getElementById(wrapperId);
+            if (!wrapper) return;
+
+            wrapper.addEventListener('mousedown', (e) => {
+                dragState.isDragging = true;
+                dragState.startX = e.clientX - dragState.translateX;
+                dragState.startY = e.clientY - dragState.translateY;
+                wrapper.style.cursor = 'grabbing';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!dragState.isDragging) return;
+                
+                dragState.translateX = e.clientX - dragState.startX;
+                dragState.translateY = e.clientY - dragState.startY;
+                
+                const maxTranslateX = (wrapper.offsetWidth * 0.125) * scaleState.scale;
+                const maxTranslateY = (wrapper.offsetHeight * 0.125) * scaleState.scale;
+                dragState.translateX = Math.max(-maxTranslateX, Math.min(maxTranslateX, dragState.translateX));
+                dragState.translateY = Math.max(-maxTranslateY, Math.min(maxTranslateY, dragState.translateY));
+                
+                updateWrapperTransform(wrapper);
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (dragState.isDragging) {
+                    dragState.isDragging = false;
+                    wrapper.style.cursor = 'grab';
+                }
+            });
+
+            wrapper.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                
+                const zoomIntensity = 0.05;
+                const delta = e.deltaY > 0 ? -zoomIntensity : zoomIntensity;
+                
+                const newScale = scaleState.scale * (1 + delta);
+                if (newScale >= scaleState.minScale && newScale <= scaleState.maxScale) {
+                    scaleState.scale = newScale;
+                    updateWrapperTransform(wrapper);
+                }
+            });
+        }
+
+        function updateWrapperTransform(wrapper) {
+            wrapper.style.transform = `translate(${dragState.translateX}px, ${dragState.translateY}px) scale(${scaleState.scale})`;
+        }
+
+        ['menkou-wrapper', 'zhu-wrapper', 'zuo-wrapper', 'you-wrapper', 'bei-wrapper'].forEach(initDrag);
+
+        function resetDragPosition() {
+            dragState.translateX = 0;
+            dragState.translateY = 0;
+            scaleState.scale = 1;
+            document.querySelectorAll('.image-wrapper').forEach(wrapper => {
+                wrapper.style.transform = 'translate(0, 0) scale(1)';
+            });
+        }
+
+        function navigateTo(targetId) {
+            if (isAnimating || targetId === currentScene) return;
+            isAnimating = true;
+
+            // 立即重置位置，确保新场景加载时使用默认位置
+            resetDragPosition();
+
+            const current = document.getElementById(currentScene);
+            const target = document.getElementById(targetId);
+
+            current.classList.add('exiting');
+            current.classList.remove('active');
+            
+            target.classList.add('entering');
+            
+            setTimeout(() => {
+                target.classList.add('active');
+                target.classList.remove('entering');
+            }, 50);
+
+            setTimeout(() => {
+                current.classList.remove('exiting');
+                currentScene = targetId;
+                isAnimating = false;
+            }, 1200);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (isAnimating) return;
+
+            if (currentScene === 'menkou') {
+                if (e.key === 'Enter' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    navigateTo('zhu');
+                }
+            } else {
+                if (e.key === 'ArrowLeft') {
+                    const scenes = ['bei', 'zuo', 'zhu', 'you'];
+                    const currentIndex = scenes.indexOf(currentScene);
+                    if (currentIndex > 0) {
+                        navigateTo(scenes[currentIndex - 1]);
+                    } else if (currentScene === 'bei') {
+                        navigateTo('zuo');
+                    }
+                } else if (e.key === 'ArrowRight') {
+                    const scenes = ['bei', 'zuo', 'zhu', 'you'];
+                    const currentIndex = scenes.indexOf(currentScene);
+                    if (currentIndex < scenes.length - 1) {
+                        navigateTo(scenes[currentIndex + 1]);
+                    } else if (currentScene === 'you') {
+                        navigateTo('bei');
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字敦煌 - AI对话助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#D4A76A', // 敦煌土黄色
+                        secondary: '#8B4513', // 敦煌褐色
+                        accent: '#E6C29C', // 敦煌浅褐色
+                        dark: '#3E2723', // 深褐色
+                        light: '#F5F5DC', // 米色
+                        paper: '#F0E6D2' // 古卷纸色
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .paper-effect {
+                background-color: rgba(240, 230, 210, 0.95);
+                background-image: linear-gradient(rgba(240, 230, 210, 0.9), rgba(240, 230, 210, 0.98));
+            }
+            .send-button {
+                background-color: #8B4513;
+                color: #F0E6D2;
+                transition: all 0.3s ease;
+            }
+            .send-button:hover {
+                background-color: #D4A76A;
+                color: #3E2723;
+                transform: scale(1.1);
+            }
+            .typing-dot {
+                width: 8px;
+                height: 8px;
+                background-color: #8B4513;
+                border-radius: 50%;
+                display: inline-block;
+                margin: 0 2px;
+                animation: typing 1.4s infinite ease-in-out both;
+            }
+            .typing-dot:nth-child(1) {
+                animation-delay: -0.32s;
+            }
+            .typing-dot:nth-child(2) {
+                animation-delay: -0.16s;
+            }
+            @keyframes typing {
+                0%, 80%, 100% {
+                    transform: scale(0);
+                }
+                40% {
+                    transform: scale(1);
+                }
+            }
+            .chat-window {
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                border-radius: 12px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+            }
+            .chat-window:hover {
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            }
+            .chat-header {
+                color: #F0E6D2;
+                cursor: move;
+            }
+            .chat-button {
+                color: #3E2723;
+                border-radius: 50%;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            .chat-button:hover {
+                transform: scale(1.1);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            }
+            .message-bubble {
+                max-width: 80%;
+                padding: 10px 15px;
+                border-radius: 18px;
+                margin-bottom: 10px;
+            }
+            .user-message {
+                background-color: rgba(212, 167, 106, 0.8);
+                color: #3E2723;
+                align-self: flex-end;
+                border-bottom-right-radius: 4px;
+            }
+            .ai-message {
+                background-color: rgba(240, 230, 210, 0.8);
+                color: #3E2723;
+                align-self: flex-start;
+                border-bottom-left-radius: 4px;
+            }
+        }
+    </style>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            min-height: 100vh;
+        }
+        #chat-widget {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            transition: all 0.1s ease-out;
+        }
+        #chat-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            transition: all 0.3s ease;
+            transform-origin: bottom right;
+        }
+        #chat-window.hidden {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
+        .chat-header {
+            background-image: url('img/IMG_20260405_212400.png') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            position: relative !important;
+        }
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(139, 69, 19, 0.4), rgba(212, 167, 106, 0.4));
+        }
+        .chat-header > div {
+            position: relative;
+            z-index: 1;
+        }
+        .chat-button {
+            background-image: url('img/IMG_20260405_213615.png') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            position: relative !important;
+        }
+        .chat-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(212, 167, 106, 0.4), rgba(230, 194, 156, 0.4));
+            border-radius: 50%;
+        }
+        .chat-button > i {
+            position: relative;
+            z-index: 1;
+        }
+        .paper-effect {
+            background-image: url('img/Image_1775395426104_517.png') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            position: relative !important;
+        }
+        .paper-effect::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(240, 230, 210, 0.5);
+        }
+        .paper-effect > div {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 悬窗式AI对话助手 -->
+    <div id="chat-widget">
+        <!-- 聊天按钮 -->
+        <div id="chat-button" class="chat-button w-14 h-14 flex items-center justify-center">
+            <i class="fa fa-comments text-xl"></i>
+        </div>
+
+        <!-- 聊天窗口 -->
+        <div id="chat-window" class="chat-window hidden w-64 md:w-80 paper-effect">
+            <!-- 聊天头部 -->
+            <div id="chat-header" class="chat-header p-5 flex items-center justify-between">
+                <div class="flex items-center">
+                    <h3 class="font-medium text-sm">数字敦煌AI助手</h3>
+                </div>
+            </div>
+
+            <!-- 聊天内容区域 -->
+            <div id="chat-messages" class="p-3 h-64 overflow-y-auto scrollbar-hide">
+                <!-- 欢迎消息 -->
+                <div class="flex mb-3">
+                    <div class="message-bubble ai-message">
+                        <p class="text-sm">您好！我是数字敦煌AI助手，很高兴为您解答关于敦煌文化的问题。请问有什么可以帮助您的？</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预设问题 -->
+            <div class="px-3 py-2 border-t border-primary">
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="preset-question text-xs p-1 bg-primary bg-opacity-40 rounded text-secondary hover:bg-opacity-60 transition text-center">
+                        敦煌莫高窟的历史
+                    </button>
+                    <button class="preset-question text-xs p-1 bg-primary bg-opacity-40 rounded text-secondary hover:bg-opacity-60 transition text-center">
+                        壁画艺术特点
+                    </button>
+                    <button class="preset-question text-xs p-1 bg-primary bg-opacity-40 rounded text-secondary hover:bg-opacity-60 transition text-center">
+                        佛教故事
+                    </button>
+                    <button class="preset-question text-xs p-1 bg-primary bg-opacity-40 rounded text-secondary hover:bg-opacity-60 transition text-center">
+                        文化遗产保护
+                    </button>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="p-3 border-t border-primary">
+                <div class="flex items-center space-x-1">
+                    <input
+                        type="text"
+                        id="message-input"
+                        placeholder="输入您的问题..."
+                        class="flex-1 px-3 py-1 rounded-full border border-primary bg-white bg-opacity-60 focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    >
+                    <button
+                        id="send-button"
+                        class="send-button rounded-full w-8 h-8 flex items-center justify-center"
+                    >
+                        <i class="fa fa-paper-plane text-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 聊天窗口控制
+        const chatWidget = document.getElementById('chat-widget');
+        const chatButton = document.getElementById('chat-button');
+        const chatWindow = document.getElementById('chat-window');
+        const chatHeader = document.getElementById('chat-header');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatMessages = document.getElementById('chat-messages');
+        const presetQuestions = document.querySelectorAll('.preset-question');
+
+        // 拖动功能变量
+        let isDragging = false;
+        let offsetX, offsetY;
+        let longPressTimer = null;
+        const LONG_PRESS_THRESHOLD = 150; // 长按时间阈值，单位毫秒
+
+        // 加载保存的位置
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedPosition = localStorage.getItem('chatWidgetPosition');
+            if (savedPosition) {
+                chatWidget.style.transform = savedPosition;
+                chatWidget.style.bottom = 'auto';
+                chatWidget.style.right = 'auto';
+                chatWidget.style.left = '0';
+                chatWidget.style.top = '0';
+            }
+        });
+
+        // 敦煌相关问题的预设回复
+        const dunhuangResponses = {
+            '敦煌莫高窟的历史': '敦煌莫高窟始建于前秦建元二年（公元366年），由僧人乐僔开创。据史书记载，乐僔法师云游至敦煌鸣沙山，忽见山顶金光万道，状如千佛，于是在崖壁上开凿了第一个洞窟。历经十六国、北朝、隋、唐、五代、西夏、元等朝代的兴建，形成了规模宏大的石窟群。',
+            '壁画艺术特点': '敦煌壁画艺术具有以下特点：1. 内容丰富，包括佛经故事、佛像、供养人等；2. 艺术风格多样，融合了中原、西域和印度等多种文化元素；3. 色彩鲜艳，使用矿物颜料，历经千年仍保持鲜艳；4. 构图饱满，人物形象生动；5. 技法精湛，包括线描、设色、晕染等多种技法。',
+            '佛教故事': '敦煌壁画中的佛教故事主要包括本生故事、因缘故事、佛传故事等。本生故事讲述佛陀前世的善行，如《九色鹿经》；因缘故事讲述因果报应；佛传故事讲述释迦牟尼从诞生到涅槃的一生。这些故事通过生动的图像向信徒传播佛教教义。',
+            '文化遗产保护': '保护敦煌文化遗产的措施包括：1. 建立专门的保护机构，如敦煌研究院；2. 实施数字化保护工程，对壁画进行数字化采集和保存；3. 控制游客数量，减少对洞窟的影响；4. 加强环境监测，控制温湿度和光照；5. 开展国际合作，引进先进的保护技术；6. 制定相关法律法规，加强文物保护。'
+        };
+
+        // 通用回复
+        const generalResponses = [
+            '感谢您对敦煌文化的关注！敦煌莫高窟是中国古代艺术的瑰宝，承载着千年的历史文化。',
+            '敦煌文化博大精深，融合了多种文化元素，是丝绸之路的重要文化遗产。',
+            '如果您有关于敦煌莫高窟的具体问题，我很乐意为您解答。',
+            '敦煌壁画艺术是中国古代艺术的杰出代表，展现了丰富的历史和文化内涵。',
+            '欢迎探索敦煌文化的奥秘，这里有许多精彩的历史故事和艺术珍品。'
+        ];
+
+        // 切换聊天窗口显示/隐藏
+        chatButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // 阻止事件冒泡
+            chatWindow.classList.toggle('hidden');
+        });
+
+        // 点击聊天窗口外部自动关闭
+        document.addEventListener('click', (e) => {
+            if (!chatWindow.contains(e.target) && !chatButton.contains(e.target) && !chatWindow.classList.contains('hidden')) {
+                chatWindow.classList.add('hidden');
+            }
+        });
+
+        // 长按开始检测
+        function startLongPress(e) {
+            longPressTimer = setTimeout(() => {
+                isDragging = true;
+                offsetX = e.clientX - chatWidget.getBoundingClientRect().left;
+                offsetY = e.clientY - chatWidget.getBoundingClientRect().top;
+                chatWidget.style.cursor = 'grabbing';
+            }, LONG_PRESS_THRESHOLD);
+        }
+
+        // 取消长按检测
+        function cancelLongPress() {
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        }
+
+        // 拖动功能实现
+        function handleMouseMove(e) {
+            if (isDragging) {
+                e.preventDefault(); // 防止默认行为，提高拖动流畅度
+                const x = e.clientX - offsetX;
+                const y = e.clientY - offsetY;
+                
+                // 确保聊天窗口不会超出屏幕边界
+                const maxX = window.innerWidth - chatWidget.offsetWidth;
+                const maxY = window.innerHeight - chatWidget.offsetHeight;
+                
+                // 计算边界值，添加一些边距以获得更好的视觉效果
+                const boundedX = Math.max(10, Math.min(x, maxX - 10));
+                const boundedY = Math.max(10, Math.min(y, maxY - 10));
+                
+                // 直接修改transform属性，提高拖动性能
+                chatWidget.style.transform = `translate(${boundedX}px, ${boundedY}px)`;
+                chatWidget.style.bottom = 'auto';
+                chatWidget.style.right = 'auto';
+                chatWidget.style.left = '0';
+                chatWidget.style.top = '0';
+            }
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            chatWidget.style.cursor = 'default';
+            cancelLongPress();
+            
+            // 保存位置到localStorage
+            const transform = chatWidget.style.transform;
+            if (transform) {
+                localStorage.setItem('chatWidgetPosition', transform);
+            }
+        }
+
+        // 为聊天按钮添加长按拖动功能
+        chatButton.addEventListener('mousedown', startLongPress);
+        chatButton.addEventListener('mouseup', cancelLongPress);
+        chatButton.addEventListener('mouseleave', cancelLongPress);
+        
+        // 为聊天按钮添加触摸事件支持
+        chatButton.addEventListener('touchstart', startLongPressTouch, { passive: false });
+        chatButton.addEventListener('touchend', cancelLongPress);
+
+        // 为聊天头部添加拖动功能
+        chatHeader.addEventListener('mousedown', startLongPress);
+        chatHeader.addEventListener('mouseup', cancelLongPress);
+        chatHeader.addEventListener('mouseleave', cancelLongPress);
+        
+        // 为聊天头部添加触摸事件支持
+        chatHeader.addEventListener('touchstart', startLongPressTouch, { passive: false });
+        chatHeader.addEventListener('touchend', cancelLongPress);
+
+        // 全局鼠标事件监听
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        
+        // 全局触摸事件监听
+        document.addEventListener('touchmove', handleTouchMove, { passive: false });
+        document.addEventListener('touchend', handleMouseUp);
+        
+        // 触摸事件处理函数
+        function startLongPressTouch(e) {
+            e.preventDefault(); // 防止默认行为，如页面滚动
+            const touch = e.touches[0];
+            longPressTimer = setTimeout(() => {
+                isDragging = true;
+                offsetX = touch.clientX - chatWidget.getBoundingClientRect().left;
+                offsetY = touch.clientY - chatWidget.getBoundingClientRect().top;
+                chatWidget.style.cursor = 'grabbing';
+            }, LONG_PRESS_THRESHOLD);
+        }
+        
+        function handleTouchMove(e) {
+            if (isDragging) {
+                e.preventDefault(); // 防止页面滚动
+                const touch = e.touches[0];
+                const x = touch.clientX - offsetX;
+                const y = touch.clientY - offsetY;
+                
+                // 确保聊天窗口不会超出屏幕边界
+                const maxX = window.innerWidth - chatWidget.offsetWidth;
+                const maxY = window.innerHeight - chatWidget.offsetHeight;
+                
+                // 计算边界值，添加一些边距以获得更好的视觉效果
+                const boundedX = Math.max(10, Math.min(x, maxX - 10));
+                const boundedY = Math.max(10, Math.min(y, maxY - 10));
+                
+                // 直接修改transform属性，提高拖动性能
+                chatWidget.style.transform = `translate(${boundedX}px, ${boundedY}px)`;
+                chatWidget.style.bottom = 'auto';
+                chatWidget.style.right = 'auto';
+                chatWidget.style.left = '0';
+                chatWidget.style.top = '0';
+            }
+        }
+
+        /**
+         * 添加消息到聊天界面
+         * @param {string} message - 消息内容
+         * @param {boolean} isUser - 是否为用户消息
+         */
+        function addMessage(message, isUser = false) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex mb-3 ' + (isUser ? 'justify-end' : '');
+            
+            if (isUser) {
+                messageElement.innerHTML = `
+                    <div class="message-bubble user-message">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            } else {
+                messageElement.innerHTML = `
+                    <div class="message-bubble ai-message">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        /**
+         * 生成AI回复
+         * @param {string} userMessage - 用户消息
+         * @returns {string} AI回复内容
+         */
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            // 更智能的意图识别和回复
+            
+            // 问候语处理
+            if (message.includes('你好') || message.includes('您好') || message.includes('hi') || message.includes('hello') || message.includes('嗨')) {
+                return '您好！我是数字敦煌AI助手，很高兴为您解答关于敦煌文化、莫高窟艺术以及丝绸之路历史的问题。请问有什么可以帮助您的？';
+            } else if (message.includes('谢谢') || message.includes('感谢') || message.includes('谢了') || message.includes('thank')) {
+                return '不客气！如果您还有其他关于敦煌文化的问题，随时可以问我。';
+            } else if (message.includes('再见') || message.includes('拜拜') || message.includes('bye') || message.includes('告辞')) {
+                return '再见！欢迎您再次咨询关于敦煌文化的问题，祝您有愉快的一天。';
+            } else if (message.includes('你是谁') || message.includes('你是什么') || message.includes('你的身份') || message.includes('介绍自己')) {
+                return '我是数字敦煌AI助手，专门为您提供关于敦煌文化、莫高窟艺术和丝绸之路历史的信息和解答。我可以回答您关于敦煌的各种问题，包括历史、艺术、文化、旅游等方面。';
+            } else if (message.includes('你能做什么') || message.includes('你有什么功能') || message.includes('你可以帮我什么')) {
+                return '我可以为您提供关于敦煌文化、莫高窟艺术、丝绸之路历史的详细信息，回答您的相关问题，提供旅游建议，以及分享敦煌的历史故事和文化知识。如果您有任何关于敦煌的问题，都可以随时问我。';
+            } else if (message.includes('你好厉害') || message.includes('真棒') || message.includes('厉害') || message.includes('不错')) {
+                return '谢谢夸奖！我会继续努力为您提供更准确、更全面的敦煌文化信息。如果您有任何问题，随时可以问我。';
+            } else if (message.includes('不明白') || message.includes('没听懂') || message.includes('不懂') || message.includes('不清楚')) {
+                return '抱歉，我可能没有解释清楚。您可以尝试用不同的方式提问，或者具体说明您想了解的内容，我会尽力为您提供更清晰的回答。';
+            } else if (message.includes('对不起') || message.includes('抱歉') || message.includes('不好意思')) {
+                return '没关系！如果您有任何关于敦煌的问题，随时可以问我，我会尽力为您解答。';
+            } else if (message.includes('你知道什么') || message.includes('你了解什么') || message.includes('你懂什么')) {
+                return '我了解敦煌文化、莫高窟艺术、丝绸之路历史等方面的知识。您可以问我关于敦煌的历史、艺术、文化、旅游等方面的问题，我会为您提供详细的信息。';
+            } else if (message.includes('无聊') || message.includes('没意思') || message.includes('没兴趣')) {
+                return '抱歉，我会努力提供更有趣的敦煌文化知识。您可以尝试问我关于敦煌的历史故事、艺术珍品或者旅游景点，我会为您详细介绍。';
+            }
+            
+            // 敦煌莫高窟深度分析
+            if (message.includes('莫高窟') || message.includes('敦煌石窟') || message.includes('洞窟')) {
+                if (message.includes('历史') || message.includes('始建') || message.includes('创建') || message.includes('年代')) {
+                    return '敦煌莫高窟始建于前秦建元二年（公元366年），由僧人乐僔开凿第一个洞窟开始，历经十六国、北朝、隋、唐、五代、西夏、元等朝代，延续开凿了1000多年，形成了规模宏大的石窟群。';
+                } else if (message.includes('艺术') || message.includes('壁画') || message.includes('彩塑') || message.includes('特点')) {
+                    return '敦煌莫高窟的艺术特点主要体现在壁画和彩塑上。壁画内容丰富，包括佛教故事、经变画、供养人画像等，采用高超的绘画技法，色彩鲜艳，构图精美。彩塑则以佛教人物为主，造型优美，表情生动，体现了不同朝代的艺术风格。';
+                } else if (message.includes('保护') || message.includes('保存') || message.includes('修复') || message.includes('濒危')) {
+                    return '敦煌莫高窟的保护工作非常重要，主要面临自然因素（如风沙、潮湿）和人为因素（如游客参观带来的湿度变化）的威胁。敦煌研究院采用了多种保护措施，包括数字化保护、洞窟监测、游客限流等，以确保这一文化遗产能够长期保存。';
+                } else if (message.includes('故事') || message.includes('佛教') || message.includes('传说') || message.includes('佛经')) {
+                    return '敦煌莫高窟的壁画中包含了大量佛教故事，如《九色鹿》《降魔变》《维摩诘经变》等。这些故事不仅是佛教教义的生动体现，也是了解古代社会生活、艺术审美和文化交流的重要资料。';
+                } else if (message.includes('数量') || message.includes('规模') || message.includes('大小') || message.includes('面积')) {
+                    return '敦煌莫高窟现存洞窟735个，分为南北两区。南区是主要的参观区域，有492个洞窟，保存着大量壁画和彩塑；北区有243个洞窟，主要是僧人和工匠的居住场所。壁画总面积约4.5万平方米，彩塑2415尊。';
+                } else if (message.includes('开放') || message.includes('参观') || message.includes('门票') || message.includes('旅游')) {
+                    return '敦煌莫高窟实行预约参观制度，游客需要提前在官网或APP上预约。开放时间一般为8:00-17:00，具体时间会根据季节调整。门票价格根据参观洞窟数量不同而有所差异，建议游客提前了解相关信息并做好行程安排。';
+                } else if (message.includes('数字化') || message.includes('数字敦煌') || message.includes('虚拟') || message.includes('线上')) {
+                    return '敦煌研究院开展了数字敦煌工程，通过先进的数字技术对莫高窟进行数字化采集和存储，建立了数字敦煌资源库。游客可以通过敦煌研究院官网或相关平台在线欣赏莫高窟的壁画和彩塑，即使不能亲临现场也能感受到敦煌艺术的魅力。';
+                } else if (message.includes('发现') || message.includes('发现者') || message.includes('是谁发现')) {
+                    return '敦煌莫高窟的藏经洞是1900年由道士王圆箓发现的。他在清理洞窟时，偶然发现了藏经洞，里面保存着大量的古代文献和艺术品。这一发现震惊了世界，为研究中国古代历史文化提供了宝贵的资料。';
+                } else if (message.includes('破坏') || message.includes('流失') || message.includes('被盗')) {
+                    return '敦煌莫高窟的藏经洞发现后，大量文献和艺术品被外国探险家如斯坦因、伯希和等人带走，流失海外。这是中国文化遗产的重大损失。近年来，中国政府和敦煌研究院一直在努力追回流失的文物，并加强对莫高窟的保护。';
+                } else if (message.includes('最著名') || message.includes('最有名') || message.includes('著名洞窟')) {
+                    return '敦煌莫高窟最著名的洞窟包括第96窟（九层楼，内有35米高的弥勒佛像）、第17窟（藏经洞）、第257窟（九色鹿本生故事）、第296窟（善事太子本生故事）等。这些洞窟以其精美的壁画和彩塑艺术而闻名于世。';
+                } else if (message.includes('修复') || message.includes('保护工作') || message.includes('修复技术')) {
+                    return '敦煌莫高窟的修复工作采用了多种先进技术，包括壁画修复、彩塑修复、洞窟加固等。修复专家们运用传统工艺与现代科技相结合的方法，确保修复工作既保持了文物的原有风貌，又提高了其耐久性。';
+                }
+            }
+            
+            // 敦煌文化深度分析
+            if (message.includes('敦煌') || message.includes('文化')) {
+                if (message.includes('历史') || message.includes('起源') || message.includes('发展') || message.includes('演变')) {
+                    return '敦煌文化起源于西汉时期，张骞出使西域后，敦煌成为丝绸之路的重要节点。在随后的历史进程中，敦煌融合了中原文化、西域文化、印度文化等多种文化元素，形成了独特的敦煌文化体系，包括艺术、宗教、文学、科技等多个方面。';
+                } else if (message.includes('艺术') || message.includes('价值') || message.includes('意义') || message.includes('影响')) {
+                    return '敦煌艺术是敦煌文化的重要组成部分，包括壁画、彩塑、藏经、书法等多种形式。它不仅是中国古代艺术的瑰宝，也是世界文化遗产的重要组成部分，对研究中国古代历史、宗教、艺术、科技以及东西方文化交流具有不可估量的价值。';
+                } else if (message.includes('丝绸之路') || message.includes('贸易') || message.includes('交流') || message.includes('往来')) {
+                    return '敦煌是丝绸之路的重要节点，是东西方文化交流的枢纽。通过丝绸之路，中国的丝绸、瓷器、茶叶等传到西方，西方的宗教、艺术、科技等也传入中国，敦煌成为了这一文化交流的见证者和受益者。';
+                } else if (message.includes('文献') || message.includes('藏经') || message.includes('遗书') || message.includes('文书')) {
+                    return '敦煌藏经洞发现的文献总数约5万件，内容涉及宗教、历史、文学、艺术、科技等多个领域，是研究中国古代社会的重要资料。这些文献不仅数量庞大，而且保存完好，为我们了解古代敦煌乃至整个中国的历史文化提供了宝贵的第一手资料。';
+                } else if (message.includes('节日') || message.includes('习俗') || message.includes('传统') || message.includes('民俗')) {
+                    return '敦煌地区有着丰富的传统节日和民俗文化，如敦煌春节社火、四月八庙会、八月十五赏月等。这些传统活动不仅体现了敦煌人民的生活智慧，也传承了敦煌文化的精髓，是敦煌文化的重要组成部分。';
+                } else if (message.includes('美食') || message.includes('特产') || message.includes('小吃') || message.includes('特色')) {
+                    return '敦煌的特色美食有很多，如敦煌酿皮子、驴肉黄面、敦煌臊子面、泡儿油糕等。这些美食融合了中原和西域的烹饪风格，口味独特，值得一试。此外，敦煌的特产还有李广杏、鸣山大枣、敦煌彩塑等，是馈赠亲友的佳品。';
+                } else if (message.includes('名人') || message.includes('历史人物') || message.includes('著名人物')) {
+                    return '敦煌历史上有许多著名人物，如开创莫高窟的僧人乐僔、发现藏经洞的道士王圆箓、敦煌研究院的创始人常书鸿等。这些人物为敦煌文化的传承和保护做出了重要贡献。';
+                } else if (message.includes('语言') || message.includes('文字') || message.includes('书写')) {
+                    return '敦煌藏经洞发现的文献中包含了多种语言和文字，如汉文、藏文、梵文、粟特文等，反映了敦煌作为东西方文化交流枢纽的重要地位。这些文献为研究古代语言文字提供了宝贵资料。';
+                } else if (message.includes('音乐') || message.includes('舞蹈') || message.includes('表演')) {
+                    return '敦煌文化中的音乐和舞蹈也非常丰富，如敦煌壁画中描绘的各种乐器和舞蹈场景。敦煌音乐融合了中原和西域的音乐元素，形成了独特的风格。敦煌舞蹈则以其优美的姿态和丰富的表现力而闻名。';
+                } else if (message.includes('服饰') || message.includes('服装') || message.includes('穿着')) {
+                    return '敦煌壁画中保存了大量古代服饰的形象，反映了不同时期、不同民族的服饰特点。这些服饰不仅是研究古代服装史的重要资料，也是敦煌文化的重要组成部分，体现了东西方文化交流的痕迹。';
+                }
+            }
+            
+            // 其他相关问题
+            if (message.includes('丝绸之路') || message.includes('丝路')) {
+                if (message.includes('历史') || message.includes('起源') || message.includes('发展')) {
+                    return '丝绸之路起源于西汉时期，张骞出使西域开辟了陆上丝绸之路。它连接了中国与中亚、西亚、欧洲等地，促进了东西方的贸易和文化交流。海上丝绸之路则始于秦汉时期，通过海洋航线连接中国与东南亚、印度、波斯湾等地。';
+                } else if (message.includes('作用') || message.includes('意义') || message.includes('影响')) {
+                    return '丝绸之路不仅是一条贸易通道，也是一条文化交流之路。通过丝绸之路，中国的丝绸、瓷器、造纸术、印刷术等传到西方，西方的佛教、伊斯兰教、数学、天文学等也传入中国，促进了东西方文明的交流与融合。';
+                } else if (message.includes('路线') || message.includes('经过') || message.includes('途径')) {
+                    return '陆上丝绸之路的主要路线是：长安（今西安）→河西走廊→敦煌→新疆→中亚→西亚→欧洲。海上丝绸之路则从中国东南沿海出发，经过东南亚、印度、波斯湾，到达红海和地中海沿岸国家。';
+                } else if (message.includes('现代') || message.includes('现在') || message.includes('复兴')) {
+                    return '21世纪以来，中国提出了"一带一路"倡议，旨在复兴古代丝绸之路的精神，促进沿线国家的经济合作和文化交流。这一倡议得到了国际社会的广泛响应，为世界和平与发展作出了重要贡献。';
+                } else if (message.includes('贸易') || message.includes('商品') || message.includes('货物')) {
+                    return '丝绸之路上的贸易商品非常丰富，从中国输出的有丝绸、瓷器、茶叶、漆器、铜镜等；从西方输入的有香料、宝石、玻璃制品、金银器等。这些商品的交流促进了沿线各国的经济发展。';
+                } else if (message.includes('人物') || message.includes('使者') || message.includes('旅行家')) {
+                    return '丝绸之路上出现了许多著名的人物，如西汉的张骞、东汉的班超、唐代的玄奘、马可·波罗等。这些人物为东西方文化交流做出了重要贡献，他们的故事也成为了丝绸之路历史的重要组成部分。';
+                }
+            } else if (message.includes('佛教') || message.includes('佛法') || message.includes('宗教')) {
+                if (message.includes('传入') || message.includes('起源') || message.includes('历史')) {
+                    return '佛教通过丝绸之路传入中国，大约在西汉末年东汉初年（公元1世纪左右）。佛教传入中国后，与中国传统文化相融合，形成了具有中国特色的佛教文化，对中国的哲学、艺术、文学等方面产生了深远影响。';
+                } else if (message.includes('教义') || message.includes('理念') || message.includes('核心')) {
+                    return '佛教的核心教义包括四谛（苦、集、灭、道）、十二因缘、三宝（佛、法、僧）等。佛教强调慈悲、智慧、因果报应和涅槃解脱，教导人们通过修行摆脱痛苦，达到涅槃的境界。';
+                } else if (message.includes('节日') || message.includes('庆典') || message.includes('仪式')) {
+                    return '佛教的主要节日有佛诞节（农历四月初八）、盂兰盆节（农历七月十五）、涅槃节（农历二月十五）等。这些节日是佛教徒重要的宗教活动日，也是佛教文化的重要组成部分。';
+                } else if (message.includes('经典') || message.includes('佛经') || message.includes('经文')) {
+                    return '佛教的主要经典包括《金刚经》《心经》《大藏经》等。敦煌藏经洞发现的文献中就包含了大量的佛教经典，这些经典不仅是宗教信仰的重要载体，也是研究佛教历史和文化的重要资料。';
+                } else if (message.includes('建筑') || message.includes('寺庙') || message.includes('佛塔')) {
+                    return '佛教建筑包括寺庙、佛塔、石窟等多种形式。敦煌莫高窟就是佛教石窟建筑的杰出代表，它不仅是宗教活动的场所，也是艺术的宝库，体现了佛教文化的博大精深。';
+                }
+            } else if (message.includes('月牙泉') || message.includes('鸣沙山') || message.includes('敦煌景点')) {
+                if (message.includes('月牙泉')) {
+                    return '月牙泉位于敦煌市西南5公里处，是沙漠中的一处奇迹，被称为"沙漠第一泉"。它形如一弯新月，泉水清澈见底，与周围的鸣沙山形成了独特的沙漠奇观。月牙泉的存在至今仍是一个谜，尽管周围是沙漠，但泉水始终不干涸。';
+                } else if (message.includes('鸣沙山')) {
+                    return '鸣沙山位于敦煌市西南5公里处，因沙粒流动时发出的声音而得名。鸣沙山由细沙堆积而成，沙粒有红、黄、绿、白、黑五种颜色，被称为"五色沙"。游客可以在鸣沙山上滑沙、骑骆驼，欣赏沙漠风光。';
+                } else if (message.includes('玉门关') || message.includes('阳关')) {
+                    return '玉门关和阳关是古代丝绸之路的重要关隘，位于敦煌市西部。玉门关因西域输入玉石时取道于此而得名，阳关则因在玉门关之南而得名。这两个关隘见证了丝绸之路的繁荣，也是古代边防的重要设施。';
+                } else if (message.includes('雅丹地貌') || message.includes('魔鬼城')) {
+                    return '敦煌雅丹国家地质公园位于敦煌市西北部，是由风力侵蚀形成的独特地貌，被称为"魔鬼城"。这里的风蚀地貌形态各异，如城堡、军舰、动物等，是大自然的杰作，吸引了众多游客前来观赏。';
+                } else if (message.includes('汉长城') || message.includes('长城')) {
+                    return '敦煌汉长城是中国现存最古老的长城之一，建于西汉时期，用于防御匈奴入侵。它沿着丝绸之路延伸，是古代边防体系的重要组成部分，也是研究中国古代军事防御工程的重要资料。';
+                } else if (message.includes('三危山') || message.includes('千佛洞')) {
+                    return '三危山是敦煌的重要景点，位于莫高窟对面，因三峰危峙而得名。据史书记载，僧人乐僔就是在三危山看到金光万道，状如千佛，从而萌发了开凿莫高窟的念头。千佛洞是莫高窟的别称，因其洞窟内布满佛像而得名。';
+                } else if (message.includes('敦煌博物馆') || message.includes('博物馆')) {
+                    return '敦煌博物馆位于敦煌市区，是一座综合性博物馆，收藏了大量敦煌地区的历史文物和艺术品。博物馆通过丰富的展品和现代化的展示手段，全面展示了敦煌的历史文化和艺术成就，是了解敦煌文化的重要窗口。';
+                }
+            }
+            
+            // 旅游相关问题
+            if (message.includes('旅游') || message.includes('旅行') || message.includes('游玩') || message.includes('参观')) {
+                if (message.includes('路线') || message.includes('行程') || message.includes('规划')) {
+                    return '敦煌的经典旅游路线通常包括莫高窟、鸣沙山月牙泉、玉门关、阳关等景点。建议安排2-3天的时间，第一天参观莫高窟和鸣沙山月牙泉，第二天参观玉门关、阳关和汉长城，第三天可以在市区逛逛，购买特产。';
+                } else if (message.includes('最佳时间') || message.includes('什么时候') || message.includes('季节')) {
+                    return '敦煌的最佳旅游季节是每年的5月至10月，此时气候适宜，风沙较小，适合户外活动。其中，7-8月是旅游旺季，游客较多，建议提前预约莫高窟门票。春秋季节气候凉爽，游客相对较少，也是不错的选择。';
+                } else if (message.includes('交通') || message.includes('怎么去') || message.includes('路线')) {
+                    return '敦煌有机场和火车站，游客可以选择飞机或火车前往。市内交通主要依靠出租车和公交车，景点之间距离较远，建议包车或参加旅游团。此外，敦煌还有共享单车和电动车租赁服务，方便游客在市区内出行。';
+                } else if (message.includes('住宿') || message.includes('酒店') || message.includes('住哪里')) {
+                    return '敦煌的住宿选择较多，从高端酒店到经济型旅馆都有。建议住在敦煌市区，方便前往各个景点。旺季时建议提前预订住宿，以避免价格上涨和房源紧张。';
+                } else if (message.includes('费用') || message.includes('花费') || message.includes('预算')) {
+                    return '敦煌旅游的费用因季节、住宿标准和游玩项目而异。一般来说，3天2晚的行程，包括交通、住宿、门票和餐饮，预算大约在2000-3000元/人左右。旺季价格会有所上涨，建议提前规划并预订。';
+                } else if (message.includes('注意事项') || message.includes('提示') || message.includes('建议')) {
+                    return '敦煌旅游的注意事项包括：1. 莫高窟需要提前预约；2. 沙漠地区日照强烈，注意防晒；3. 昼夜温差大，带好保暖衣物；4. 尊重当地风俗习惯；5. 保护文物，文明参观；6. 准备足够的饮用水。';
+                } else if (message.includes('特产') || message.includes('纪念品') || message.includes('礼物')) {
+                    return '敦煌的特产和纪念品有很多，如敦煌彩塑、夜光杯、敦煌地毯、李广杏干、鸣山大枣等。这些特产不仅具有地方特色，也是馈赠亲友的佳品。建议在正规商店购买，确保品质。';
+                } else if (message.includes('美食') || message.includes('餐厅') || message.includes('吃饭')) {
+                    return '敦煌的特色美食有驴肉黄面、敦煌酿皮子、敦煌臊子面、泡儿油糕等。推荐的餐厅有敦煌老饭馆、顺张驴肉黄面馆等。这些餐厅提供正宗的敦煌美食，值得一试。';
+                }
+            }
+            
+            // 文化遗产相关问题
+            if (message.includes('文化遗产') || message.includes('世界遗产') || message.includes('保护')) {
+                if (message.includes('莫高窟') || message.includes('敦煌')) {
+                    return '敦煌莫高窟于1987年被联合国教科文组织列为世界文化遗产，是中国首批世界文化遗产之一。它以其丰富的壁画和彩塑艺术，以及重要的历史文化价值，成为人类共同的文化财富。';
+                } else if (message.includes('意义') || message.includes('价值')) {
+                    return '文化遗产是人类历史和文化的重要载体，具有不可替代的价值。保护文化遗产不仅是对历史的尊重，也是对未来的负责。敦煌莫高窟作为世界文化遗产，其保护工作对于传承人类文明具有重要意义。';
+                } else if (message.includes('如何保护') || message.includes('保护措施')) {
+                    return '文化遗产的保护需要综合施策，包括：1. 建立完善的保护法规体系；2. 采用先进的科学技术进行保护；3. 加强宣传教育，提高公众保护意识；4. 合理利用文化遗产，实现可持续发展；5. 国际合作，共同保护人类共同的文化财富。';
+                } else if (message.includes('其他') || message.includes('中国') || message.includes('世界')) {
+                    return '中国还有许多其他的世界文化遗产，如长城、故宫、秦始皇陵兵马俑等。这些文化遗产共同构成了中华民族的精神家园，也是人类文明的重要组成部分。保护好这些文化遗产是我们的共同责任。';
+                }
+            }
+            
+            // 历史相关问题
+            if (message.includes('历史') || message.includes('古代') || message.includes('过去')) {
+                if (message.includes('敦煌') || message.includes('莫高窟')) {
+                    return '敦煌有着悠久的历史，从西汉时期设立敦煌郡开始，就成为丝绸之路的重要节点。莫高窟的开凿始于公元366年，历经多个朝代的建设，形成了规模宏大的石窟群，见证了敦煌的历史变迁。';
+                } else if (message.includes('丝绸之路') || message.includes('贸易')) {
+                    return '丝绸之路的历史可以追溯到西汉时期，张骞出使西域开辟了陆上丝绸之路。在随后的历史中，丝绸之路成为东西方贸易和文化交流的重要通道，对人类文明的发展产生了深远影响。';
+                } else if (message.includes('唐朝') || message.includes('唐代')) {
+                    return '唐朝是敦煌莫高窟的鼎盛时期，这一时期开凿的洞窟数量最多，艺术水平也最高。唐代的壁画和彩塑体现了当时的繁荣景象和高超的艺术技巧，是敦煌艺术的巅峰之作。';
+                } else if (message.includes('汉朝') || message.includes('汉代')) {
+                    return '汉朝是敦煌历史上的重要时期，西汉时期设立敦煌郡，成为丝绸之路的重要节点。东汉时期，班超经营西域，进一步巩固了敦煌的地位。汉朝的开拓为敦煌文化的发展奠定了基础。';
+                } else if (message.includes('西夏') || message.includes('元代')) {
+                    return '西夏和元代是敦煌莫高窟开凿的后期阶段，这一时期的艺术风格与前期有所不同，体现了民族融合的特点。西夏时期的壁画和彩塑具有独特的艺术风格，元代则更多地受到藏传佛教的影响。';
+                }
+            }
+            
+            // 艺术相关问题
+            if (message.includes('艺术') || message.includes('绘画') || message.includes('雕塑')) {
+                if (message.includes('敦煌') || message.includes('莫高窟')) {
+                    return '敦煌艺术是中国古代艺术的瑰宝，包括壁画、彩塑、藏经、书法等多种形式。莫高窟的壁画内容丰富，技法高超，色彩鲜艳，是中国古代绘画艺术的杰出代表。彩塑则以佛教人物为主，造型优美，表情生动，体现了不同朝代的艺术风格。';
+                } else if (message.includes('风格') || message.includes('特点')) {
+                    return '敦煌艺术的风格随着时代的变迁而变化，从早期的粗犷质朴，到唐代的华丽多彩，再到后期的简约典雅，反映了不同时期的艺术审美和文化特色。敦煌艺术融合了中原、西域和印度等多种文化元素，形成了独特的艺术风格。';
+                } else if (message.includes('影响') || message.includes('意义')) {
+                    return '敦煌艺术对中国乃至世界艺术的发展产生了深远影响。它不仅是中国古代艺术的重要组成部分，也是世界艺术宝库中的瑰宝。敦煌艺术的发现和研究，为我们了解古代艺术的发展提供了宝贵资料。';
+                } else if (message.includes('色彩') || message.includes('颜料') || message.includes('颜色')) {
+                    return '敦煌壁画使用了多种天然颜料，如朱砂、赭石、石青、石绿等，这些颜料经过千百年的时间仍然鲜艳如新。敦煌艺术的色彩运用非常丰富，体现了古代艺术家的高超技艺和审美追求。';
+                } else if (message.includes('技法') || message.includes('技术') || message.includes('方法')) {
+                    return '敦煌壁画采用了多种绘画技法，如线描、晕染、平涂等。这些技法的运用使得壁画具有立体感和层次感，体现了古代艺术家的精湛技艺。敦煌彩塑则采用了泥塑、木雕等多种技法，造型优美，表情生动。';
+                }
+            }
+            
+            // 科技相关问题
+            if (message.includes('科技') || message.includes('技术') || message.includes('科学')) {
+                if (message.includes('敦煌') || message.includes('莫高窟')) {
+                    return '敦煌莫高窟的保护和研究运用了许多现代科技手段，如数字化技术、遥感技术、环境监测技术等。这些科技手段的运用，为莫高窟的保护和研究提供了有力的支持，也为文化遗产的保护提供了新的思路。';
+                } else if (message.includes('古代') || message.includes('传统')) {
+                    return '敦煌藏经洞发现的文献中包含了大量古代科技方面的内容，如天文历法、数学、医学、农业等。这些文献为研究中国古代科技的发展提供了宝贵资料，展示了古代中国人民的智慧。';
+                }
+            }
+            
+            // 教育相关问题
+            if (message.includes('教育') || message.includes('学习') || message.includes('研究')) {
+                if (message.includes('敦煌') || message.includes('莫高窟')) {
+                    return '敦煌莫高窟是重要的教育和研究基地，吸引了众多学者和学生前来研究和学习。敦煌研究院设有专门的研究机构，开展敦煌学的研究和教育工作。此外，敦煌莫高窟也是重要的爱国主义教育基地，向人们展示了中华民族的优秀文化遗产。';
+                } else if (message.includes('敦煌学') || message.includes('学科')) {
+                    return '敦煌学是一门以敦煌文献、敦煌艺术和敦煌历史为研究对象的学科，涉及历史学、考古学、艺术学、宗教学等多个领域。敦煌学的研究对于了解中国古代历史文化和东西方文化交流具有重要意义。';
+                }
+            }
+            
+            // 检查是否有敦煌相关的预设回复
+            for (const [key, response] of Object.entries(dunhuangResponses)) {
+                if (userMessage.includes(key)) {
+                    return response;
+                }
+            }
+            
+            // 智能反问
+            if (message.includes('什么是') || message.includes('什么叫') || message.includes('定义') || message.includes('意思')) {
+                return '您想了解关于敦煌的哪方面内容呢？比如莫高窟艺术、敦煌文化历史、丝绸之路等，我可以为您提供更详细的信息。';
+            } else if (message.includes('如何') || message.includes('怎样') || message.includes('怎么') || message.includes('方法')) {
+                return '您是想了解如何参观敦煌莫高窟，还是如何保护文化遗产，或者其他方面的信息呢？请具体说明，我会为您提供更准确的回答。';
+            } else if (message.includes('为什么') || message.includes('原因') || message.includes('理由')) {
+                return '您想了解关于敦煌哪方面的原因呢？比如莫高窟的建造原因、敦煌文化繁荣的原因等，我可以为您提供更详细的解释。';
+            } else if (message.includes('哪里') || message.includes('位置') || message.includes('地址')) {
+                return '您想了解敦煌的具体位置，还是敦煌某个景点的位置呢？敦煌位于甘肃省西北部，是丝绸之路的重要节点，拥有众多历史文化景点。';
+            } else if (message.includes('什么时候') || message.includes('时间') || message.includes('何时')) {
+                return '您想了解敦煌的最佳旅游时间，还是某个历史事件发生的时间呢？敦煌的最佳旅游季节是每年的5月至10月，此时气候适宜，适合户外活动。';
+            } else if (message.includes('多少') || message.includes('数量') || message.includes('价格') || message.includes('费用')) {
+                return '您想了解敦煌莫高窟的洞窟数量，还是旅游费用，或者其他方面的数量信息呢？请具体说明，我会为您提供更准确的回答。';
+            } else if (message.includes('谁') || message.includes('人物') || message.includes('是谁')) {
+                return '您想了解敦煌历史上的哪位人物，还是敦煌文化的相关人物呢？敦煌历史上有许多重要人物，如乐僔、王圆箓、常书鸿等，他们为敦煌文化的发展和保护做出了重要贡献。';
+            } else if (message.includes('怎样的') || message.includes('什么样') || message.includes('如何的')) {
+                return '您想了解敦煌的哪方面特点呢？比如敦煌莫高窟的艺术特点、敦煌文化的特色，或者敦煌旅游的体验等，我可以为您提供详细的信息。';
+            }
+            
+            // 随机选择通用回复
+            const randomIndex = Math.floor(Math.random() * generalResponses.length);
+            return generalResponses[randomIndex];
+        }
+
+        /**
+         * 处理发送消息
+         */
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                // 添加用户消息
+                addMessage(message, true);
+                messageInput.value = '';
+                
+                // 显示AI正在输入
+                const typingIndicator = document.createElement('div');
+                typingIndicator.id = 'typing-indicator';
+                typingIndicator.className = 'flex mb-3';
+                typingIndicator.innerHTML = `
+                    <div class="message-bubble ai-message">
+                        <div class="flex items-center">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(typingIndicator);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // 模拟AI思考时间
+                setTimeout(() => {
+                    // 移除输入指示器
+                    const indicator = document.getElementById('typing-indicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+                    // 生成并添加AI回复
+                    const aiResponse = generateAIResponse(message);
+                    addMessage(aiResponse);
+                }, 1500);
+            }
+        }
+
+        // 事件监听
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 预设问题点击事件
+        presetQuestions.forEach(button => {
+            button.addEventListener('click', () => {
+                const question = button.textContent.trim();
+                messageInput.value = question;
+                sendMessage();
+            });
+        });
+    </script>
+</body>
+</html>
